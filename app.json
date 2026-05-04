@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "TripMate",
+    "slug": "tripmate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#2d3a8c"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.tripmate.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#2d3a8c"
+      },
+      "package": "com.tripmate.app"
+    }
+  }
+}
