@@ -22,6 +22,11 @@ export default function SplashScreen() {
 
   useEffect(() => {
     if (isLoading) return;
+    // On web, if the user navigated directly to /landing, send them there
+    if (typeof window !== 'undefined' && window.location.href.includes('/landing')) {
+      router.replace('/landing');
+      return;
+    }
     const timer = setTimeout(async () => {
       if (user) {
         router.replace('/(tabs)/');
