@@ -19,6 +19,11 @@
         "backgroundColor": "#2d3a8c"
       },
       "package": "com.tripmate.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "baseUrl": "/tripmate"
     }
   }
 }
