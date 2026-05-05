@@ -1,0 +1,41 @@
+import api from './api';
+import { ChatRoom, Message } from '../types';
+import { mockChatRooms, mockMessages } from '../mock/data';
+
+const USE_MOCK = !process.env.EXPO_PUBLIC_API_URL;
+
+export async function getChatRooms(): Promise<ChatRoom[]> {
+  if (USE_MOCK) return mockChatRooms;
+  const { data } = await api.get('/chat/rooms');
+  return data;
+}
+
+export async function getMessages(roomId: string): Promise<Message[]> {
+  if (USE_MOCK) return mockMessages;
+  const { data } = await api.get(`/chat/rooms/${roomId}/messages`);
+  return data;
+}
+
+export async function sendMessage(roomId: string, content: string): Promise<Message> {
+  if (USE_MOCK) {
+    return { id: Date.now().toString(), senderId: 'me', content, createdAt: new Date().toISOString(), type: 'text' };
+  }
+  const { data } = await api.post(`/chat/rooms/${roomId}/messages`, { content });
+  return data;
+}
+
+export async function acceptCompanion(roomId: string): Promise<void> {
+  if (USE_MOCK) return;
+  await api.post(`/chat/rooms/${roomId}/accept`);
+}
+
+export async function rejectCompanion(roomId: string): Promise<void> {
+  if (USE_MOCK) return;
+  await api.post(`/chat/rooms/${roomId}/reject`);
+}
+
+export async function startChat(userId: string): Promise<ChatRoom> {
+  if (USE_MOCK) return mockChatRooms[0];
+  const { data } = await api.post('/chat/rooms', { userId });
+  return data;
+}
