@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../context/AuthContext';
 import { Colors } from '../../constants/colors';
 
@@ -22,12 +21,11 @@ export default function SplashScreen() {
 
   useEffect(() => {
     if (isLoading) return;
-    const timer = setTimeout(async () => {
+    const timer = setTimeout(() => {
       if (user) {
         router.replace('/(tabs)/');
       } else {
-        const done = await AsyncStorage.getItem('onboarding_done').catch(() => null);
-        router.replace(done ? '/(auth)/login' : '/onboarding');
+        router.replace('/(auth)/login');
       }
     }, 2200);
     return () => clearTimeout(timer);
