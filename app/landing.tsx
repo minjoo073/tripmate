@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  Dimensions, Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Colors } from '../constants/colors';
-
-const W = Dimensions.get('window').width;
 
 const FEATURES = [
   {
@@ -111,7 +109,8 @@ function Stars({ count }: { count: number }) {
 }
 
 export default function LandingPage() {
-  const isWide = W > 700;
+  const { width } = useWindowDimensions();
+  const isWide = width > 700;
 
   return (
     <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
