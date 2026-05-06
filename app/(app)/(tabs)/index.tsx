@@ -10,10 +10,10 @@ import { getRecommended } from '../../../services/matchService';
 
 const FILTER_TABS = [
   { label: '전체', action: null },
-  { label: '여행지별', action: () => router.push('/(tabs)/explore') },
-  { label: '날짜별', action: () => router.push('/(tabs)/explore') },
-  { label: '스타일', action: () => router.push('/(tabs)/explore') },
-  { label: '성별', action: () => router.push('/(tabs)/explore') },
+  { label: '여행지별', action: () => router.push('/explore-destination') },
+  { label: '날짜별', action: () => router.push('/explore-date') },
+  { label: '스타일', action: () => router.push('/explore-style') },
+  { label: '성별', action: () => router.push('/explore-gender') },
 ];
 
 const QUICK_DESTINATIONS = [

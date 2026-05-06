@@ -21,6 +21,10 @@ function AppStack() {
       <Stack.Screen name="mates" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="profile-setup" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="explore-destination" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="explore-date" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="explore-style" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="explore-gender" options={{ animation: 'slide_from_right' }} />
     </Stack>
   );
 }
