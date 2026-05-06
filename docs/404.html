@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  // GitHub Pages SPA redirect: 404 -> index with path in query
+  var path = window.location.pathname.slice('/tripmate'.length) || '/';
+  var search = window.location.search ? '&q=' + encodeURIComponent(window.location.search.slice(1)) : '';
+  window.location.replace('/tripmate/?p=' + encodeURIComponent(path) + search + window.location.hash);
+</script>
+</head>
+<body></body>
+</html>

@@ -7,7 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web --clear --port $PORT",
-    "build:web": "expo export --platform web --output-dir docs --clear && find docs -name '*.html' -exec sed -i '' 's|src=\"/_expo/|src=\"/tripmate/_expo/|g; s|href=\"/favicon\\.ico\"|href=\"/tripmate/favicon.ico\"|g' {} + && sed -i '' 's|</head>|<script>if(location.pathname===\"/tripmate\")location.replace(\"/tripmate/\");</script></head>|' docs/index.html && touch docs/.nojekyll"
+    "build:web": "expo export --platform web --output-dir docs --clear && find docs -name '*.html' -exec sed -i '' 's|src=\"/_expo/|src=\"/tripmate/_expo/|g; s|href=\"/favicon\\.ico\"|href=\"/tripmate/favicon.ico\"|g' {} + && sed -i '' 's|</head>|<script>if(location.pathname===\"/tripmate\")location.replace(\"/tripmate/\");</script></head>|' docs/index.html && touch docs/.nojekyll && cp docs/+not-found.html docs/404.html"
   },
   "dependencies": {
     "@expo/cli": "^55.0.28",
