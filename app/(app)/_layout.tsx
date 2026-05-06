@@ -18,6 +18,9 @@ function AppStack() {
       <Stack.Screen name="chat/[id]" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="post/[id]" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="mates" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="profile-setup" options={{ animation: 'slide_from_right' }} />
     </Stack>
   );
 }
