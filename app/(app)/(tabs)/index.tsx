@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
   tabTextActive: { color: Colors.white, fontWeight: '600' },
   scroll: { flex: 1, marginTop: 14 },
-  scrollContent: { paddingHorizontal: 20, paddingBottom: 32, flexGrow: 1 },
+  scrollContent: { paddingHorizontal: 20, paddingBottom: 48, flexGrow: 1 },
   section: { marginBottom: 24 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },

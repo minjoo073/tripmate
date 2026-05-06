@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary },
   subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 4 },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingBottom: 24 },
+  content: { paddingHorizontal: 20, paddingBottom: 48 },
   field: { marginBottom: 16 },
   dateRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
   dateField: { flex: 1 },

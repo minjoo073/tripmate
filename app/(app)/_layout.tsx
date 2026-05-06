@@ -31,7 +31,7 @@ export default function AppLayout() {
         <View style={styles.phoneFrame}>
           <SafeAreaProvider
             initialMetrics={{
-              insets: { top: 44, bottom: 34, left: 0, right: 0 },
+              insets: { top: 59, bottom: 34, left: 0, right: 0 },
               frame: { x: 0, y: 0, width: 390, height: 844 },
             }}
             style={styles.phoneInner}
