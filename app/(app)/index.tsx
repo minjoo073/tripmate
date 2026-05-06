@@ -1,9 +1,16 @@
 import { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../context/AuthContext';
 import { Colors } from '../../constants/colors';
+
+function webNavigate(path: string) {
+  // GitHub Pages 정적 배포에서 router.replace가 동작하지 않는 경우를 대비해
+  // window.location으로 직접 이동 (baseUrl /tripmate 자동 감지)
+  const base = window.location.pathname.replace(/\/$/, '').split('/').slice(0, 2).join('/');
+  window.location.replace(base + path);
+}
 
 export default function SplashScreen() {
   const { user, isLoading } = useAuth();
@@ -22,20 +29,20 @@ export default function SplashScreen() {
 
   useEffect(() => {
     if (isLoading) return;
-    // On web, if the user navigated directly to /landing, send them there
-    if (typeof window !== 'undefined' && window.location.href.includes('/landing')) {
-      router.replace('/landing');
-      return;
-    }
     const timer = setTimeout(async () => {
-      if (user) {
-        router.replace('/(tabs)/');
-      } else {
-        const done = await AsyncStorage.getItem('onboarding_done');
-        if (done) {
-          router.replace('/(auth)/login');
+      if (Platform.OS === 'web') {
+        if (user) {
+          webNavigate('/(tabs)/');
         } else {
-          router.replace('/onboarding');
+          const done = await AsyncStorage.getItem('onboarding_done').catch(() => null);
+          webNavigate(done ? '/(auth)/login' : '/onboarding');
+        }
+      } else {
+        if (user) {
+          router.replace('/(tabs)/');
+        } else {
+          const done = await AsyncStorage.getItem('onboarding_done');
+          router.replace(done ? '/(auth)/login' : '/onboarding');
         }
       }
     }, 2200);
