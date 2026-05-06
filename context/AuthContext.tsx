@@ -23,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem('auth_user').then((stored) => {
       if (stored) setUser(JSON.parse(stored));
+    }).catch(() => {}).finally(() => {
       setIsLoading(false);
     });
   }, []);
