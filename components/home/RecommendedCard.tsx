@@ -13,7 +13,7 @@ export function RecommendedCard({ item }: Props) {
   return (
     <TouchableOpacity
       style={styles.card}
-      activeOpacity={0.85}
+      activeOpacity={0.82}
       onPress={() => router.push(`/mate/${item.user.id}`)}
     >
       <Avatar nickname={item.user.nickname} size={56} />
@@ -21,22 +21,27 @@ export function RecommendedCard({ item }: Props) {
       <View style={styles.badge}>
         <Text style={styles.badgeText}>{item.matchRate}%</Text>
       </View>
-      <Text style={styles.destination} numberOfLines={1}>{item.trip.destination}</Text>
+      <Text style={styles.destination} numberOfLines={1}>📍 {item.trip.destination}</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    width: 120,
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 12,
+    width: 116,
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    padding: 14,
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
     gap: 6,
     marginRight: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
   },
   name: {
     fontSize: 13,
@@ -47,11 +52,11 @@ const styles = StyleSheet.create({
   badge: {
     backgroundColor: Colors.primaryBg,
     paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
   },
   badgeText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: Colors.primary,
   },

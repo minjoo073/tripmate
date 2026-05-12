@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, FlatList, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { SendIcon } from '../../../components/ui/Icon';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -59,14 +60,17 @@ export default function ChatRoomScreen() {
       keyboardVerticalOffset={0}
     >
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 4 }]}>
-        <TouchableOpacity onPress={() => router.back()}>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
           <Text style={styles.back}>←</Text>
         </TouchableOpacity>
         <Avatar nickname={room?.partner.nickname} size={36} />
         <Text style={styles.partnerName} numberOfLines={1}>{room?.partner.nickname ?? '...'}</Text>
-        <TouchableOpacity onPress={() => room?.partner.id && router.push(`/mate/${room.partner.id}`)}>
-          <Text style={styles.profileBtn}>프로필 보기</Text>
+        <TouchableOpacity
+          style={styles.profileLink}
+          onPress={() => room?.partner.id && router.push(`/mate/${room.partner.id}`)}
+        >
+          <Text style={styles.profileLinkText}>프로필</Text>
         </TouchableOpacity>
       </View>
 
@@ -101,7 +105,7 @@ export default function ChatRoomScreen() {
           style={styles.confirmedBanner}
           onPress={() => router.push({ pathname: '/match/confirmed', params: { partnerId: room?.partner.id, tripId: room?.trip?.id } })}
         >
-          <Text style={styles.confirmedText}>🎉 동행이 확정되었어요! 확인하기 →</Text>
+          <Text style={styles.confirmedText}>🎉 동행이 확정되었어요 · 확인하기 →</Text>
         </TouchableOpacity>
       )}
 
@@ -111,13 +115,19 @@ export default function ChatRoomScreen() {
           style={styles.input}
           value={text}
           onChangeText={setText}
-          placeholder="메시지를 입력하세요"
+          placeholder="메시지 입력"
           placeholderTextColor={Colors.textPlaceholder}
           returnKeyType="send"
           onSubmitEditing={handleSend}
+          multiline={false}
         />
-        <TouchableOpacity style={styles.sendBtn} onPress={handleSend} activeOpacity={0.8}>
-          <Text style={styles.sendIcon}>↑</Text>
+        <TouchableOpacity
+          style={[styles.sendBtn, !text.trim() && styles.sendBtnDisabled]}
+          onPress={handleSend}
+          activeOpacity={0.8}
+          disabled={!text.trim()}
+        >
+          <SendIcon color="#FFFFFF" size={18} />
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -131,12 +141,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 12,
-    backgroundColor: Colors.primary,
-    gap: 8,
+    backgroundColor: Colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+    gap: 10,
   },
-  back: { fontSize: 22, color: Colors.white },
-  partnerName: { flex: 1, fontSize: 16, fontWeight: '700', color: Colors.white, numberOfLines: 1 },
-  profileBtn: { fontSize: 12, color: 'rgba(255,255,255,0.7)' },
+  headerBtn: { padding: 4 },
+  back: { fontSize: 22, color: Colors.textPrimary },
+  partnerName: { flex: 1, fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
+  profileLink: {
+    backgroundColor: Colors.bg,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+  },
+  profileLinkText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
   messages: { flex: 1 },
   messagesContent: { padding: 16, paddingBottom: 8 },
   confirmedBanner: {
@@ -146,7 +167,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.cardBorder,
   },
-  confirmedText: { fontSize: 14, color: Colors.primary, fontWeight: '600', textAlign: 'center' },
+  confirmedText: { fontSize: 13, color: Colors.primary, fontWeight: '600', textAlign: 'center' },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -160,21 +181,22 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     height: 44,
-    backgroundColor: Colors.inputBg,
+    backgroundColor: Colors.bg,
     borderRadius: 22,
-    paddingHorizontal: 16,
-    fontSize: 14,
+    paddingHorizontal: 18,
+    fontSize: 15,
     color: Colors.textPrimary,
-    borderWidth: 1,
-    borderColor: Colors.inputBorder,
+    borderWidth: 1.5,
+    borderColor: Colors.cardBorder,
   },
   sendBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  sendBtnDisabled: { backgroundColor: Colors.cardBorder },
   sendIcon: { fontSize: 18, color: Colors.white, fontWeight: '700' },
 });

@@ -43,7 +43,7 @@ export default function ExploreDestinationScreen() {
   const filtered = DESTINATIONS.filter((d) => d.region === activeRegion);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
@@ -174,8 +174,8 @@ const styles = StyleSheet.create({
   tagsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   tag: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
-    paddingHorizontal: 8,
+    borderRadius: 999,
+    paddingHorizontal: 10,
     paddingVertical: 3,
   },
   tagText: { fontSize: 11, color: Colors.primary, fontWeight: '600' },

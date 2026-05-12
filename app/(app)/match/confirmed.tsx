@@ -7,7 +7,7 @@ import { Colors } from '../../../constants/colors';
 import { Avatar } from '../../../components/ui/Avatar';
 import { mockUsers, mockTrips } from '../../../mock/data';
 
-const RADIUS = 60;
+const RADIUS = 58;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 function AnimatedCircle({ rate }: { rate: number }) {
@@ -18,24 +18,24 @@ function AnimatedCircle({ rate }: { rate: number }) {
     anim.addListener(({ value }) => {
       setOffset(CIRCUMFERENCE * (1 - value));
     });
-    Animated.timing(anim, { toValue: rate / 100, duration: 1200, useNativeDriver: false }).start();
+    Animated.timing(anim, { toValue: rate / 100, duration: 1400, useNativeDriver: false }).start();
     return () => anim.removeAllListeners();
   }, [rate]);
 
   return (
-    <Svg width={148} height={148}>
-      <Circle cx={74} cy={74} r={RADIUS} stroke="rgba(255,255,255,0.15)" strokeWidth={10} fill="none" />
+    <Svg width={140} height={140}>
+      <Circle cx={70} cy={70} r={RADIUS} stroke="rgba(255,255,255,0.10)" strokeWidth={8} fill="none" />
       <Circle
-        cx={74}
-        cy={74}
+        cx={70}
+        cy={70}
         r={RADIUS}
-        stroke={Colors.pointYellow}
-        strokeWidth={10}
+        stroke={Colors.warm}
+        strokeWidth={8}
         fill="none"
         strokeDasharray={`${CIRCUMFERENCE} ${CIRCUMFERENCE}`}
         strokeDashoffset={offset}
         strokeLinecap="round"
-        transform="rotate(-90 74 74)"
+        transform="rotate(-90 70 70)"
       />
     </Svg>
   );
@@ -50,32 +50,50 @@ export default function ConfirmedScreen() {
   const matchRate = 97;
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.92)).current;
+
   useEffect(() => {
-    Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, tension: 80, friction: 8, useNativeDriver: true }),
+    ]).start();
   }, []);
 
   return (
-    <Animated.View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom, opacity: fadeAnim }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 },
+        { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
+      ]}
+    >
+      <View style={styles.labelWrap}>
+        <Text style={styles.labelText}>MATCH CONFIRMED</Text>
+      </View>
+
       <View style={styles.profiles}>
-        <Avatar nickname="나" size={64} />
+        <Avatar nickname="나" size={64} variant="light" />
         <View style={styles.gauge}>
           <AnimatedCircle rate={matchRate} />
           <View style={styles.gaugeCenter}>
             <Text style={styles.gaugeRate}>{matchRate}%</Text>
           </View>
         </View>
-        <Avatar nickname={partner.nickname} size={64} />
+        <Avatar nickname={partner.nickname} size={64} variant="light" />
       </View>
 
-      <Text style={styles.title}>동행 확정! 🎉</Text>
-      <Text style={styles.subtitle}>{partner.nickname} 님과 함께하는 여행이 확정되었어요</Text>
+      <View style={styles.textWrap}>
+        <Text style={styles.title}>동행 확정! 🎉</Text>
+        <Text style={styles.subtitle}>{partner.nickname} 님과 함께하는{'\n'}여행이 확정되었어요</Text>
+      </View>
 
       <View style={styles.summaryCard}>
         <Text style={styles.summaryLabel}>TRIP SUMMARY</Text>
-        <Text style={styles.summaryItem}>📍 {trip.destination}, {trip.country}</Text>
-        <Text style={styles.summaryItem}>📅 {trip.startDate} – {trip.endDate}</Text>
+        <View style={styles.summaryDivider} />
+        <Text style={styles.summaryItem}>📍  {trip.destination}, {trip.country}</Text>
+        <Text style={styles.summaryItem}>📅  {trip.startDate} – {trip.endDate}</Text>
         <View style={styles.matchBadge}>
-          <Text style={styles.matchBadgeText}>💛 매칭률 {matchRate}%</Text>
+          <Text style={styles.matchBadgeText}>매칭률 {matchRate}%</Text>
         </View>
       </View>
 
@@ -85,9 +103,9 @@ export default function ConfirmedScreen() {
           onPress={() => router.push('/chat/c1')}
           activeOpacity={0.85}
         >
-          <Text style={styles.chatBtnText}>→ 채팅 계속하기</Text>
+          <Text style={styles.chatBtnText}>채팅 시작하기 →</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.replace('/(tabs)/')}>
+        <TouchableOpacity onPress={() => router.replace('/(tabs)/')} activeOpacity={0.7}>
           <Text style={styles.homeBtn}>홈으로 돌아가기</Text>
         </TouchableOpacity>
       </View>
@@ -101,17 +119,29 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.cardDark,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
-    gap: 20,
+    padding: 28,
+    gap: 24,
+  },
+  labelWrap: {
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+  },
+  labelText: {
+    fontSize: 10,
+    color: Colors.warm,
+    fontWeight: '700',
+    letterSpacing: 2,
   },
   profiles: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 0,
   },
   gauge: {
-    width: 148,
-    height: 148,
+    width: 140,
+    height: 140,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -121,34 +151,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  gaugeRate: { fontSize: 28, fontWeight: '800', color: Colors.pointYellow },
-  title: { fontSize: 28, fontWeight: '800', color: Colors.white },
-  subtitle: { fontSize: 14, color: 'rgba(255,255,255,0.7)', textAlign: 'center' },
+  gaugeRate: { fontSize: 26, fontWeight: '800', color: Colors.warm },
+  textWrap: { alignItems: 'center', gap: 8 },
+  title: { fontSize: 26, fontWeight: '800', color: Colors.white },
+  subtitle: { fontSize: 14, color: 'rgba(255,255,255,0.65)', textAlign: 'center', lineHeight: 22 },
   summaryCard: {
     width: '100%',
-    backgroundColor: 'rgba(255,255,255,0.10)',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderRadius: 20,
     padding: 20,
-    gap: 8,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.10)',
   },
-  summaryLabel: { fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: '700', textAlign: 'center', letterSpacing: 1 },
-  summaryItem: { fontSize: 14, color: Colors.white },
+  summaryLabel: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.4)',
+    fontWeight: '700',
+    letterSpacing: 1.5,
+  },
+  summaryDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  summaryItem: { fontSize: 14, color: 'rgba(255,255,255,0.85)' },
   matchBadge: {
-    backgroundColor: 'rgba(255,249,215,0.15)',
-    borderRadius: 8,
+    backgroundColor: 'rgba(248,214,109,0.15)',
+    borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 6,
     alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: 'rgba(248,214,109,0.3)',
   },
-  matchBadgeText: { fontSize: 13, color: Colors.pointYellow, fontWeight: '700' },
-  actions: { width: '100%', gap: 12 },
+  matchBadgeText: { fontSize: 13, color: Colors.warm, fontWeight: '700' },
+  actions: { width: '100%', gap: 14 },
   chatBtn: {
     height: 52,
-    backgroundColor: Colors.white,
-    borderRadius: 14,
+    backgroundColor: Colors.primary,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chatBtnText: { fontSize: 16, fontWeight: '700', color: Colors.primary },
-  homeBtn: { fontSize: 14, color: 'rgba(255,255,255,0.6)', textAlign: 'center' },
+  chatBtnText: { fontSize: 16, fontWeight: '700', color: Colors.white },
+  homeBtn: { fontSize: 14, color: 'rgba(255,255,255,0.45)', textAlign: 'center' },
 });

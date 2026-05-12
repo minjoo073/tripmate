@@ -14,7 +14,7 @@ export function RoundHeader({ title, subtitle, children, style }: RoundHeaderPro
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top + 16 }, style]}>
+    <View style={[styles.header, { paddingTop: insets.top + 20 }, style]}>
       <Text style={styles.title}>{title}</Text>
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
       {children}
@@ -24,23 +24,23 @@ export function RoundHeader({ title, subtitle, children, style }: RoundHeaderPro
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: Colors.primary,
-    borderBottomLeftRadius: 52,
-    borderBottomRightRadius: 52,
-    paddingBottom: 32,
+    backgroundColor: Colors.white,
+    paddingBottom: 28,
     paddingHorizontal: 24,
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    color: Colors.white,
+    color: Colors.textPrimary,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 4,
+    color: Colors.textSecondary,
+    marginTop: 6,
     textAlign: 'center',
   },
 });

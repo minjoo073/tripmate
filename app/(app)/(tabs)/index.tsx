@@ -7,6 +7,10 @@ import { MatchResult } from '../../../types';
 import { RecommendedCard } from '../../../components/home/RecommendedCard';
 import { useAuth } from '../../../context/AuthContext';
 import { getRecommended } from '../../../services/matchService';
+import {
+  BellIcon, SearchIcon, FireIcon, SparkleIcon, CalendarIcon,
+  MapPinIcon, ArrowRightIcon, WaveIcon,
+} from '../../../components/ui/Icon';
 
 const FILTER_TABS = [
   { label: '전체', action: null },
@@ -50,15 +54,18 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.greeting}>안녕하세요 👋</Text>
+          <View style={styles.greetingRow}>
+            <Text style={styles.greeting}>안녕하세요</Text>
+            <WaveIcon color={Colors.warm} size={20} />
+          </View>
           <Text style={styles.subtitle}>{user?.nickname ?? '여행자'}님의 여행</Text>
         </View>
         <TouchableOpacity onPress={() => router.push('/notifications')} style={styles.bellBtn}>
-          <Text style={styles.bell}>🔔</Text>
+          <BellIcon color={Colors.textPrimary} size={22} />
         </TouchableOpacity>
       </View>
 
@@ -68,7 +75,7 @@ export default function HomeScreen() {
         onPress={() => router.push('/(tabs)/explore')}
         activeOpacity={0.8}
       >
-        <Text style={styles.searchIcon}>🔍</Text>
+        <SearchIcon color={Colors.textPlaceholder} size={16} />
         <Text style={styles.searchPlaceholder}>여행지, 날짜로 메이트 찾기</Text>
       </TouchableOpacity>
 
@@ -100,7 +107,7 @@ export default function HomeScreen() {
         {/* 인기 여행지 */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>🔥 지금 인기 여행지</Text>
+            <View style={styles.sectionTitleRow}><FireIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 지금 인기 여행지</Text></View>
             <Text style={styles.sectionSub}>메이트 모집 중</Text>
           </View>
           <ScrollView
@@ -113,7 +120,7 @@ export default function HomeScreen() {
                 key={d.name}
                 style={styles.destChip}
                 onPress={() => router.push({ pathname: '/mates', params: { destination: d.name } })}
-                activeOpacity={0.85}
+                activeOpacity={0.82}
               >
                 <Text style={styles.destFlag}>{d.flag}</Text>
                 <Text style={styles.destName}>{d.name}</Text>
@@ -132,17 +139,22 @@ export default function HomeScreen() {
           activeOpacity={0.88}
         >
           <View style={styles.aiBannerLeft}>
-            <Text style={styles.aiBannerTag}>AI MATCHING</Text>
-            <Text style={styles.aiBannerTitle}>나에게 딱 맞는 메이트{'\n'}AI가 찾아드릴게요 🤖</Text>
-            <Text style={styles.aiBannerSub}>여행지·날짜·스타일 분석 · 평균 4초</Text>
+            <View style={styles.aiBannerTagWrap}>
+              <Text style={styles.aiBannerTag}>AI MATCHING</Text>
+            </View>
+            <Text style={styles.aiBannerTitle}>나에게 딱 맞는 메이트{'\n'}AI가 찾아드릴게요</Text>
+            <Text style={styles.aiBannerSub}>여행지 · 날짜 · 스타일 분석 · 평균 4초</Text>
           </View>
-          <Text style={styles.aiBannerArrow}>→</Text>
+          <View style={styles.aiBannerRight}>
+            <Text style={styles.aiBannerEmoji}>🤖</Text>
+            <ArrowRightIcon color={Colors.warm} size={20} />
+          </View>
         </TouchableOpacity>
 
         {/* 추천 메이트 */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>✨ 추천 메이트</Text>
+            <View style={styles.sectionTitleRow}><SparkleIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 추천 메이트</Text></View>
             <TouchableOpacity onPress={() => router.push('/match/list')}>
               <Text style={styles.moreBtn}>더보기</Text>
             </TouchableOpacity>
@@ -161,7 +173,7 @@ export default function HomeScreen() {
         {/* 메이트 모집 글 */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>🗓 메이트 모집 중</Text>
+            <View style={styles.sectionTitleRow}><CalendarIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 메이트 모집 중</Text></View>
             <TouchableOpacity onPress={() => router.push('/mates')}>
               <Text style={styles.moreBtn}>더보기</Text>
             </TouchableOpacity>
@@ -171,14 +183,17 @@ export default function HomeScreen() {
               key={item.user.id}
               style={styles.mateRow}
               onPress={() => router.push(`/mate/${item.user.id}`)}
-              activeOpacity={0.85}
+              activeOpacity={0.82}
             >
               <View style={styles.mateAvatar}>
                 <Text style={styles.mateAvatarText}>{item.user.nickname[0]}</Text>
               </View>
               <View style={styles.mateInfo}>
                 <Text style={styles.mateName}>{item.user.nickname}</Text>
-                <Text style={styles.mateDest}>📍 오사카 · 6월 중순</Text>
+                <View style={styles.mateDestRow2}>
+                  <MapPinIcon color={Colors.textSecondary} size={13} />
+                  <Text style={styles.mateDest}>{item.trip.destination} · {item.trip.startDate.slice(5, 7)}월</Text>
+                </View>
                 <View style={styles.mateTagsRow}>
                   {item.user.travelStyles.slice(0, 2).map((s) => (
                     <View key={s} style={styles.mateTag}>
@@ -187,7 +202,10 @@ export default function HomeScreen() {
                   ))}
                 </View>
               </View>
-              <Text style={styles.mateMatch}>{item.score}%</Text>
+              <View style={styles.mateMatchWrap}>
+                <Text style={styles.mateMatch}>{item.matchRate}%</Text>
+                <Text style={styles.mateMatchLabel}>매칭률</Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
@@ -195,7 +213,7 @@ export default function HomeScreen() {
         {/* 여행 팁 & 후기 */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>✍️ 여행 팁 & 후기</Text>
+            <View style={styles.sectionTitleRow}><SparkleIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 여행 팁 & 후기</Text></View>
             <TouchableOpacity onPress={() => router.push('/(tabs)/community')}>
               <Text style={styles.moreBtn}>더보기</Text>
             </TouchableOpacity>
@@ -205,7 +223,7 @@ export default function HomeScreen() {
               key={tip.title}
               style={styles.tipCard}
               onPress={() => router.push({ pathname: '/(tabs)/community', params: { tab: tip.category } })}
-              activeOpacity={0.85}
+              activeOpacity={0.82}
             >
               <View style={styles.tipIconBox}>
                 <Text style={styles.tipIcon}>{tip.icon}</Text>
@@ -215,7 +233,7 @@ export default function HomeScreen() {
                 <Text style={styles.tipDesc}>{tip.desc}</Text>
               </View>
               <View style={[styles.tipTag, tip.tag === '후기' && styles.tipTagReview]}>
-                <Text style={styles.tipTagText}>{tip.tag}</Text>
+                <Text style={[styles.tipTagText, tip.tag === '후기' && styles.tipTagTextReview]}>{tip.tag}</Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -227,12 +245,14 @@ export default function HomeScreen() {
           onPress={() => router.push('/(tabs)/profile')}
           activeOpacity={0.88}
         >
-          <Text style={styles.myTripEmoji}>🗓</Text>
+          <View style={styles.myTripIconBox}>
+            <CalendarIcon color={Colors.primary} size={22} />
+          </View>
           <View style={styles.myTripInfo}>
             <Text style={styles.myTripTitle}>내 여행 일정 관리</Text>
             <Text style={styles.myTripSub}>다가오는 여행 · 지난 여행 · 동행 기록</Text>
           </View>
-          <Text style={styles.myTripArrow}>→</Text>
+          <ArrowRightIcon color={Colors.primary} size={18} />
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -248,13 +268,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 12,
+    paddingBottom: 14,
   },
   headerLeft: { gap: 2 },
+  greetingRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   greeting: { fontSize: 13, color: Colors.textSecondary },
-  subtitle: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
+  subtitle: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary },
   bellBtn: { padding: 6 },
-  bell: { fontSize: 24 },
+  mateDestRow2: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  myTripIconBox: { width: 44, height: 44, borderRadius: 14, backgroundColor: Colors.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
   searchBar: {
     flexDirection: 'row',
@@ -264,26 +286,26 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
     gap: 10,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
     elevation: 1,
   },
-  searchIcon: { fontSize: 16 },
+  searchIcon: { fontSize: 15 },
   searchPlaceholder: { fontSize: 14, color: Colors.textPlaceholder, flex: 1 },
 
-  tabScroll: { marginTop: 14, maxHeight: 48 },
+  tabScroll: { marginTop: 14, maxHeight: 46 },
   tabContent: { paddingHorizontal: 20, gap: 8, alignItems: 'center', flexDirection: 'row' },
   tab: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 999,
     backgroundColor: Colors.white,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
   },
   tabActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
@@ -300,31 +322,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
   },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center' },
+  sectionTitle: { fontSize: 17, fontWeight: '700', color: Colors.textPrimary },
   sectionSub: { fontSize: 12, color: Colors.textSecondary },
   moreBtn: { fontSize: 13, color: Colors.primary, fontWeight: '600' },
 
   destRow: { gap: 10, paddingBottom: 4 },
   destChip: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
+    borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 16,
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
     gap: 6,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
     elevation: 1,
   },
   destFlag: { fontSize: 24 },
   destName: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
   destBadge: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
+    borderRadius: 999,
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
@@ -339,103 +362,130 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 32,
     shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
     elevation: 4,
   },
-  aiBannerLeft: { gap: 4 },
+  aiBannerLeft: { gap: 8, flex: 1 },
+  aiBannerTagWrap: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignSelf: 'flex-start',
+  },
   aiBannerTag: {
     fontSize: 10,
-    color: Colors.pointYellow,
+    color: Colors.warm,
     fontWeight: '700',
     letterSpacing: 1,
   },
-  aiBannerTitle: { fontSize: 16, fontWeight: '800', color: Colors.white, lineHeight: 24 },
-  aiBannerSub: { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2 },
-  aiBannerArrow: { fontSize: 24, color: Colors.pointYellow, fontWeight: '700' },
+  aiBannerTitle: { fontSize: 17, fontWeight: '700', color: Colors.white, lineHeight: 25 },
+  aiBannerSub: { fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
+  aiBannerRight: { alignItems: 'center', gap: 8, paddingLeft: 16 },
+  aiBannerEmoji: { fontSize: 32 },
+  aiBannerArrow: { fontSize: 16, color: Colors.warm, fontWeight: '700' },
 
   hScrollContent: { gap: 12, paddingBottom: 4 },
 
   mateRow: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     marginBottom: 10,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
   },
   mateAvatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.primaryBg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  mateAvatarText: { fontSize: 18, fontWeight: '700', color: Colors.white },
+  mateAvatarText: { fontSize: 18, fontWeight: '700', color: Colors.primary },
   mateInfo: { flex: 1, gap: 4 },
   mateName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   mateDest: { fontSize: 12, color: Colors.textSecondary },
   mateTagsRow: { flexDirection: 'row', gap: 6, marginTop: 2 },
   mateTag: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
-    paddingHorizontal: 8,
+    borderRadius: 999,
+    paddingHorizontal: 10,
     paddingVertical: 3,
   },
   mateTagText: { fontSize: 11, color: Colors.primary, fontWeight: '600' },
-  mateMatch: { fontSize: 18, fontWeight: '800', color: Colors.primary },
+  mateMatchWrap: { alignItems: 'center', gap: 2 },
+  mateMatch: { fontSize: 20, fontWeight: '800', color: Colors.primary },
+  mateMatchLabel: { fontSize: 10, color: Colors.textSecondary },
 
   tipCard: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     marginBottom: 10,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
   },
   tipIconBox: {
-    width: 48,
-    height: 48,
+    width: 46,
+    height: 46,
     borderRadius: 14,
     backgroundColor: Colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tipIcon: { fontSize: 24 },
+  tipIcon: { fontSize: 22 },
   tipInfo: { flex: 1, gap: 3 },
   tipTitle: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
   tipDesc: { fontSize: 12, color: Colors.textSecondary },
   tipTag: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 8,
+    borderRadius: 999,
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 5,
     flexShrink: 0,
   },
-  tipTagReview: { backgroundColor: 'rgba(152,200,202,0.3)' },
+  tipTagReview: { backgroundColor: Colors.success },
   tipTagText: { fontSize: 11, color: Colors.primary, fontWeight: '700' },
+  tipTagTextReview: { color: Colors.textPrimary },
 
   myTripBanner: {
     backgroundColor: Colors.white,
-    borderRadius: 18,
+    borderRadius: 20,
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
   },
-  myTripEmoji: { fontSize: 30 },
+  myTripEmoji: { fontSize: 28 },
   myTripInfo: { flex: 1, gap: 3 },
   myTripTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   myTripSub: { fontSize: 12, color: Colors.textSecondary },
-  myTripArrow: { fontSize: 20, color: Colors.primary, fontWeight: '700' },
+  myTripArrow: { fontSize: 18, color: Colors.primary, fontWeight: '700' },
 });

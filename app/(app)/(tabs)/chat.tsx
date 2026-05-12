@@ -15,14 +15,17 @@ export default function ChatListScreen() {
   }, []);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       <View style={styles.header}>
         <Text style={styles.title}>채팅</Text>
+        <Text style={styles.subtitle}>메이트와의 대화</Text>
       </View>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {rooms.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>아직 채팅이 없어요{'\n'}메이트를 찾아 대화를 시작해보세요 💬</Text>
+            <Text style={styles.emptyIcon}>💬</Text>
+            <Text style={styles.emptyTitle}>아직 채팅이 없어요</Text>
+            <Text style={styles.emptyDesc}>메이트를 찾아 대화를 시작해보세요</Text>
           </View>
         ) : (
           rooms.map((item) => <ChatListItem key={item.id} item={item} />)
@@ -34,8 +37,18 @@ export default function ChatListScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingHorizontal: 20, paddingVertical: 16 },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 20,
+    backgroundColor: Colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
   title: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary },
-  empty: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
-  emptyText: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 24 },
+  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  empty: { paddingTop: 80, alignItems: 'center', gap: 10 },
+  emptyIcon: { fontSize: 40 },
+  emptyTitle: { fontSize: 16, fontWeight: '600', color: Colors.textPrimary },
+  emptyDesc: { fontSize: 13, color: Colors.textSecondary },
 });

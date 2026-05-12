@@ -7,8 +7,8 @@ import { PostCard } from '../../../components/community/PostCard';
 import { getPosts } from '../../../services/communityService';
 
 const TABS = [
-  { key: 'all', label: 'Mate 모집' },
-  { key: 'tips', label: 'Travel Tips' },
+  { key: 'all', label: '메이트 모집' },
+  { key: 'tips', label: '여행 팁' },
   { key: 'review', label: '후기' },
 ] as const;
 
@@ -25,12 +25,13 @@ export default function CommunityScreen() {
   }, [activeTab]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Treavle Bard</Text>
+        <Text style={styles.title}>커뮤니티</Text>
+        <Text style={styles.subtitle}>여행자들의 이야기</Text>
       </View>
 
-      <View style={styles.tabs}>
+      <View style={styles.tabBar}>
         {TABS.map((tab) => (
           <TouchableOpacity
             key={tab.key}
@@ -53,25 +54,33 @@ export default function CommunityScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingHorizontal: 20, paddingVertical: 16 },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 20,
+    backgroundColor: Colors.white,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
   title: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary },
-  tabs: {
+  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  tabBar: {
     flexDirection: 'row',
+    backgroundColor: Colors.white,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
   },
   tab: {
-    flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    paddingHorizontal: 4,
+    paddingVertical: 14,
+    marginRight: 24,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
   },
   tabActive: {
-    borderBottomWidth: 2,
     borderBottomColor: Colors.primary,
   },
-  tabText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500', textAlign: 'center' },
+  tabText: { fontSize: 14, color: Colors.textSecondary, fontWeight: '500' },
   tabTextActive: { color: Colors.primary, fontWeight: '700' },
   list: { padding: 20, paddingBottom: 40 },
 });

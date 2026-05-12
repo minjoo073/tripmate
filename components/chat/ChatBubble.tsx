@@ -20,23 +20,23 @@ export function ChatBubble({ content, isMe, time }: Props) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, marginBottom: 8 },
+  wrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, marginBottom: 10 },
   wrapMe: { justifyContent: 'flex-end' },
   bubble: {
-    maxWidth: '75%',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 16,
+    maxWidth: '72%',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 20,
   },
   bubbleOther: {
     backgroundColor: Colors.chatBg,
-    borderTopLeftRadius: 4,
+    borderTopLeftRadius: 6,
   },
   bubbleMe: {
     backgroundColor: Colors.primary,
-    borderTopRightRadius: 4,
+    borderTopRightRadius: 6,
   },
-  text: { fontSize: 14, color: Colors.textPrimary, lineHeight: 20 },
+  text: { fontSize: 15, color: Colors.textPrimary, lineHeight: 22 },
   textMe: { color: Colors.white },
-  time: { fontSize: 10, color: Colors.textSecondary },
+  time: { fontSize: 10, color: Colors.textSecondary, marginBottom: 2 },
 });

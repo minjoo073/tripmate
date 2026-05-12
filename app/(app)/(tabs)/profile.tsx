@@ -5,8 +5,9 @@ import { Colors } from '../../../constants/colors';
 import { Avatar } from '../../../components/ui/Avatar';
 import { useAuth } from '../../../context/AuthContext';
 import { router } from 'expo-router';
+import { SettingsIcon, MessageIcon, BookmarkIcon } from '../../../components/ui/Icon';
 
-const TABS = ['My Trips', 'Reviews', 'Saved'];
+const TABS = ['내 여행', '리뷰', '저장'];
 
 const MOCK_TRIPS = [
   { id: '1', dest: '오사카, 일본', date: '2025.06.15 – 06.19', companion: '조승연', rating: 5, status: 'done' },
@@ -15,42 +16,45 @@ const MOCK_TRIPS = [
 ];
 
 const STATUS_COLORS: Record<string, string> = {
-  upcoming: Colors.pointTeal,
-  done: Colors.pointBlueGray,
+  upcoming: Colors.primaryBg,
+  done: Colors.success,
+};
+
+const STATUS_TEXT_COLORS: Record<string, string> = {
+  upcoming: Colors.primary,
+  done: Colors.textPrimary,
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  upcoming: '진행중',
+  upcoming: '예정',
   done: '완료',
 };
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('My Trips');
+  const [activeTab, setActiveTab] = useState('내 여행');
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
-        {/* 설정 아이콘 */}
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <TouchableOpacity
-          style={styles.settingsIcon}
+          style={styles.settingsBtn}
           onPress={() => router.push('/settings')}
         >
-          <Text style={styles.settingsIconText}>⚙️</Text>
+          <SettingsIcon color={Colors.textSecondary} size={22} />
         </TouchableOpacity>
 
-        <Avatar nickname={user?.nickname ?? '나'} size={84} variant="light" />
+        <Avatar nickname={user?.nickname ?? '나'} size={80} />
         <Text style={styles.nickname}>{user?.nickname ?? '여행자'}</Text>
         <Text style={styles.meta}>서울 · SNS 인증 ✓</Text>
 
-        {/* 프로필 편집 버튼 */}
         <TouchableOpacity
-          style={styles.editProfileBtn}
+          style={styles.editBtn}
           onPress={() => router.push('/profile-setup')}
         >
-          <Text style={styles.editProfileBtnText}>✏️ 프로필 편집</Text>
+          <Text style={styles.editBtnText}>프로필 편집</Text>
         </TouchableOpacity>
 
         <View style={styles.statsRow}>
@@ -66,7 +70,7 @@ export default function ProfileScreen() {
           <View style={styles.statDivider} />
           <View style={styles.stat}>
             <Text style={styles.statValue}>4.9</Text>
-            <Text style={styles.statLabel}>리뷰</Text>
+            <Text style={styles.statLabel}>평점</Text>
           </View>
         </View>
       </View>
@@ -89,17 +93,20 @@ export default function ProfileScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {activeTab === 'My Trips' && (
+        {activeTab === '내 여행' && (
           <>
+            <Text style={styles.sectionLabel}>나의 여행 기록</Text>
             {MOCK_TRIPS.map((trip) => (
               <View key={trip.id} style={styles.tripCard}>
-                <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[trip.status] }]}>
-                  <Text style={styles.statusText}>{STATUS_LABELS[trip.status]}</Text>
-                </View>
-                <View style={styles.tripInfo}>
+                <View style={styles.tripCardLeft}>
+                  <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[trip.status] }]}>
+                    <Text style={[styles.statusText, { color: STATUS_TEXT_COLORS[trip.status] }]}>
+                      {STATUS_LABELS[trip.status]}
+                    </Text>
+                  </View>
                   <Text style={styles.tripDest}>{trip.dest}</Text>
                   <Text style={styles.tripDate}>{trip.date}</Text>
-                  <Text style={styles.tripCompanion}>동행: {trip.companion}</Text>
+                  <Text style={styles.tripCompanion}>동행 · {trip.companion}</Text>
                 </View>
                 {trip.rating > 0 && (
                   <Text style={styles.rating}>{'★'.repeat(trip.rating)}</Text>
@@ -108,16 +115,16 @@ export default function ProfileScreen() {
             ))}
           </>
         )}
-        {activeTab === 'Reviews' && (
+        {activeTab === '리뷰' && (
           <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>💬</Text>
+            <View style={styles.emptyIconBox}><MessageIcon color={Colors.textPlaceholder} size={32} /></View>
             <Text style={styles.emptyTitle}>아직 리뷰가 없어요</Text>
             <Text style={styles.emptyDesc}>여행 후 메이트 리뷰를 남겨보세요</Text>
           </View>
         )}
-        {activeTab === 'Saved' && (
+        {activeTab === '저장' && (
           <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>❤️</Text>
+            <View style={styles.emptyIconBox}><BookmarkIcon color={Colors.textPlaceholder} size={32} /></View>
             <Text style={styles.emptyTitle}>찜한 메이트가 없어요</Text>
             <Text style={styles.emptyDesc}>마음에 드는 메이트를 저장해보세요</Text>
           </View>
@@ -131,80 +138,100 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
 
   header: {
-    backgroundColor: Colors.primary,
-    borderBottomLeftRadius: 36,
-    borderBottomRightRadius: 36,
+    backgroundColor: Colors.white,
     alignItems: 'center',
-    paddingBottom: 28,
+    paddingBottom: 24,
     paddingHorizontal: 24,
     gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
-  settingsIcon: {
+  settingsBtn: {
     position: 'absolute',
     top: 20,
     right: 20,
     padding: 6,
   },
-  settingsIconText: { fontSize: 24 },
+  settingsBtnText: { fontSize: 22 },
 
-  nickname: { fontSize: 22, fontWeight: '700', color: Colors.white },
-  meta: { fontSize: 13, color: 'rgba(255,255,255,0.75)' },
+  nickname: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
+  meta: { fontSize: 13, color: Colors.textSecondary },
 
-  editProfileBtn: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 20,
+  editBtn: {
+    backgroundColor: Colors.bg,
+    borderRadius: 999,
     paddingHorizontal: 20,
     paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderWidth: 1.5,
+    borderColor: Colors.cardBorder,
   },
-  editProfileBtnText: { fontSize: 13, color: Colors.white, fontWeight: '600' },
+  editBtnText: { fontSize: 13, color: Colors.textPrimary, fontWeight: '600' },
 
   statsRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
   stat: { flex: 1, alignItems: 'center', gap: 4 },
-  statValue: { fontSize: 20, fontWeight: '700', color: Colors.white },
-  statLabel: { fontSize: 11, color: 'rgba(255,255,255,0.7)', textAlign: 'center' },
-  statDivider: { width: 1, height: 32, backgroundColor: 'rgba(255,255,255,0.3)' },
+  statValue: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
+  statLabel: { fontSize: 11, color: Colors.textSecondary, textAlign: 'center' },
+  statDivider: { width: 1, height: 32, backgroundColor: Colors.cardBorder },
 
   tabs: {
     flexDirection: 'row',
     backgroundColor: Colors.white,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
+    paddingHorizontal: 20,
   },
-  tab: { flex: 1, paddingVertical: 16, alignItems: 'center' },
-  tabActive: { borderBottomWidth: 2, borderBottomColor: Colors.primary },
-  tabText: { fontSize: 14, color: Colors.textSecondary },
+  tab: {
+    paddingVertical: 14,
+    marginRight: 24,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabActive: { borderBottomColor: Colors.primary },
+  tabText: { fontSize: 14, color: Colors.textSecondary, fontWeight: '500' },
   tabTextActive: { color: Colors.primary, fontWeight: '700' },
 
   scroll: { flex: 1 },
-  scrollContent: { padding: 20, paddingBottom: 48, gap: 10 },
+  scrollContent: { padding: 20, paddingBottom: 48 },
+
+  sectionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+    marginBottom: 12,
+    letterSpacing: 0.3,
+  },
 
   tripCard: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
-    gap: 14,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
   },
+  tripCardLeft: { flex: 1, gap: 5 },
   statusBadge: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingVertical: 4,
+    borderRadius: 999,
     alignSelf: 'flex-start',
+    marginBottom: 4,
   },
-  statusText: { fontSize: 11, color: Colors.textPrimary, fontWeight: '600' },
-  tripInfo: { flex: 1, gap: 3 },
+  statusText: { fontSize: 11, fontWeight: '600' },
   tripDest: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary },
   tripDate: { fontSize: 12, color: Colors.textSecondary },
-  tripCompanion: { fontSize: 12, color: Colors.primary },
-  rating: { fontSize: 14, color: '#F59E0B' },
+  tripCompanion: { fontSize: 12, color: Colors.primary, fontWeight: '500' },
+  rating: { fontSize: 13, color: '#F59E0B' },
 
   empty: { paddingTop: 48, alignItems: 'center', gap: 10 },
-  emptyIcon: { fontSize: 40 },
+  emptyIconBox: { width: 64, height: 64, borderRadius: 20, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
   emptyDesc: { fontSize: 13, color: Colors.textSecondary },
 });

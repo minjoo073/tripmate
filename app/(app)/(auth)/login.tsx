@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { RoundHeader } from '../../../components/ui/RoundHeader';
 import { useAuth } from '../../../context/AuthContext';
 import { login } from '../../../services/authService';
 
@@ -48,8 +47,19 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      <RoundHeader title="돌아오셨군요! ✈️" subtitle="또 떠나볼까요?" />
-      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      {/* Header */}
+      <View style={[styles.header, { paddingTop: insets.top + 32 }]}>
+        <Text style={styles.logo}>✈️</Text>
+        <Text style={styles.title}>다시 만나서 반가워요</Text>
+        <Text style={styles.subtitle}>여행을 계속해볼까요?</Text>
+      </View>
+
+      <ScrollView
+        style={styles.body}
+        contentContainerStyle={styles.bodyContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Input
           label="이메일"
           value={email}
@@ -76,20 +86,24 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialBtn} onPress={() => handleSocialLogin('google')}>
-            <Text style={styles.socialBtnText}>🔵  Google로 로그인</Text>
+          <TouchableOpacity style={styles.socialBtn} onPress={() => handleSocialLogin('google')} activeOpacity={0.82}>
+            <Text style={styles.socialBtnIcon}>🔵</Text>
+            <Text style={styles.socialBtnText}>Google로 로그인</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialBtn} onPress={() => handleSocialLogin('apple')}>
-            <Text style={styles.socialBtnText}>🍎  Apple로 로그인</Text>
+          <TouchableOpacity style={styles.socialBtn} onPress={() => handleSocialLogin('apple')} activeOpacity={0.82}>
+            <Text style={styles.socialBtnIcon}>🍎</Text>
+            <Text style={styles.socialBtnText}>Apple로 로그인</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.socialBtn, styles.kakaoBtn]} onPress={() => handleSocialLogin('kakao')}>
-            <Text style={[styles.socialBtnText, styles.kakaoText]}>🟡  카카오로 로그인</Text>
+          <TouchableOpacity style={[styles.socialBtn, styles.kakaoBtn]} onPress={() => handleSocialLogin('kakao')} activeOpacity={0.82}>
+            <Text style={styles.socialBtnIcon}>🟡</Text>
+            <Text style={[styles.socialBtnText, styles.kakaoText]}>카카오로 로그인</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity onPress={() => router.push('/(auth)/signup')} style={styles.signupLink}>
           <Text style={styles.signupText}>
-            계정이 없으신가요? <Text style={styles.signupBold}>회원가입</Text>
+            계정이 없으신가요?{'  '}
+            <Text style={styles.signupBold}>회원가입</Text>
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -98,28 +112,47 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+  container: { flex: 1, backgroundColor: Colors.white },
+  header: {
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+    gap: 8,
+  },
+  logo: { fontSize: 36, marginBottom: 4 },
+  title: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary },
+  subtitle: { fontSize: 14, color: Colors.textSecondary },
   body: { flex: 1 },
   bodyContent: { padding: 24, gap: 0 },
   field: { marginBottom: 16 },
   loginBtn: { marginTop: 8 },
-  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 20 },
+  divider: { flexDirection: 'row', alignItems: 'center', marginVertical: 24 },
   dividerLine: { flex: 1, height: 1, backgroundColor: Colors.cardBorder },
-  dividerText: { marginHorizontal: 12, fontSize: 13, color: Colors.textSecondary },
+  dividerText: { marginHorizontal: 16, fontSize: 13, color: Colors.textSecondary },
   socialButtons: { gap: 10 },
   socialBtn: {
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
+    height: 52,
+    borderRadius: 16,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
     backgroundColor: Colors.white,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
   },
+  socialBtnIcon: { fontSize: 18 },
   socialBtnText: { fontSize: 15, color: Colors.textPrimary, fontWeight: '500' },
   kakaoBtn: { backgroundColor: '#FEE500', borderColor: '#FEE500' },
   kakaoText: { color: '#3C1E1E' },
-  signupLink: { marginTop: 24, alignItems: 'center' },
+  signupLink: { marginTop: 28, alignItems: 'center' },
   signupText: { fontSize: 14, color: Colors.textSecondary },
   signupBold: { fontWeight: '700', color: Colors.primary },
 });

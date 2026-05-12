@@ -15,10 +15,10 @@ export function ChatListItem({ item }: Props) {
   return (
     <TouchableOpacity
       style={styles.item}
-      activeOpacity={0.85}
+      activeOpacity={0.82}
       onPress={() => router.push(`/chat/${item.id}`)}
     >
-      <Avatar nickname={item.partner.nickname} size={48} />
+      <Avatar nickname={item.partner.nickname} size={50} />
       <View style={styles.info}>
         <Text style={styles.name}>{item.partner.nickname}</Text>
         <Text style={styles.message} numberOfLines={1}>{item.lastMessage}</Text>
@@ -39,18 +39,25 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'stretch',
-    padding: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
     backgroundColor: Colors.white,
-    gap: 12,
+    gap: 14,
   },
-  info: { flex: 1, minWidth: 0 },
+  info: { flex: 1, minWidth: 0, gap: 4 },
   name: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary },
-  message: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  message: { fontSize: 13, color: Colors.textSecondary },
   right: { alignItems: 'flex-end', gap: 6 },
   time: { fontSize: 11, color: Colors.textSecondary },
-  badge: { backgroundColor: Colors.primary, borderRadius: 10, paddingHorizontal: 7, paddingVertical: 2, minWidth: 20, alignItems: 'center' },
+  badge: {
+    backgroundColor: Colors.primary,
+    borderRadius: 999,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    minWidth: 20,
+    alignItems: 'center',
+  },
   badgeText: { fontSize: 11, color: Colors.white, fontWeight: '700' },
 });
