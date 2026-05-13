@@ -16,13 +16,16 @@ const MOCK_POSTS: Record<string, MatePost[]> = {
     { id: '5', user: { id: '5', nickname: '정다은', age: 29, gender: 'female', isVerified: true }, destination: '도쿄, 일본', dates: '2025.07.12 – 07.16', styles: ['역사/문화', '관광', '사진'], currentCount: 1, maxCount: 2, desc: '아사쿠사, 우에노 문화 코스 함께 걸어요 🗼' },
   ],
   방콕: [
-    { id: '6', user: { id: '1', nickname: '한소희', age: 26, gender: 'female', isVerified: true }, destination: '방콕, 태국', dates: '2025.08.01 – 08.06', styles: ['맛집', '현지시장', '사진'], currentCount: 2, maxCount: 4, desc: '짜뚜짝 시장부터 왕궁까지! 로컬 음식 탐방 같이 해요 🌶️' },
+    { id: '6', user: { id: '6', nickname: '이수아', age: 25, gender: 'female', isVerified: true }, destination: '방콕, 태국', dates: '2025.08.01 – 08.06', styles: ['맛집', '현지시장', '사진'], currentCount: 2, maxCount: 4, desc: '짜뚜짝 시장부터 왕궁까지! 로컬 음식 탐방 같이 해요 🌶️' },
+    { id: '9', user: { id: '7', nickname: '김태양', age: 30, gender: 'male', isVerified: false }, destination: '방콕, 태국', dates: '2025.08.10 – 08.14', styles: ['액티비티', '나이트라이프'], currentCount: 1, maxCount: 3, desc: '방콕 야시장, 무에타이 관람, 루프탑바까지! 활발하게 다닐 분 🌙' },
   ],
   파리: [
-    { id: '7', user: { id: '3', nickname: '양세은', age: 28, gender: 'female', isVerified: true }, destination: '파리, 프랑스', dates: '2025.09.10 – 09.17', styles: ['관광', '사진', '카페'], currentCount: 1, maxCount: 2, desc: '에펠탑, 루브르, 몽마르트르... 파리의 모든 것을 천천히 누려요 🗼' },
+    { id: '7', user: { id: '8', nickname: '박지원', age: 27, gender: 'female', isVerified: true }, destination: '파리, 프랑스', dates: '2025.09.10 – 09.17', styles: ['관광', '사진', '카페'], currentCount: 1, maxCount: 2, desc: '에펠탑, 루브르, 몽마르트르... 파리의 모든 것을 천천히 누려요 🗼' },
+    { id: '10', user: { id: '9', nickname: '오채원', age: 24, gender: 'female', isVerified: true }, destination: '파리, 프랑스', dates: '2025.09.20 – 09.25', styles: ['카페', '힐링', '쇼핑'], currentCount: 1, maxCount: 2, desc: '파리 감성 카페 투어와 마르셰 쇼핑 함께해요 ☕' },
   ],
   뉴욕: [
-    { id: '8', user: { id: '2', nickname: '조승연', age: 27, gender: 'male', isVerified: true }, destination: '뉴욕, 미국', dates: '2025.10.05 – 10.12', styles: ['나이트라이프', '액티비티', '관광'], currentCount: 1, maxCount: 3, desc: '맨해튼에서 브루클린까지! 빠르고 강렬한 뉴욕 여행 함께해요 🗽' },
+    { id: '8', user: { id: '10', nickname: '강도윤', age: 30, gender: 'male', isVerified: true }, destination: '뉴욕, 미국', dates: '2025.10.05 – 10.12', styles: ['나이트라이프', '액티비티', '관광'], currentCount: 1, maxCount: 3, desc: '맨해튼에서 브루클린까지! 빠르고 강렬한 뉴욕 여행 함께해요 🗽' },
+    { id: '11', user: { id: '11', nickname: '임지현', age: 27, gender: 'female', isVerified: false }, destination: '뉴욕, 미국', dates: '2025.10.15 – 10.20', styles: ['쇼핑', '관광', '사진'], currentCount: 2, maxCount: 4, desc: '타임스퀘어, 센트럴파크, MOMA 같이 구경해요! 🗽' },
   ],
 };
 
@@ -54,7 +57,7 @@ export default function MatesScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
@@ -205,8 +208,8 @@ const styles = StyleSheet.create({
   userAge: { fontSize: 13, color: Colors.textSecondary },
   verifiedBadge: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
-    paddingHorizontal: 6,
+    borderRadius: 999,
+    paddingHorizontal: 8,
     paddingVertical: 2,
   },
   verifiedText: { fontSize: 10, color: Colors.primary, fontWeight: '700' },
@@ -225,8 +228,8 @@ const styles = StyleSheet.create({
   tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   tag: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 8,
-    paddingHorizontal: 10,
+    borderRadius: 999,
+    paddingHorizontal: 12,
     paddingVertical: 4,
   },
   tagText: { fontSize: 12, color: Colors.primary, fontWeight: '600' },
@@ -234,8 +237,8 @@ const styles = StyleSheet.create({
   cardBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   countBadge: {
     backgroundColor: Colors.pointTeal,
-    borderRadius: 8,
-    paddingHorizontal: 10,
+    borderRadius: 999,
+    paddingHorizontal: 12,
     paddingVertical: 5,
   },
   countText: { fontSize: 12, color: Colors.textPrimary, fontWeight: '600' },

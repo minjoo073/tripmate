@@ -46,9 +46,9 @@ export default function PostDetailScreen() {
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.back}>← Post Detail</Text>
+          <Text style={styles.back}>←</Text>
         </TouchableOpacity>
       </View>
 
@@ -106,8 +106,8 @@ export default function PostDetailScreen() {
       </ScrollView>
 
       <View style={styles.bottomActions}>
-        <Button label="Join Trip" onPress={handleJoin} variant="secondary" style={styles.joinBtn} />
-        <Button label="Chat Now 💬" onPress={handleChat} loading={chatLoading} style={styles.chatBtn} />
+        <Button label="참가 신청" onPress={handleJoin} variant="secondary" style={styles.joinBtn} />
+        <Button label="채팅하기 💬" onPress={handleChat} loading={chatLoading} style={styles.chatBtn} />
       </View>
     </View>
   );
@@ -116,7 +116,7 @@ export default function PostDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   header: { paddingHorizontal: 20, paddingBottom: 8 },
-  back: { fontSize: 15, fontWeight: '600', color: Colors.primary },
+  back: { fontSize: 22, color: Colors.textPrimary },
   scroll: { flex: 1 },
   content: { padding: 20, paddingBottom: 32 },
   titleCard: { backgroundColor: Colors.cardDark, borderRadius: 16, padding: 16, gap: 10, marginBottom: 16 },
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   tagSection: { marginBottom: 16 },
   tagLabel: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary, marginBottom: 8 },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  tag: { backgroundColor: Colors.primaryBg, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 10 },
+  tag: { backgroundColor: Colors.primaryBg, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 999 },
   tagText: { fontSize: 13, color: Colors.primary, fontWeight: '500' },
   scheduleSection: { marginBottom: 16 },
   scheduleRow: { flexDirection: 'row', gap: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: Colors.cardBorder },

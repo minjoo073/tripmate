@@ -11,14 +11,19 @@ interface TagProps {
 }
 
 export function Tag({ label, selected = false, onPress, style, color }: TagProps) {
-  const bgColor = color ?? (selected ? Colors.primary : Colors.card);
-  const textColor = selected ? Colors.white : Colors.textSecondary;
+  const bgColor = color ?? (selected ? Colors.primary : Colors.white);
+  const textColor = color ? Colors.textPrimary : selected ? Colors.white : Colors.textSecondary;
 
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={[styles.tag, { backgroundColor: bgColor }, !selected && styles.border, style]}
+      style={[
+        styles.tag,
+        { backgroundColor: bgColor },
+        !selected && !color && styles.border,
+        style,
+      ]}
     >
       <Text style={[styles.text, { color: textColor }]}>{label}</Text>
     </TouchableOpacity>
@@ -27,12 +32,12 @@ export function Tag({ label, selected = false, onPress, style, color }: TagProps
 
 const styles = StyleSheet.create({
   tag: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 999,
   },
   border: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
   },
   text: {

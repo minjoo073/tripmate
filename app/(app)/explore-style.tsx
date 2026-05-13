@@ -36,9 +36,11 @@ type MateCard = {
 const MATES: MateCard[] = [
   { id: '1', nickname: '한소희', age: 26, gender: 'female', destination: '오사카', flag: '🇯🇵', styles: ['카페', '사진', '힐링'], rating: 4.9, isVerified: true, bio: '카페 리스트 300개 보유 중 ☕ 감성 사진 같이 찍어요' },
   { id: '2', nickname: '조승연', age: 27, gender: 'male', destination: '도쿄', flag: '🇯🇵', styles: ['맛집', '현지시장', '사진'], rating: 4.8, isVerified: true, bio: '현지 골목 투어 전문가. 맛집 리스트 공유해요!' },
-  { id: '3', nickname: '양세은', age: 28, gender: 'female', destination: '발리', flag: '🇮🇩', styles: ['힐링', '카페', '관광'], rating: 4.7, isVerified: true, bio: '느리게 힐링하는 여행을 좋아해요 🌿' },
-  { id: '4', nickname: '장기은', age: 25, gender: 'female', destination: '방콕', flag: '🇹🇭', styles: ['쇼핑', '액티비티', '나이트라이프'], rating: 4.6, isVerified: false, bio: '에너지 넘치는 여행 함께해요! 밤에도 활발해요 🌙' },
-  { id: '5', nickname: '정다은', age: 29, gender: 'female', destination: '파리', flag: '🇫🇷', styles: ['관광', '역사/문화', '사진'], rating: 4.9, isVerified: true, bio: '꼼꼼한 계획파. 유럽 문화 탐방 같이 해요 🏛️' },
+  { id: '6', nickname: '이수아', age: 25, gender: 'female', destination: '발리', flag: '🇮🇩', styles: ['힐링', '카페', '관광'], rating: 4.7, isVerified: true, bio: '느리게 힐링하는 여행을 좋아해요 🌿' },
+  { id: '7', nickname: '김민준', age: 31, gender: 'male', destination: '방콕', flag: '🇹🇭', styles: ['쇼핑', '액티비티', '나이트라이프'], rating: 4.6, isVerified: false, bio: '에너지 넘치는 여행 함께해요! 밤에도 활발해요 🌙' },
+  { id: '8', nickname: '박지원', age: 27, gender: 'female', destination: '파리', flag: '🇫🇷', styles: ['관광', '역사/문화', '사진'], rating: 4.9, isVerified: true, bio: '꼼꼼한 계획파. 유럽 문화 탐방 같이 해요 🏛️' },
+  { id: '9', nickname: '신예은', age: 24, gender: 'female', destination: '싱가포르', flag: '🇸🇬', styles: ['맛집', '쇼핑', '카페'], rating: 4.8, isVerified: true, bio: '맛집과 쇼핑은 필수! 싱가포르 로컬 맛 탐방해요 🍜' },
+  { id: '10', nickname: '강도윤', age: 30, gender: 'male', destination: '뉴욕', flag: '🇺🇸', styles: ['나이트라이프', '액티비티', '관광'], rating: 4.7, isVerified: true, bio: '맨해튼 거리를 걷고 브루클린 바에서 마무리해요 🗽' },
 ];
 
 export default function ExploreStyleScreen() {
@@ -57,7 +59,7 @@ export default function ExploreStyleScreen() {
       : MATES.filter((m) => selectedStyles.some((s) => m.styles.includes(s)));
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
@@ -212,7 +214,7 @@ const styles = StyleSheet.create({
   styleLabelActive: { color: Colors.white },
   styleCount: {
     backgroundColor: Colors.bg,
-    borderRadius: 6,
+    borderRadius: 999,
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
@@ -259,8 +261,8 @@ const styles = StyleSheet.create({
   mateMeta: { fontSize: 12, color: Colors.textSecondary },
   verifiedBadge: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
-    paddingHorizontal: 6,
+    borderRadius: 999,
+    paddingHorizontal: 8,
     paddingVertical: 2,
   },
   verifiedText: { fontSize: 10, color: Colors.primary, fontWeight: '700' },
@@ -271,8 +273,8 @@ const styles = StyleSheet.create({
   mateTagsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   mateTag: {
     backgroundColor: Colors.bg,
-    borderRadius: 6,
-    paddingHorizontal: 8,
+    borderRadius: 999,
+    paddingHorizontal: 10,
     paddingVertical: 3,
     borderWidth: 1,
     borderColor: Colors.cardBorder,

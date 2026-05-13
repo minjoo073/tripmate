@@ -36,16 +36,16 @@ export function Input({ label, isPassword, containerStyle, ...props }: InputProp
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 14,
-    color: Colors.textPrimary,
+    fontSize: 13,
+    color: Colors.textSecondary,
     fontWeight: '500',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   inputWrap: {
-    height: 48,
+    height: 50,
     backgroundColor: Colors.inputBg,
-    borderRadius: 12,
-    borderWidth: 1,
+    borderRadius: 14,
+    borderWidth: 1.5,
     borderColor: Colors.inputBorder,
     flexDirection: 'row',
     alignItems: 'center',
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   focused: { borderColor: Colors.primary },
   input: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     color: Colors.textPrimary,
   },
   eye: {

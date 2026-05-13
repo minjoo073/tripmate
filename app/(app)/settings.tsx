@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
+import { ChevronRightIcon } from '../../components/ui/Icon';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
@@ -26,7 +27,7 @@ function SettingRow({ label, value, onPress, danger, rightElement }: SettingRowP
       ) : (
         <View style={styles.settingRight}>
           {value ? <Text style={styles.settingValue}>{value}</Text> : null}
-          {onPress && <Text style={styles.settingArrow}>›</Text>}
+          {onPress && <ChevronRightIcon color={Colors.textPlaceholder} size={18} />}
         </View>
       )}
     </TouchableOpacity>
@@ -76,7 +77,7 @@ export default function SettingsScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>

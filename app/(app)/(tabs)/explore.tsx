@@ -36,13 +36,18 @@ export default function ExploreScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 16, paddingBottom: insets.bottom }]}>
       <View style={styles.header}>
-        <Text style={styles.title}>Find a Mate</Text>
+        <Text style={styles.title}>메이트 찾기</Text>
         <Text style={styles.subtitle}>여행지와 스타일이 맞는 동행을 찾아드려요</Text>
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Input
           label="여행지"
           value={destination}
@@ -85,20 +90,29 @@ export default function ExploreScreen() {
         <Text style={styles.sectionLabel}>필터</Text>
         <View style={styles.filterList}>
           <View style={styles.filterRow}>
-            <Text style={styles.filterLabel}>성별 무관</Text>
+            <View style={styles.filterLabelWrap}>
+              <Text style={styles.filterLabel}>성별 무관</Text>
+              <Text style={styles.filterDesc}>모든 성별의 메이트</Text>
+            </View>
             <Toggle value={anyGender} onValueChange={setAnyGender} />
           </View>
           <View style={styles.filterRow}>
-            <Text style={styles.filterLabel}>일정 겹치는 메이트만</Text>
+            <View style={styles.filterLabelWrap}>
+              <Text style={styles.filterLabel}>일정 겹치는 메이트만</Text>
+              <Text style={styles.filterDesc}>내 일정과 겹치는 기간만</Text>
+            </View>
             <Toggle value={scheduleOverlap} onValueChange={setScheduleOverlap} />
           </View>
           <View style={[styles.filterRow, styles.filterRowLast]}>
-            <Text style={styles.filterLabel}>인증 완료 희망만</Text>
+            <View style={styles.filterLabelWrap}>
+              <Text style={styles.filterLabel}>인증 완료 희망만</Text>
+              <Text style={styles.filterDesc}>SNS 인증 완료 메이트만</Text>
+            </View>
             <Toggle value={verifiedOnly} onValueChange={setVerifiedOnly} />
           </View>
         </View>
 
-        <Button label="🔍  메이트 검색" onPress={handleSearch} style={styles.searchBtn} />
+        <Button label="메이트 검색" onPress={handleSearch} style={styles.searchBtn} />
       </ScrollView>
     </View>
   );
@@ -106,32 +120,52 @@ export default function ExploreScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
-  header: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16 },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+    backgroundColor: Colors.white,
+  },
   title: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary },
   subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 4 },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingBottom: 48 },
+  content: { paddingHorizontal: 20, paddingTop: 24, paddingBottom: 48 },
   field: { marginBottom: 16 },
-  dateRow: { flexDirection: 'row', gap: 12, marginBottom: 16 },
+  dateRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
   dateField: { flex: 1 },
-  sectionLabel: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary, marginBottom: 10 },
-  tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 },
+  sectionLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: 12,
+  },
+  tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
   filterList: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
+    borderRadius: 20,
+    borderWidth: 1.5,
     borderColor: Colors.cardBorder,
-    marginBottom: 24,
+    marginBottom: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
   },
   filterRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
   },
   filterRowLast: { borderBottomWidth: 0 },
-  filterLabel: { fontSize: 14, color: Colors.textPrimary },
+  filterLabelWrap: { gap: 2 },
+  filterLabel: { fontSize: 14, fontWeight: '500', color: Colors.textPrimary },
+  filterDesc: { fontSize: 11, color: Colors.textSecondary },
   searchBtn: {},
 });
