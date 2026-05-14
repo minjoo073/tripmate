@@ -25,7 +25,7 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading,
       style={[styles.base, variantStyle, fullWidth && styles.full, (disabled || loading) && styles.disabled, style]}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#fff' : Colors.primary} size="small" />
+        <ActivityIndicator color={variant === 'primary' ? Colors.white : Colors.primary} size="small" />
       ) : (
         <Text style={[styles.baseText, variantTextStyle, textStyle]}>{label}</Text>
       )}
@@ -36,7 +36,7 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading,
 const styles = StyleSheet.create({
   base: {
     height: 52,
-    borderRadius: 16,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -44,21 +44,23 @@ const styles = StyleSheet.create({
   full: { width: '100%' },
   primary: {
     backgroundColor: Colors.primary,
-    shadowColor: Colors.shadowButton,
+    shadowColor: 'rgba(59, 81, 120, 0.2)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 12,
     elevation: 3,
   },
   secondary: {
-    backgroundColor: Colors.primaryBg,
+    backgroundColor: Colors.primaryLight,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
   },
   textBtn: {
     backgroundColor: 'transparent',
     height: 40,
   },
   disabled: { opacity: 0.45 },
-  baseText: { fontSize: 16, fontWeight: '600' },
+  baseText: { fontSize: 15, fontWeight: '600', letterSpacing: -0.1 },
   primaryText: { color: Colors.white },
   secondaryText: { color: Colors.primary },
   textBtnText: { color: Colors.textSecondary },

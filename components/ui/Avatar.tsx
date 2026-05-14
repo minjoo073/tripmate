@@ -13,8 +13,8 @@ interface AvatarProps {
 export function Avatar({ uri, nickname, size = 48, emoji, variant = 'default' }: AvatarProps) {
   const initial = nickname ? nickname[0] : '?';
   const isLight = variant === 'light';
-  const bgColor = isLight ? 'rgba(255,255,255,0.20)' : Colors.primaryBg;
-  const textColor = isLight ? Colors.white : Colors.primary;
+  const bgColor = isLight ? 'rgba(255,255,255,0.20)' : Colors.bgDeep;
+  const textColor = isLight ? Colors.white : Colors.textSecondary;
 
   if (uri) {
     return (
@@ -33,7 +33,7 @@ export function Avatar({ uri, nickname, size = 48, emoji, variant = 'default' }:
         { width: size, height: size, borderRadius: size / 2, backgroundColor: bgColor },
       ]}
     >
-      <Text style={{ fontSize: size * 0.38, color: textColor, fontWeight: '700' }}>
+      <Text style={{ fontSize: size * 0.36, color: textColor, fontWeight: '600' }}>
         {emoji ?? initial}
       </Text>
     </View>
