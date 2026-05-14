@@ -13,13 +13,13 @@ import {
 type IconType = 'home' | 'explore' | 'community' | 'chat' | 'profile';
 
 function TabIcon({ focused, icon, label }: { focused: boolean; icon: IconType; label: string }) {
-  const color = focused ? Colors.primary : Colors.textPlaceholder;
+  const color = focused ? Colors.primary : Colors.textMuted;
   const iconEl = {
-    home: <HomeIcon color={color} size={22} filled={focused} />,
-    explore: <ExploreIcon color={color} size={22} />,
-    community: <CommunityIcon color={color} size={22} filled={focused} />,
-    chat: <ChatNavIcon color={color} size={22} />,
-    profile: <ProfileNavIcon color={color} size={22} />,
+    home: <HomeIcon color={color} size={21} filled={focused} />,
+    explore: <ExploreIcon color={color} size={21} />,
+    community: <CommunityIcon color={color} size={21} filled={focused} />,
+    chat: <ChatNavIcon color={color} size={21} />,
+    profile: <ProfileNavIcon color={color} size={21} />,
   }[icon];
 
   return (
@@ -32,7 +32,7 @@ function TabIcon({ focused, icon, label }: { focused: boolean; icon: IconType; l
 
 const tabStyles = StyleSheet.create({
   wrap: { alignItems: 'center', paddingTop: 4, width: 56, gap: 3 },
-  label: { fontSize: 10, color: Colors.textPlaceholder, fontWeight: '400' },
+  label: { fontSize: 10, color: Colors.textMuted, fontWeight: '400', letterSpacing: 0.2 },
   labelActive: { color: Colors.primary, fontWeight: '600' },
 });
 
@@ -44,14 +44,14 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 60 + insets.bottom,
-          backgroundColor: Colors.white,
+          height: 58 + insets.bottom,
+          backgroundColor: Colors.card,
           borderTopWidth: 1,
-          borderTopColor: Colors.navBorder,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -1 },
-          shadowOpacity: 0.04,
-          shadowRadius: 8,
+          borderTopColor: Colors.cardBorder,
+          shadowColor: 'rgba(42,33,24,0.06)',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 1,
+          shadowRadius: 12,
           elevation: 4,
           paddingBottom: insets.bottom,
         },
@@ -68,7 +68,7 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="community"
-        options={{ tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon="community" label="커뮤니티" /> }}
+        options={{ tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon="community" label="피드" /> }}
       />
       <Tabs.Screen
         name="chat"
@@ -76,7 +76,7 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="profile"
-        options={{ tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon="profile" label="프로필" /> }}
+        options={{ tabBarIcon: ({ focused }) => <TabIcon focused={focused} icon="profile" label="나" /> }}
       />
     </Tabs>
   );

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated,
+} from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -8,157 +10,167 @@ import { RecommendedCard } from '../../../components/home/RecommendedCard';
 import { useAuth } from '../../../context/AuthContext';
 import { getRecommended } from '../../../services/matchService';
 import {
-  BellIcon, SearchIcon, FireIcon, SparkleIcon, CalendarIcon,
-  MapPinIcon, ArrowRightIcon, WaveIcon,
+  BellIcon, SearchIcon, MapPinIcon, ArrowRightIcon,
 } from '../../../components/ui/Icon';
 
-const FILTER_TABS = [
-  { label: '전체', action: null },
-  { label: '여행지별', action: () => router.push('/explore-destination') },
-  { label: '날짜별', action: () => router.push('/explore-date') },
-  { label: '스타일', action: () => router.push('/explore-style') },
-  { label: '성별', action: () => router.push('/explore-gender') },
+const DESTINATIONS = [
+  { name: '오사카', sub: 'Osaka, Japan', count: 34, color: '#E8DDD0' },
+  { name: '도쿄', sub: 'Tokyo, Japan', count: 28, color: '#D8E0E8' },
+  { name: '방콕', sub: 'Bangkok, Thailand', count: 21, color: '#DDE8DC' },
+  { name: '파리', sub: 'Paris, France', count: 17, color: '#E8DDE8' },
+  { name: '뉴욕', sub: 'New York, USA', count: 13, color: '#E0DDD8' },
 ];
 
-const QUICK_DESTINATIONS = [
-  { name: '오사카', flag: '🇯🇵', count: 34 },
-  { name: '도쿄', flag: '🇯🇵', count: 28 },
-  { name: '방콕', flag: '🇹🇭', count: 21 },
-  { name: '파리', flag: '🇫🇷', count: 17 },
-  { name: '뉴욕', flag: '🇺🇸', count: 13 },
-];
-
-const TRAVEL_TIPS = [
-  { icon: '🏨', title: '숙소 쉐어 꿀팁', desc: '에어비앤비 공유로 비용 반반', tag: 'TIP', category: 'tips' },
-  { icon: '✈️', title: '항공권 최저가 찾기', desc: '스카이스캐너 vs 카약 비교', tag: 'TIP', category: 'tips' },
-  { icon: '🍜', title: '오사카 맛집 TOP 10', desc: '현지인 추천 숨은 맛집 공개', tag: '후기', category: 'review' },
+const TRAVEL_STORIES = [
+  {
+    tag: '여행 기록',
+    title: '오사카 골목의 오래된 카페들',
+    desc: '현지인만 아는 도톤보리 뒷골목 카페 순례',
+    city: 'Osaka',
+  },
+  {
+    tag: '동행 후기',
+    title: '방콕에서 만난 특별한 인연',
+    desc: '혼자였던 여행이 둘이 되던 순간',
+    city: 'Bangkok',
+  },
+  {
+    tag: '로컬 추천',
+    title: '도쿄의 숨겨진 서점 거리',
+    desc: '진보초에서 발견한 필름카메라와 빈티지 지도들',
+    city: 'Tokyo',
+  },
 ];
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState(0);
   const [matches, setMatches] = useState<MatchResult[]>([]);
 
   useEffect(() => {
     getRecommended().then(setMatches);
   }, []);
 
-  const handleTabPress = (index: number) => {
-    const tab = FILTER_TABS[index];
-    if (tab.action) {
-      tab.action();
-    } else {
-      setActiveTab(index);
-    }
-  };
-
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <View style={styles.greetingRow}>
-            <Text style={styles.greeting}>안녕하세요</Text>
-            <WaveIcon color={Colors.warm} size={20} />
-          </View>
-          <Text style={styles.subtitle}>{user?.nickname ?? '여행자'}님의 여행</Text>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Minimal top bar */}
+      <View style={styles.topBar}>
+        <View>
+          <Text style={styles.appLabel}>TRIPMATE</Text>
+          <Text style={styles.tagline}>어디로 떠날까요</Text>
         </View>
         <TouchableOpacity onPress={() => router.push('/notifications')} style={styles.bellBtn}>
-          <BellIcon color={Colors.textPrimary} size={22} />
+          <BellIcon color={Colors.textSecondary} size={20} />
         </TouchableOpacity>
       </View>
 
-      {/* Search Bar */}
-      <TouchableOpacity
-        style={styles.searchBar}
-        onPress={() => router.push('/(tabs)/explore')}
-        activeOpacity={0.8}
-      >
-        <SearchIcon color={Colors.textPlaceholder} size={16} />
-        <Text style={styles.searchPlaceholder}>여행지, 날짜로 메이트 찾기</Text>
-      </TouchableOpacity>
-
-      {/* Filter Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.tabScroll}
-        contentContainerStyle={styles.tabContent}
-      >
-        {FILTER_TABS.map((tab, index) => (
-          <TouchableOpacity
-            key={tab.label}
-            style={[styles.tab, activeTab === index && styles.tabActive]}
-            onPress={() => handleTabPress(index)}
-          >
-            <Text style={[styles.tabText, activeTab === index && styles.tabTextActive]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {/* Live stats bar */}
+      <View style={styles.statsBar}>
+        <View style={styles.statsBarDot} />
+        <Text style={styles.statsBarText}>지금 <Text style={styles.statsBarHighlight}>127명</Text>이 여행 메이트를 찾고 있어요</Text>
+      </View>
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 48 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* 인기 여행지 */}
+        {/* Search */}
+        <TouchableOpacity
+          style={styles.searchBar}
+          onPress={() => router.push('/(tabs)/explore')}
+          activeOpacity={0.85}
+        >
+          <SearchIcon color={Colors.textMuted} size={15} />
+          <Text style={styles.searchText}>도시, 날짜로 동행 찾기</Text>
+          <View style={styles.searchCta}>
+            <Text style={styles.searchCtaText}>검색</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Destinations */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}><FireIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 지금 인기 여행지</Text></View>
-            <Text style={styles.sectionSub}>메이트 모집 중</Text>
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionLabel}>POPULAR NOW</Text>
+            <Text style={styles.sectionTitle}>지금 떠나는 도시들</Text>
           </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.destRow}
           >
-            {QUICK_DESTINATIONS.map((d) => (
+            {DESTINATIONS.map((d) => (
               <TouchableOpacity
                 key={d.name}
-                style={styles.destChip}
+                style={[styles.destCard, { backgroundColor: d.color }]}
                 onPress={() => router.push({ pathname: '/mates', params: { destination: d.name } })}
                 activeOpacity={0.82}
               >
-                <Text style={styles.destFlag}>{d.flag}</Text>
                 <Text style={styles.destName}>{d.name}</Text>
-                <View style={styles.destBadge}>
-                  <Text style={styles.destBadgeText}>{d.count}명</Text>
+                <Text style={styles.destSub}>{d.sub}</Text>
+                <View style={styles.destCount}>
+                  <Text style={styles.destCountText}>{d.count}명 모집 중</Text>
                 </View>
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
 
-        {/* AI 매칭 배너 */}
+        {/* Today's mood */}
+        <View style={styles.section}>
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionLabel}>TODAY'S MOOD</Text>
+            <Text style={styles.sectionTitle}>오늘 인기 여행 스타일</Text>
+          </View>
+          <View style={styles.moodRow}>
+            {['카페 투어', '로컬 골목', '야경 산책', '현지 맛집', '필름카메라'].map((mood, i) => (
+              <TouchableOpacity key={mood} style={[styles.moodTag, i === 0 && styles.moodTagActive]}>
+                <Text style={[styles.moodTagText, i === 0 && styles.moodTagTextActive]}>{mood}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* AI Connection - atmospheric */}
         <TouchableOpacity
-          style={styles.aiBanner}
+          style={styles.connectionBanner}
           onPress={() => router.push('/match/loading')}
           activeOpacity={0.88}
         >
-          <View style={styles.aiBannerLeft}>
-            <View style={styles.aiBannerTagWrap}>
-              <Text style={styles.aiBannerTag}>AI MATCHING</Text>
+          <View style={styles.connectionInner}>
+            <View style={styles.connectionTop}>
+              <Text style={styles.connectionLabel}>YOUR TRAVEL VIBE</Text>
+              <ArrowRightIcon color={Colors.accent} size={16} />
             </View>
-            <Text style={styles.aiBannerTitle}>나에게 딱 맞는 메이트{'\n'}AI가 찾아드릴게요</Text>
-            <Text style={styles.aiBannerSub}>여행지 · 날짜 · 스타일 분석 · 평균 4초</Text>
-          </View>
-          <View style={styles.aiBannerRight}>
-            <Text style={styles.aiBannerEmoji}>🤖</Text>
-            <ArrowRightIcon color={Colors.warm} size={20} />
+            <Text style={styles.connectionTitle}>
+              같은 속도로 여행할{'\n'}메이트를 찾아드려요
+            </Text>
+            <Text style={styles.connectionSub}>
+              여행지 · 일정 · 취향 · 신뢰도 분석
+            </Text>
+            <View style={styles.connectionDots}>
+              {['오사카', '도쿄', '파리', '방콕'].map((city, i) => (
+                <View key={city} style={[styles.dot, i === 1 && styles.dotActive]}>
+                  <Text style={[styles.dotText, i === 1 && styles.dotTextActive]}>{city}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </TouchableOpacity>
 
-        {/* 추천 메이트 */}
+        {/* Companion suggestions */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}><SparkleIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 추천 메이트</Text></View>
-            <TouchableOpacity onPress={() => router.push('/match/list')}>
-              <Text style={styles.moreBtn}>더보기</Text>
-            </TouchableOpacity>
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionLabel}>TRAVEL COMPANIONS</Text>
+            <Text style={styles.sectionTitle}>함께할 여행자</Text>
           </View>
+          <TouchableOpacity
+            style={styles.moreLinkRow}
+            onPress={() => router.push('/match/list')}
+          >
+            <Text style={styles.moreLink}>모두 보기</Text>
+            <ArrowRightIcon color={Colors.textMuted} size={13} />
+          </TouchableOpacity>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -170,89 +182,88 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        {/* 메이트 모집 글 */}
+        {/* Companion list */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}><CalendarIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 메이트 모집 중</Text></View>
-            <TouchableOpacity onPress={() => router.push('/mates')}>
-              <Text style={styles.moreBtn}>더보기</Text>
-            </TouchableOpacity>
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionLabel}>OPEN TRIPS</Text>
+            <Text style={styles.sectionTitle}>동행 모집 중</Text>
           </View>
-          {matches.slice(0, 2).map((item) => (
+          {matches.slice(0, 3).map((item) => (
             <TouchableOpacity
               key={item.user.id}
-              style={styles.mateRow}
+              style={styles.companionRow}
               onPress={() => router.push(`/mate/${item.user.id}`)}
               activeOpacity={0.82}
             >
-              <View style={styles.mateAvatar}>
-                <Text style={styles.mateAvatarText}>{item.user.nickname[0]}</Text>
+              <View style={styles.companionAvatar}>
+                <Text style={styles.companionAvatarText}>{item.user.nickname[0]}</Text>
               </View>
-              <View style={styles.mateInfo}>
-                <Text style={styles.mateName}>{item.user.nickname}</Text>
-                <View style={styles.mateDestRow2}>
-                  <MapPinIcon color={Colors.textSecondary} size={13} />
-                  <Text style={styles.mateDest}>{item.trip.destination} · {item.trip.startDate.slice(5, 7)}월</Text>
+              <View style={styles.companionInfo}>
+                <Text style={styles.companionName}>{item.user.nickname}</Text>
+                <View style={styles.companionDestRow}>
+                  <MapPinIcon color={Colors.textMuted} size={11} />
+                  <Text style={styles.companionDest}>
+                    {item.trip.destination} · {item.trip.startDate.slice(5, 7)}월
+                  </Text>
                 </View>
-                <View style={styles.mateTagsRow}>
+                <View style={styles.companionTagsRow}>
                   {item.user.travelStyles.slice(0, 2).map((s) => (
-                    <View key={s} style={styles.mateTag}>
-                      <Text style={styles.mateTagText}>{s}</Text>
+                    <View key={s} style={styles.companionTag}>
+                      <Text style={styles.companionTagText}>{s}</Text>
                     </View>
                   ))}
                 </View>
               </View>
-              <View style={styles.mateMatchWrap}>
-                <Text style={styles.mateMatch}>{item.matchRate}%</Text>
-                <Text style={styles.mateMatchLabel}>매칭률</Text>
-              </View>
+              <Text style={styles.companionStyle}>
+                {item.user.travelStyles[0] ?? '자유여행'}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* 여행 팁 & 후기 */}
+        {/* Travel stories feed */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}><SparkleIcon color={Colors.textPrimary} size={18} /><Text style={styles.sectionTitle}> 여행 팁 & 후기</Text></View>
-            <TouchableOpacity onPress={() => router.push('/(tabs)/community')}>
-              <Text style={styles.moreBtn}>더보기</Text>
-            </TouchableOpacity>
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionLabel}>TRAVEL STORIES</Text>
+            <Text style={styles.sectionTitle}>여행자들의 이야기</Text>
           </View>
-          {TRAVEL_TIPS.map((tip) => (
+          <TouchableOpacity
+            style={styles.moreLinkRow}
+            onPress={() => router.push('/(tabs)/community')}
+          >
+            <Text style={styles.moreLink}>피드 보기</Text>
+            <ArrowRightIcon color={Colors.textMuted} size={13} />
+          </TouchableOpacity>
+          {TRAVEL_STORIES.map((story) => (
             <TouchableOpacity
-              key={tip.title}
-              style={styles.tipCard}
-              onPress={() => router.push({ pathname: '/(tabs)/community', params: { tab: tip.category } })}
+              key={story.title}
+              style={styles.storyCard}
+              onPress={() => router.push('/(tabs)/community')}
               activeOpacity={0.82}
             >
-              <View style={styles.tipIconBox}>
-                <Text style={styles.tipIcon}>{tip.icon}</Text>
+              <View style={styles.storyLeft}>
+                <View style={styles.storyTagWrap}>
+                  <Text style={styles.storyTag}>{story.tag}</Text>
+                </View>
+                <Text style={styles.storyTitle}>{story.title}</Text>
+                <Text style={styles.storyDesc}>{story.desc}</Text>
               </View>
-              <View style={styles.tipInfo}>
-                <Text style={styles.tipTitle}>{tip.title}</Text>
-                <Text style={styles.tipDesc}>{tip.desc}</Text>
-              </View>
-              <View style={[styles.tipTag, tip.tag === '후기' && styles.tipTagReview]}>
-                <Text style={[styles.tipTagText, tip.tag === '후기' && styles.tipTagTextReview]}>{tip.tag}</Text>
+              <View style={styles.storyCityBox}>
+                <Text style={styles.storyCityText}>{story.city}</Text>
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* 내 여행 현황 배너 */}
+        {/* My trip prompt */}
         <TouchableOpacity
-          style={styles.myTripBanner}
+          style={styles.myTripPrompt}
           onPress={() => router.push('/(tabs)/profile')}
           activeOpacity={0.88}
         >
-          <View style={styles.myTripIconBox}>
-            <CalendarIcon color={Colors.primary} size={22} />
-          </View>
-          <View style={styles.myTripInfo}>
-            <Text style={styles.myTripTitle}>내 여행 일정 관리</Text>
-            <Text style={styles.myTripSub}>다가오는 여행 · 지난 여행 · 동행 기록</Text>
-          </View>
-          <ArrowRightIcon color={Colors.primary} size={18} />
+          <Text style={styles.myTripPromptTitle}>내 여행 기록</Text>
+          <Text style={styles.myTripPromptSub}>방문한 도시 · 동행 후기 · 예정 여행</Text>
+          <ArrowRightIcon color={Colors.textMuted} size={15} />
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -262,230 +273,349 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
 
-  header: {
+  topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 14,
+    alignItems: 'flex-end',
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 16,
   },
-  headerLeft: { gap: 2 },
-  greetingRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  greeting: { fontSize: 13, color: Colors.textSecondary },
-  subtitle: { fontSize: 22, fontWeight: '700', color: Colors.textPrimary },
-  bellBtn: { padding: 6 },
-  mateDestRow2: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  myTripIconBox: { width: 44, height: 44, borderRadius: 14, backgroundColor: Colors.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  appLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    letterSpacing: 2.5,
+    marginBottom: 4,
+  },
+  tagline: {
+    fontSize: 24,
+    fontWeight: '300',
+    color: Colors.textPrimary,
+    letterSpacing: -0.5,
+  },
+  bellBtn: { padding: 4 },
+
+  scroll: { flex: 1 },
+  scrollContent: { paddingTop: 4 },
 
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.card,
     borderRadius: 14,
-    marginHorizontal: 20,
+    marginHorizontal: 24,
+    marginBottom: 32,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: Colors.cardBorder,
     gap: 10,
-    shadowColor: '#000',
+    shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
+    shadowOpacity: 1,
     shadowRadius: 8,
     elevation: 1,
   },
-  searchIcon: { fontSize: 15 },
-  searchPlaceholder: { fontSize: 14, color: Colors.textPlaceholder, flex: 1 },
-
-  tabScroll: { marginTop: 14, maxHeight: 46 },
-  tabContent: { paddingHorizontal: 20, gap: 8, alignItems: 'center', flexDirection: 'row' },
-  tab: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: Colors.white,
-    borderWidth: 1.5,
-    borderColor: Colors.cardBorder,
+  searchText: {
+    flex: 1,
+    fontSize: 14,
+    color: Colors.textMuted,
+    fontWeight: '400',
   },
-  tabActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  tabText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
-  tabTextActive: { color: Colors.white, fontWeight: '600' },
+  searchCta: {
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  searchCtaText: {
+    fontSize: 12,
+    color: Colors.white,
+    fontWeight: '600',
+  },
 
-  scroll: { flex: 1, marginTop: 16 },
-  scrollContent: { paddingHorizontal: 20, paddingBottom: 48 },
-
-  section: { marginBottom: 32 },
-  sectionHeader: {
+  section: { marginBottom: 36, paddingHorizontal: 24 },
+  sectionHead: { marginBottom: 4 },
+  sectionLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    letterSpacing: 2,
+    marginBottom: 4,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '500',
+    color: Colors.textPrimary,
+    letterSpacing: -0.3,
+    marginBottom: 16,
+  },
+  moreLinkRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    gap: 4,
+    marginTop: -12,
+    marginBottom: 16,
   },
-  sectionTitleRow: { flexDirection: 'row', alignItems: 'center' },
-  sectionTitle: { fontSize: 17, fontWeight: '700', color: Colors.textPrimary },
-  sectionSub: { fontSize: 12, color: Colors.textSecondary },
-  moreBtn: { fontSize: 13, color: Colors.primary, fontWeight: '600' },
+  moreLink: {
+    fontSize: 12,
+    color: Colors.textMuted,
+    fontWeight: '500',
+  },
 
-  destRow: { gap: 10, paddingBottom: 4 },
-  destChip: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderColor: Colors.cardBorder,
-    gap: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 1,
+  destRow: { gap: 10, paddingBottom: 4, paddingRight: 24 },
+  destCard: {
+    width: 130,
+    borderRadius: 16,
+    padding: 16,
+    gap: 4,
   },
-  destFlag: { fontSize: 24 },
-  destName: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
-  destBadge: {
-    backgroundColor: Colors.primaryBg,
+  destName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    letterSpacing: -0.3,
+  },
+  destSub: {
+    fontSize: 10,
+    color: Colors.textSecondary,
+    fontWeight: '400',
+    marginBottom: 8,
+  },
+  destCount: {
+    backgroundColor: 'rgba(42, 33, 24, 0.08)',
     borderRadius: 999,
     paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  destBadgeText: { fontSize: 10, color: Colors.primary, fontWeight: '700' },
-
-  aiBanner: {
-    backgroundColor: Colors.primary,
-    borderRadius: 20,
-    padding: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 4,
-  },
-  aiBannerLeft: { gap: 8, flex: 1 },
-  aiBannerTagWrap: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 999,
-    paddingHorizontal: 10,
     paddingVertical: 4,
     alignSelf: 'flex-start',
   },
-  aiBannerTag: {
+  destCountText: {
     fontSize: 10,
-    color: Colors.warm,
+    color: Colors.textPrimary,
+    fontWeight: '600',
+  },
+
+  connectionBanner: {
+    marginHorizontal: 24,
+    marginBottom: 36,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: Colors.primary,
+  },
+  connectionInner: { padding: 24 },
+  connectionTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  connectionLabel: {
+    fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 1,
+    color: 'rgba(255,255,255,0.5)',
+    letterSpacing: 2,
   },
-  aiBannerTitle: { fontSize: 17, fontWeight: '700', color: Colors.white, lineHeight: 25 },
-  aiBannerSub: { fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 2 },
-  aiBannerRight: { alignItems: 'center', gap: 8, paddingLeft: 16 },
-  aiBannerEmoji: { fontSize: 32 },
-  aiBannerArrow: { fontSize: 16, color: Colors.warm, fontWeight: '700' },
-
-  hScrollContent: { gap: 12, paddingBottom: 4 },
-
-  mateRow: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 16,
+  connectionTitle: {
+    fontSize: 22,
+    fontWeight: '300',
+    color: Colors.white,
+    lineHeight: 31,
+    letterSpacing: -0.4,
+    marginBottom: 8,
+  },
+  connectionSub: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.55)',
+    marginBottom: 20,
+  },
+  connectionDots: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    marginBottom: 10,
-    borderWidth: 1.5,
-    borderColor: Colors.cardBorder,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 1,
+    gap: 8,
   },
-  mateAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: Colors.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mateAvatarText: { fontSize: 18, fontWeight: '700', color: Colors.primary },
-  mateInfo: { flex: 1, gap: 4 },
-  mateName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
-  mateDest: { fontSize: 12, color: Colors.textSecondary },
-  mateTagsRow: { flexDirection: 'row', gap: 6, marginTop: 2 },
-  mateTag: {
-    backgroundColor: Colors.primaryBg,
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-  },
-  mateTagText: { fontSize: 11, color: Colors.primary, fontWeight: '600' },
-  mateMatchWrap: { alignItems: 'center', gap: 2 },
-  mateMatch: { fontSize: 20, fontWeight: '800', color: Colors.primary },
-  mateMatchLabel: { fontSize: 10, color: Colors.textSecondary },
-
-  tipCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    marginBottom: 10,
-    borderWidth: 1.5,
-    borderColor: Colors.cardBorder,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 1,
-  },
-  tipIconBox: {
-    width: 46,
-    height: 46,
-    borderRadius: 14,
-    backgroundColor: Colors.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tipIcon: { fontSize: 22 },
-  tipInfo: { flex: 1, gap: 3 },
-  tipTitle: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
-  tipDesc: { fontSize: 12, color: Colors.textSecondary },
-  tipTag: {
-    backgroundColor: Colors.primaryBg,
-    borderRadius: 999,
+  dot: {
     paddingHorizontal: 10,
     paddingVertical: 5,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  dotActive: {
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
+  },
+  dotText: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    fontWeight: '500',
+  },
+  dotTextActive: {
+    color: Colors.white,
+    fontWeight: '600',
+  },
+
+  hScrollContent: { gap: 12, paddingBottom: 4, paddingRight: 24 },
+
+  companionRow: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+  },
+  companionAvatar: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: Colors.bgDeep,
+    alignItems: 'center',
+    justifyContent: 'center',
     flexShrink: 0,
   },
-  tipTagReview: { backgroundColor: Colors.success },
-  tipTagText: { fontSize: 11, color: Colors.primary, fontWeight: '700' },
-  tipTagTextReview: { color: Colors.textPrimary },
+  companionAvatarText: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.textSecondary,
+  },
+  companionInfo: { flex: 1, gap: 4 },
+  companionName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+  },
+  companionDestRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  companionDest: {
+    fontSize: 11,
+    color: Colors.textMuted,
+  },
+  companionTagsRow: { flexDirection: 'row', gap: 6, marginTop: 2 },
+  companionTag: {
+    backgroundColor: Colors.bgDeep,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  companionTagText: {
+    fontSize: 10,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+  },
+  companionStyle: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    fontWeight: '500',
+    flexShrink: 0,
+  },
 
-  myTripBanner: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 20,
+  storyCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 18,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    borderWidth: 1.5,
+    marginBottom: 10,
+    borderWidth: 1,
     borderColor: Colors.cardBorder,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 1,
   },
-  myTripEmoji: { fontSize: 28 },
-  myTripInfo: { flex: 1, gap: 3 },
-  myTripTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
-  myTripSub: { fontSize: 12, color: Colors.textSecondary },
-  myTripArrow: { fontSize: 18, color: Colors.primary, fontWeight: '700' },
+  storyLeft: { flex: 1, gap: 5 },
+  storyTagWrap: {
+    backgroundColor: Colors.accentLight,
+    borderRadius: 4,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    alignSelf: 'flex-start',
+    marginBottom: 2,
+  },
+  storyTag: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: Colors.accent,
+    letterSpacing: 0.5,
+  },
+  storyTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    lineHeight: 20,
+  },
+  storyDesc: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    lineHeight: 18,
+  },
+  storyCityBox: {
+    width: 52,
+    height: 52,
+    borderRadius: 12,
+    backgroundColor: Colors.bgDeep,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  storyCityText: {
+    fontSize: 10,
+    color: Colors.textSecondary,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+
+  myTripPrompt: {
+    marginHorizontal: 24,
+    marginBottom: 8,
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 0,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+  },
+  myTripPromptTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    flex: 1,
+  },
+  myTripPromptSub: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    marginRight: 12,
+  },
+
+  statsBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    backgroundColor: Colors.primaryLight,
+  },
+  statsBarDot: {
+    width: 6, height: 6, borderRadius: 3,
+    backgroundColor: Colors.olive,
+  },
+  statsBarText: { fontSize: 12, color: Colors.dustBlue, fontWeight: '400' },
+  statsBarHighlight: { fontWeight: '700', color: Colors.primary },
+
+  moodRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  moodTag: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 999,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+  },
+  moodTagActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  moodTagText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
+  moodTagTextActive: { color: Colors.white, fontWeight: '600' },
 });

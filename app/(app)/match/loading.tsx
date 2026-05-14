@@ -7,34 +7,41 @@ import { findMates } from '../../../services/matchService';
 import { FindMateFilter } from '../../../types';
 
 const STEPS = [
-  '일정 & 목적지 분석',
-  '여행 스타일 파악',
-  '프로필 & 신뢰도 검증',
-  '최적의 메이트 순위 산출',
+  { label: '여행지 & 일정 확인 중', sub: 'destination & schedule' },
+  { label: '여행 스타일 비교 중', sub: 'travel style matching' },
+  { label: '신뢰도 & 인증 확인', sub: 'trust & verification' },
+  { label: '비슷한 여행자 연결 중', sub: 'finding your companion' },
 ];
 
 export default function MatchLoadingScreen() {
   const insets = useSafeAreaInsets();
   const { filter: filterParam } = useLocalSearchParams<{ filter: string }>();
   const [completedSteps, setCompletedSteps] = useState(0);
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   const floatAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
   const stepAnims = useRef(STEPS.map(() => new Animated.Value(0))).current;
+  const dotAnims = useRef([0, 1, 2].map(() => new Animated.Value(0))).current;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(floatAnim, { toValue: 1, duration: 1800, useNativeDriver: true }),
-        Animated.timing(floatAnim, { toValue: 0, duration: 1800, useNativeDriver: true }),
-      ]),
-    ).start();
+    Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }).start();
 
     Animated.loop(
       Animated.sequence([
-        Animated.timing(pulseAnim, { toValue: 1.06, duration: 1000, useNativeDriver: true }),
-        Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        Animated.timing(floatAnim, { toValue: 1, duration: 2200, useNativeDriver: true }),
+        Animated.timing(floatAnim, { toValue: 0, duration: 2200, useNativeDriver: true }),
       ]),
     ).start();
+
+    dotAnims.forEach((anim, i) => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(i * 200),
+          Animated.timing(anim, { toValue: 1, duration: 400, useNativeDriver: true }),
+          Animated.timing(anim, { toValue: 0.3, duration: 400, useNativeDriver: true }),
+        ]),
+      ).start();
+    });
   }, []);
 
   useEffect(() => {
@@ -42,55 +49,74 @@ export default function MatchLoadingScreen() {
 
     STEPS.forEach((_, i) => {
       setTimeout(() => {
-        Animated.timing(stepAnims[i], { toValue: 1, duration: 400, useNativeDriver: true }).start();
+        Animated.timing(stepAnims[i], { toValue: 1, duration: 500, useNativeDriver: true }).start();
         setCompletedSteps((prev) => prev + 1);
-      }, i * 600 + 300);
+      }, i * 700 + 400);
     });
 
     findMates(filter).then((results) => {
       setTimeout(() => {
         router.replace({ pathname: '/match/list', params: { results: JSON.stringify(results) } });
-      }, STEPS.length * 600 + 800);
+      }, STEPS.length * 700 + 900);
     });
   }, []);
 
-  const translateY = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -10] });
+  const translateY = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -8] });
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16, paddingBottom: insets.bottom }]}>
-      <Animated.View style={[styles.iconWrap, { transform: [{ translateY }, { scale: pulseAnim }] }]}>
-        <Text style={styles.icon}>🤖</Text>
+    <Animated.View style={[styles.container, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 40 }, { opacity: fadeAnim }]}>
+
+      {/* Compass icon */}
+      <Animated.View style={[styles.compassWrap, { transform: [{ translateY }] }]}>
+        <Text style={styles.compassIcon}>✦</Text>
+        <View style={styles.compassRing} />
       </Animated.View>
 
       <View style={styles.textWrap}>
-        <Text style={styles.title}>AI 매칭 중</Text>
-        <Text style={styles.subtitle}>여행 스타일과 일정을{'\n'}분석하고 있어요</Text>
+        <Text style={styles.title}>비슷한 여행자를{'\n'}찾고 있어요</Text>
+        <View style={styles.dotsRow}>
+          {dotAnims.map((anim, i) => (
+            <Animated.View key={i} style={[styles.dot, { opacity: anim }]} />
+          ))}
+        </View>
       </View>
 
+      {/* Steps */}
       <View style={styles.steps}>
         {STEPS.map((step, i) => {
           const done = i < completedSteps;
           return (
             <Animated.View
-              key={step}
-              style={[styles.step, done && styles.stepDone, { opacity: stepAnims[i] }]}
+              key={step.label}
+              style={[styles.step, { opacity: stepAnims[i] }]}
             >
-              <View style={[styles.stepDot, done && styles.stepDotDone]}>
-                <Text style={[styles.stepDotText, done && styles.stepDotTextDone]}>
-                  {done ? '✓' : (i + 1).toString()}
-                </Text>
+              <View style={[styles.stepCheck, done && styles.stepCheckDone]}>
+                {done && <Text style={styles.stepCheckMark}>✓</Text>}
               </View>
-              <Text style={[styles.stepText, done && styles.stepTextDone]}>{step}</Text>
+              <View style={styles.stepText}>
+                <Text style={[styles.stepLabel, done && styles.stepLabelDone]}>{step.label}</Text>
+                <Text style={styles.stepSub}>{step.sub}</Text>
+              </View>
             </Animated.View>
           );
         })}
       </View>
 
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${(completedSteps / STEPS.length) * 100}%` }]} />
+      {/* Progress line */}
+      <View style={styles.progressWrap}>
+        <View style={styles.progressTrack}>
+          <Animated.View
+            style={[
+              styles.progressFill,
+              { width: `${(completedSteps / STEPS.length) * 100}%` },
+            ]}
+          />
+        </View>
+        <Text style={styles.progressLabel}>
+          {completedSteps < STEPS.length ? `${STEPS[completedSteps]?.label ?? '완료'}...` : '같은 속도의 여행자를 연결하는 중이에요'}
+        </Text>
       </View>
-      <Text style={styles.progressText}>{completedSteps} / {STEPS.length} 완료</Text>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -101,64 +127,111 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 32,
-    gap: 24,
+    gap: 36,
   },
-  iconWrap: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: Colors.primaryBg,
+
+  compassWrap: {
+    width: 80,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
-    elevation: 4,
   },
-  icon: { fontSize: 44 },
-  textWrap: { alignItems: 'center', gap: 8 },
-  title: { fontSize: 24, fontWeight: '700', color: Colors.textPrimary },
-  subtitle: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+  compassIcon: {
+    fontSize: 28,
+    color: Colors.primary,
+    position: 'absolute',
+  },
+  compassRing: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    position: 'absolute',
+  },
+
+  textWrap: { alignItems: 'center', gap: 14 },
+  title: {
+    fontSize: 22,
+    fontWeight: '300',
+    color: Colors.textPrimary,
+    textAlign: 'center',
+    lineHeight: 32,
+    letterSpacing: -0.4,
+  },
+  dotsRow: { flexDirection: 'row', gap: 6 },
+  dot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.primary,
+  },
+
   steps: { width: '100%', gap: 10 },
   step: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    height: 54,
+    gap: 14,
+    paddingVertical: 14,
     paddingHorizontal: 16,
-    gap: 12,
-    borderWidth: 1.5,
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
-  stepDone: { borderColor: Colors.primary, backgroundColor: Colors.primaryBg },
-  stepDot: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+  stepCheck: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: Colors.cardBorder,
+    flexShrink: 0,
   },
-  stepDotDone: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  stepDotText: { fontSize: 10, color: Colors.textSecondary, fontWeight: '700' },
-  stepDotTextDone: { color: Colors.white },
-  stepText: { fontSize: 14, color: Colors.textSecondary },
-  stepTextDone: { color: Colors.primary, fontWeight: '600' },
-  progressBar: {
-    width: '100%',
-    height: 4,
+  stepCheckDone: {
+    backgroundColor: Colors.olive,
+    borderColor: Colors.olive,
+  },
+  stepCheckMark: {
+    fontSize: 10,
+    color: Colors.white,
+    fontWeight: '700',
+  },
+  stepText: { flex: 1, gap: 2 },
+  stepLabel: {
+    fontSize: 14,
+    color: Colors.textMuted,
+    fontWeight: '400',
+  },
+  stepLabelDone: {
+    color: Colors.textPrimary,
+    fontWeight: '500',
+  },
+  stepSub: {
+    fontSize: 10,
+    color: Colors.textMuted,
+    fontWeight: '400',
+    letterSpacing: 0.3,
+  },
+
+  progressWrap: { width: '100%', gap: 10 },
+  progressTrack: {
+    height: 1,
     backgroundColor: Colors.cardBorder,
-    borderRadius: 999,
+    borderRadius: 1,
     overflow: 'hidden',
   },
   progressFill: {
-    height: 4,
+    height: 1,
     backgroundColor: Colors.primary,
-    borderRadius: 999,
+    borderRadius: 1,
   },
-  progressText: { fontSize: 12, color: Colors.textSecondary },
+  progressLabel: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    textAlign: 'center',
+    letterSpacing: 0.3,
+  },
 });

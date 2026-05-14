@@ -3,67 +3,85 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
 import { Colors } from '../../constants/colors';
+import Svg, { Circle, Line, Path } from 'react-native-svg';
+
+function CompassIcon() {
+  return (
+    <Svg width={52} height={52} viewBox="0 0 52 52">
+      <Circle cx={26} cy={26} r={22} stroke="rgba(255,255,255,0.22)" strokeWidth={1} fill="none" />
+      <Line x1={26} y1={4} x2={26} y2={9} stroke="rgba(255,255,255,0.5)" strokeWidth={1.2} />
+      <Line x1={26} y1={43} x2={26} y2={48} stroke="rgba(255,255,255,0.2)" strokeWidth={1} />
+      <Line x1={4} y1={26} x2={9} y2={26} stroke="rgba(255,255,255,0.2)" strokeWidth={1} />
+      <Line x1={43} y1={26} x2={48} y2={26} stroke="rgba(255,255,255,0.2)" strokeWidth={1} />
+      {/* North needle */}
+      <Path d="M26 10 L29 23 L26 21 L23 23 Z" fill="rgba(255,255,255,0.85)" />
+      {/* South needle */}
+      <Path d="M26 42 L29 29 L26 31 L23 29 Z" fill="rgba(255,255,255,0.22)" />
+      {/* Center dot */}
+      <Circle cx={26} cy={26} r={2} fill="rgba(255,255,255,0.5)" />
+    </Svg>
+  );
+}
 
 export default function SplashScreen() {
   const { user, isLoading } = useAuth();
 
-  const logoAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const iconAnim = useRef(new Animated.Value(0)).current;
   const textAnim = useRef(new Animated.Value(0)).current;
-  const dotAnim  = useRef(new Animated.Value(0)).current;
+  const subAnim  = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    Animated.sequence([
-      Animated.timing(logoAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
-      Animated.timing(textAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
-      Animated.timing(dotAnim,  { toValue: 1, duration: 400, useNativeDriver: true }),
+    Animated.parallel([
+      Animated.timing(iconAnim, { toValue: 1, duration: 900, delay: 0,    useNativeDriver: true }),
+      Animated.timing(textAnim, { toValue: 1, duration: 700, delay: 700,  useNativeDriver: true }),
+      Animated.timing(subAnim,  { toValue: 1, duration: 600, delay: 1200, useNativeDriver: true }),
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, delay: 1600, useNativeDriver: true }),
     ]).start();
   }, []);
 
   useEffect(() => {
     if (isLoading) return;
     const timer = setTimeout(() => {
-      if (user) {
-        router.replace('/(tabs)/');
-      } else {
-        router.replace('/(auth)/login');
-      }
-    }, 2200);
+      router.replace(user ? '/(tabs)/' : '/(auth)/login');
+    }, 2600);
     return () => clearTimeout(timer);
   }, [isLoading, user]);
 
   return (
     <View style={styles.container}>
-      {/* 배경 원형 장식 */}
-      <View style={styles.bgCircle1} />
-      <View style={styles.bgCircle2} />
-
       <View style={styles.center}>
-        {/* 로고 */}
-        <Animated.View style={[styles.logoWrap, {
-          opacity: logoAnim,
-          transform: [{ scale: logoAnim.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] }) }],
-        }]}>
-          <View style={styles.logoBox}>
-            <Text style={styles.logoIcon}>✈️</Text>
-          </View>
+
+        {/* Small top label */}
+        <Animated.Text style={[styles.topLabel, { opacity: iconAnim }]}>
+          TRAVEL MATE
+        </Animated.Text>
+
+        {/* Compass icon */}
+        <Animated.View style={[styles.iconWrap, { opacity: iconAnim }]}>
+          <CompassIcon />
         </Animated.View>
 
-        {/* 앱 이름 + 태그라인 */}
-        <Animated.View style={{ opacity: textAnim, alignItems: 'center', gap: 8 }}>
-          <Text style={styles.appName}>TripMate</Text>
-          <Text style={styles.tagline}>여행 일정과 스타일로{'\n'}딱 맞는 동행을 찾아보세요</Text>
-        </Animated.View>
+        {/* App name */}
+        <Animated.Text style={[styles.appName, { opacity: textAnim }]}>
+          TripMate
+        </Animated.Text>
 
-        {/* 로딩 점 */}
-        <Animated.View style={[styles.dots, { opacity: dotAnim }]}>
+        {/* Tagline */}
+        <Animated.Text style={[styles.tagline, { opacity: subAnim }]}>
+          취향이 맞는 여행 메이트를{'\n'}만나보세요
+        </Animated.Text>
+
+        {/* Dots */}
+        <Animated.View style={[styles.dots, { opacity: fadeAnim }]}>
           <View style={styles.dot} />
           <View style={[styles.dot, styles.dotMid]} />
           <View style={styles.dot} />
         </Animated.View>
+
       </View>
 
-      {/* 하단 버전 */}
-      <Animated.Text style={[styles.version, { opacity: dotAnim }]}>
+      <Animated.Text style={[styles.version, { opacity: fadeAnim }]}>
         v1.0.0
       </Animated.Text>
     </View>
@@ -77,72 +95,54 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bgCircle1: {
-    position: 'absolute',
-    width: 360,
-    height: 360,
-    borderRadius: 180,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    top: -60,
-    right: -80,
-  },
-  bgCircle2: {
-    position: 'absolute',
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    bottom: 40,
-    left: -60,
-  },
   center: {
     alignItems: 'center',
-    gap: 20,
+    gap: 16,
   },
-  logoWrap: {
+  topLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.3)',
+    letterSpacing: 4,
+    marginBottom: 8,
+  },
+  iconWrap: {
     marginBottom: 4,
   },
-  logoBox: {
-    width: 110,
-    height: 110,
-    borderRadius: 34,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.25)',
-  },
-  logoIcon: { fontSize: 56 },
   appName: {
-    fontSize: 38,
-    fontWeight: '800',
+    fontSize: 36,
+    fontWeight: '300',
     color: Colors.white,
-    letterSpacing: -1,
+    letterSpacing: 2,
+    marginTop: 8,
   },
   tagline: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.75)',
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.55)',
     textAlign: 'center',
-    lineHeight: 23,
+    lineHeight: 22,
+    fontWeight: '400',
+    letterSpacing: 0.2,
   },
   dots: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 8,
+    gap: 6,
+    marginTop: 12,
   },
   dot: {
-    width: 7,
-    height: 7,
-    borderRadius: 3.5,
-    backgroundColor: 'rgba(255,255,255,0.4)',
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
   dotMid: {
-    backgroundColor: Colors.pointYellow,
+    backgroundColor: 'rgba(255,255,255,0.5)',
   },
   version: {
     position: 'absolute',
-    bottom: 40,
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.3)',
+    bottom: 36,
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.18)',
+    letterSpacing: 0.5,
   },
 });

@@ -11,7 +11,7 @@ interface TagProps {
 }
 
 export function Tag({ label, selected = false, onPress, style, color }: TagProps) {
-  const bgColor = color ?? (selected ? Colors.primary : Colors.white);
+  const bgColor = color ?? (selected ? Colors.primary : Colors.card);
   const textColor = color ? Colors.textPrimary : selected ? Colors.white : Colors.textSecondary;
 
   return (
@@ -37,11 +37,11 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   border: {
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
   text: {
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '400',
   },
 });
