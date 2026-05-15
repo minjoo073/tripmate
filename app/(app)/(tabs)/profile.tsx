@@ -4,8 +4,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
 import { Avatar } from '../../../components/ui/Avatar';
 import { useAuth } from '../../../context/AuthContext';
+import { usePersonality } from '../../../context/PersonalityContext';
 import { router } from 'expo-router';
-import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon } from '../../../components/ui/Icon';
+import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon, WaveIcon, MoonIcon, UsersIcon, CalendarIcon, EditIcon } from '../../../components/ui/Icon';
 
 const TABS = ['여행 기록', '리뷰', '저장'];
 
@@ -15,7 +16,13 @@ const MOCK_TRIPS = [
   { id: '3', dest: '방콕, 태국', date: '2024.12.20 – 12.25', companion: '한소희', rating: 5, status: 'done' },
 ];
 
-const TRAVEL_MOODS = ['카페 투어', '로컬 골목', '필름카메라', '느린 여행', '맛집 탐방'];
+const TRAVEL_MOODS = [
+  { label: '카페 투어',   bg: 'rgba(192,135,70,0.14)',  text: '#9A6830' },
+  { label: '로컬 골목',   bg: 'rgba(100,140,100,0.14)', text: '#3E7248' },
+  { label: '필름카메라',  bg: 'rgba(90,130,175,0.14)',  text: '#3A6A9A' },
+  { label: '느린 여행',   bg: 'rgba(155,140,115,0.16)', text: '#7A6848' },
+  { label: '맛집 탐방',   bg: 'rgba(192,75,75,0.12)',   text: '#A03A3A' },
+];
 
 const VISITED_CITIES = [
   { city: '오사카', count: 3, flag: '🇯🇵' },
@@ -27,6 +34,7 @@ const VISITED_CITIES = [
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { personality } = usePersonality();
   const [activeTab, setActiveTab] = useState('여행 기록');
 
   return (
@@ -58,6 +66,14 @@ export default function ProfileScreen() {
           <Text style={styles.editBtnText}>프로필 편집</Text>
         </TouchableOpacity>
 
+        {/* Personality mini — compact below edit button */}
+        <TouchableOpacity style={styles.personalityMini} onPress={() => router.push('/travel-personality')} activeOpacity={0.7}>
+          <Text style={styles.personalityMiniText}>
+            {personality.pace} · {personality.time} · {personality.companion} · {personality.planning}
+          </Text>
+          <EditIcon color={Colors.textMuted} size={11} />
+        </TouchableOpacity>
+
         <View style={styles.statsRow}>
           <View style={styles.stat}>
             <Text style={styles.statValue}>3</Text>
@@ -85,15 +101,15 @@ export default function ProfileScreen() {
       <View style={styles.moodRow}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.moodContent}>
           {TRAVEL_MOODS.map((mood) => (
-            <View key={mood} style={styles.moodTag}>
-              <Text style={styles.moodTagText}>{mood}</Text>
+            <View key={mood.label} style={[styles.moodTag, { backgroundColor: mood.bg }]}>
+              <Text style={[styles.moodTagText, { color: mood.text }]}>{mood.label}</Text>
             </View>
           ))}
         </ScrollView>
       </View>
 
       {/* Upcoming trip banner */}
-      <TouchableOpacity style={styles.upcomingBanner} activeOpacity={0.85}>
+      <TouchableOpacity style={styles.upcomingBanner} activeOpacity={0.85} onPress={() => router.push('/trip-plan')}>
         <View style={styles.upcomingLeft}>
           <Text style={styles.upcomingLabel}>NEXT JOURNEY</Text>
           <Text style={styles.upcomingDest}>도쿄, 일본</Text>
@@ -102,63 +118,39 @@ export default function ProfileScreen() {
         <ArrowRightIcon color={Colors.primary} size={16} />
       </TouchableOpacity>
 
-      {/* Tabs */}
-      <View style={styles.tabs}>
-        {TABS.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[styles.tab, activeTab === tab && styles.tabActive]}
-            onPress={() => setActiveTab(tab)}
-          >
-            <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{tab}</Text>
-          </TouchableOpacity>
-        ))}
+      {/* Tabs — pill segmented control */}
+      <View style={styles.tabsWrap}>
+        <View style={styles.tabsTrack}>
+          {TABS.map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              style={[styles.tab, activeTab === tab && styles.tabActive]}
+              onPress={() => setActiveTab(tab)}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>{tab}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
         {activeTab === '여행 기록' && (
           <>
-            {/* Visited cities */}
-            <View style={styles.visitedWrap}>
-              <Text style={styles.visitedTitle}>방문한 도시</Text>
-              <View style={styles.visitedCities}>
-                {VISITED_CITIES.map((c) => (
-                  <View key={c.city} style={styles.visitedCity}>
-                    <Text style={styles.visitedFlag}>{c.flag}</Text>
-                    <Text style={styles.visitedCityName}>{c.city}</Text>
-                    <Text style={styles.visitedCityCount}>{c.count}회</Text>
-                  </View>
-                ))}
+            {/* Route Archive card */}
+            <TouchableOpacity
+              style={styles.routeCard}
+              onPress={() => router.push('/route-archive')}
+              activeOpacity={0.85}
+            >
+              <View style={styles.routeCardLeft}>
+                <Text style={styles.routeCardLabel}>ROUTE ARCHIVE</Text>
+                <Text style={styles.routeCardTitle}>내 여행 기록</Text>
+                <Text style={styles.routeCardSub}>지도 위에 새겨진 나의 발자국</Text>
               </View>
-            </View>
-
-            {/* Travel personality */}
-            <View style={styles.personalityCard}>
-              <Text style={styles.personalityTitle}>여행 성향</Text>
-              <View style={styles.personalityRow}>
-                <View style={styles.personalityItem}>
-                  <Text style={styles.personalityEmoji}>🚶</Text>
-                  <Text style={styles.personalityLabel}>느긋한</Text>
-                  <Text style={styles.personalityKey}>여행 속도</Text>
-                </View>
-                <View style={styles.personalityItem}>
-                  <Text style={styles.personalityEmoji}>🌙</Text>
-                  <Text style={styles.personalityLabel}>저녁형</Text>
-                  <Text style={styles.personalityKey}>활동 시간</Text>
-                </View>
-                <View style={styles.personalityItem}>
-                  <Text style={styles.personalityEmoji}>👥</Text>
-                  <Text style={styles.personalityLabel}>함께</Text>
-                  <Text style={styles.personalityKey}>여행 스타일</Text>
-                </View>
-                <View style={styles.personalityItem}>
-                  <Text style={styles.personalityEmoji}>📷</Text>
-                  <Text style={styles.personalityLabel}>감성형</Text>
-                  <Text style={styles.personalityKey}>여행 무드</Text>
-                </View>
-              </View>
-            </View>
+              <ArrowRightIcon color={Colors.accent} size={16} />
+            </TouchableOpacity>
 
             <Text style={styles.sectionLabel}>여행 기록 · {MOCK_TRIPS.length}</Text>
             {MOCK_TRIPS.map((trip) => (
@@ -235,6 +227,17 @@ const styles = StyleSheet.create({
   metaText: { fontSize: 11, color: Colors.textMuted },
   metaSep: { fontSize: 11, color: Colors.textMuted },
 
+  personalityMini: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  personalityMiniText: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    fontWeight: '400',
+  },
+
   editBtn: {
     backgroundColor: Colors.bg,
     borderRadius: 999,
@@ -255,14 +258,11 @@ const styles = StyleSheet.create({
   moodRow: { backgroundColor: Colors.card, borderBottomWidth: 1, borderBottomColor: Colors.cardBorder },
   moodContent: { paddingHorizontal: 20, paddingVertical: 12, gap: 8, flexDirection: 'row' },
   moodTag: {
-    backgroundColor: Colors.bgDeep,
     borderRadius: 999,
-    paddingHorizontal: 12,
+    paddingHorizontal: 13,
     paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
   },
-  moodTagText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
+  moodTagText: { fontSize: 12, fontWeight: '500' },
 
   upcomingBanner: {
     marginHorizontal: 20,
@@ -286,17 +286,33 @@ const styles = StyleSheet.create({
   upcomingDest: { fontSize: 15, fontWeight: '600', color: Colors.primary, letterSpacing: -0.2 },
   upcomingDate: { fontSize: 11, color: Colors.dustBlue },
 
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: Colors.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.cardBorder,
-    paddingHorizontal: 24,
-    marginTop: 16,
+  tabsWrap: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: Colors.bg,
   },
-  tab: { paddingVertical: 12, marginRight: 24, borderBottomWidth: 1.5, borderBottomColor: 'transparent' },
-  tabActive: { borderBottomColor: Colors.textPrimary },
-  tabText: { fontSize: 14, color: Colors.textMuted, fontWeight: '400' },
+  tabsTrack: {
+    flexDirection: 'row',
+    backgroundColor: Colors.bgDeep,
+    borderRadius: 12,
+    padding: 3,
+    gap: 2,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  tabActive: {
+    backgroundColor: Colors.card,
+    shadowColor: 'rgba(42,33,24,0.10)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tabText: { fontSize: 13, color: Colors.textMuted, fontWeight: '400' },
   tabTextActive: { color: Colors.textPrimary, fontWeight: '600' },
 
   scroll: { flex: 1 },
@@ -351,19 +367,52 @@ const styles = StyleSheet.create({
     borderColor: Colors.cardBorder,
     marginBottom: 20,
   },
-  personalityTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.textMuted,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
+  personalityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 14,
   },
+  personalityTitle: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: Colors.textMuted,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
   personalityRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  personalityItem: { flex: 1, alignItems: 'center', gap: 4 },
-  personalityEmoji: { fontSize: 18 },
-  personalityLabel: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
+  personalityItem: { flex: 1, alignItems: 'center', gap: 5 },
+  personalityLabel: { fontSize: 13, fontWeight: '400', color: Colors.textPrimary },
   personalityKey: { fontSize: 10, color: Colors.textMuted },
+
+  routeCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1.5,
+    borderColor: Colors.accent,
+    marginBottom: 20,
+  },
+  routeCardLeft: { gap: 3 },
+  routeCardLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: Colors.accent,
+    letterSpacing: 2.5,
+  },
+  routeCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    letterSpacing: -0.2,
+  },
+  routeCardSub: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+  },
 
   empty: { paddingTop: 56, alignItems: 'center', gap: 10 },
   emptyIconBox: { width: 56, height: 56, borderRadius: 16, backgroundColor: Colors.bgDeep, alignItems: 'center', justifyContent: 'center' },

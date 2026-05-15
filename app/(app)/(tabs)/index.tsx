@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, NativeSyntheticEvent, NativeScrollEvent,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,18 +24,24 @@ const DESTINATIONS = [
 const TRAVEL_STORIES = [
   {
     tag: '여행 기록',
+    tagBg: 'rgba(107,140,173,0.15)',
+    tagColor: '#4A7498',
     title: '오사카 골목의 오래된 카페들',
     desc: '현지인만 아는 도톤보리 뒷골목 카페 순례',
     city: 'Osaka',
   },
   {
     tag: '동행 후기',
+    tagBg: 'rgba(180,217,204,0.30)',
+    tagColor: '#3D7A65',
     title: '방콕에서 만난 특별한 인연',
     desc: '혼자였던 여행이 둘이 되던 순간',
     city: 'Bangkok',
   },
   {
     tag: '로컬 추천',
+    tagBg: 'rgba(232,200,130,0.28)',
+    tagColor: '#8A6820',
     title: '도쿄의 숨겨진 서점 거리',
     desc: '진보초에서 발견한 필름카메라와 빈티지 지도들',
     city: 'Tokyo',
@@ -46,6 +52,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [matches, setMatches] = useState<MatchResult[]>([]);
+  const [destIdx, setDestIdx] = useState(0);
 
   useEffect(() => {
     getRecommended().then(setMatches);
@@ -98,6 +105,11 @@ export default function HomeScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.destRow}
+            onScroll={(e: NativeSyntheticEvent<NativeScrollEvent>) => {
+              const idx = Math.round(e.nativeEvent.contentOffset.x / 140);
+              setDestIdx(Math.min(idx, DESTINATIONS.length - 1));
+            }}
+            scrollEventThrottle={16}
           >
             {DESTINATIONS.map((d) => (
               <TouchableOpacity
@@ -114,6 +126,15 @@ export default function HomeScreen() {
               </TouchableOpacity>
             ))}
           </ScrollView>
+          {/* Scroll indicator dots */}
+          <View style={styles.destDots}>
+            {DESTINATIONS.map((_, i) => (
+              <View
+                key={i}
+                style={[styles.destDot, i === destIdx && styles.destDotActive]}
+              />
+            ))}
+          </View>
         </View>
 
         {/* Today's mood */}
@@ -140,7 +161,7 @@ export default function HomeScreen() {
           <View style={styles.connectionInner}>
             <View style={styles.connectionTop}>
               <Text style={styles.connectionLabel}>YOUR TRAVEL VIBE</Text>
-              <ArrowRightIcon color={Colors.accent} size={16} />
+              <ArrowRightIcon color="#FFF9D7" size={16} />
             </View>
             <Text style={styles.connectionTitle}>
               같은 속도로 여행할{'\n'}메이트를 찾아드려요
@@ -175,6 +196,9 @@ export default function HomeScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.hScrollContent}
+            snapToInterval={152}
+            snapToAlignment="start"
+            decelerationRate="fast"
           >
             {matches.map((item) => (
               <RecommendedCard key={item.user.id} item={item} />
@@ -242,8 +266,8 @@ export default function HomeScreen() {
               activeOpacity={0.82}
             >
               <View style={styles.storyLeft}>
-                <View style={styles.storyTagWrap}>
-                  <Text style={styles.storyTag}>{story.tag}</Text>
+                <View style={[styles.storyTagWrap, { backgroundColor: story.tagBg }]}>
+                  <Text style={[styles.storyTag, { color: story.tagColor }]}>{story.tag}</Text>
                 </View>
                 <Text style={styles.storyTitle}>{story.title}</Text>
                 <Text style={styles.storyDesc}>{story.desc}</Text>
@@ -277,9 +301,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingHorizontal: 28,
+    paddingTop: 28,
+    paddingBottom: 18,
   },
   appLabel: {
     fontSize: 10,
@@ -297,14 +321,14 @@ const styles = StyleSheet.create({
   bellBtn: { padding: 4 },
 
   scroll: { flex: 1 },
-  scrollContent: { paddingTop: 4 },
+  scrollContent: { paddingTop: 16 },
 
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.card,
     borderRadius: 14,
-    marginHorizontal: 24,
+    marginHorizontal: 28,
     marginBottom: 32,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -335,7 +359,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  section: { marginBottom: 36, paddingHorizontal: 24 },
+  section: { marginBottom: 36, paddingHorizontal: 28 },
   sectionHead: { marginBottom: 4 },
   sectionLabel: {
     fontSize: 10,
@@ -365,6 +389,23 @@ const styles = StyleSheet.create({
   },
 
   destRow: { gap: 10, paddingBottom: 4, paddingRight: 24 },
+  destDots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5,
+    marginTop: 12,
+  },
+  destDot: {
+    width: 16,
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: Colors.cardBorder,
+  },
+  destDotActive: {
+    width: 24,
+    backgroundColor: Colors.textMuted,
+  },
   destCard: {
     width: 130,
     borderRadius: 16,
@@ -397,52 +438,52 @@ const styles = StyleSheet.create({
   },
 
   connectionBanner: {
-    marginHorizontal: 24,
+    marginHorizontal: 28,
     marginBottom: 36,
     borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: Colors.primary,
   },
-  connectionInner: { padding: 24 },
+  connectionInner: { padding: 18 },
   connectionTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   connectionLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '700',
     color: 'rgba(255,255,255,0.5)',
     letterSpacing: 2,
   },
   connectionTitle: {
-    fontSize: 22,
+    fontSize: 17,
     fontWeight: '300',
     color: Colors.white,
-    lineHeight: 31,
+    lineHeight: 24,
     letterSpacing: -0.4,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   connectionSub: {
-    fontSize: 12,
+    fontSize: 11,
     color: 'rgba(255,255,255,0.55)',
-    marginBottom: 20,
+    marginBottom: 14,
   },
   connectionDots: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 6,
   },
   dot: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
   },
   dotActive: {
-    backgroundColor: Colors.accent,
-    borderColor: Colors.accent,
+    backgroundColor: '#FFF9D7',
+    borderColor: '#FFF9D7',
   },
   dotText: {
     fontSize: 11,
@@ -450,7 +491,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   dotTextActive: {
-    color: Colors.white,
+    color: '#2A2118',
     fontWeight: '600',
   },
 
@@ -565,7 +606,7 @@ const styles = StyleSheet.create({
   },
 
   myTripPrompt: {
-    marginHorizontal: 24,
+    marginHorizontal: 28,
     marginBottom: 8,
     backgroundColor: Colors.card,
     borderRadius: 16,
@@ -592,7 +633,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
-    paddingHorizontal: 24,
+    paddingHorizontal: 28,
     paddingVertical: 10,
     backgroundColor: Colors.primaryLight,
   },

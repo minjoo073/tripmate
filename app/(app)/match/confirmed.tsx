@@ -10,6 +10,29 @@ import { mockUsers, mockTrips } from '../../../mock/data';
 const RADIUS = 54;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
+const AIRPORT_CODES: Record<string, string> = {
+  '오사카': 'KIX', '도쿄': 'NRT', '파리': 'CDG', '바르셀로나': 'BCN',
+  '방콕': 'BKK', '하노이': 'HAN', '제주': 'CJU', '뉴욕': 'JFK',
+  '런던': 'LHR', '로마': 'FCO', '프라하': 'PRG', '리스본': 'LIS',
+};
+
+function Barcode() {
+  const pattern = [2,1,3,1,2,1,1,3,2,1,1,2,3,1,2,1,1,3,1,2,1,2,3,1,1,2,1,3,2,1,2,1,1,3,1,2,3,1,1,2,1,3,1,1,2,3,1,2,1,3,2,1,1,2,3,1,2,1,1,3];
+  return (
+    <View style={{ flexDirection: 'row', height: 48, width: '100%' }}>
+      {pattern.map((w, i) => (
+        <View
+          key={i}
+          style={{
+            flex: w,
+            backgroundColor: i % 2 === 0 ? 'rgba(42,33,24,0.80)' : 'transparent',
+          }}
+        />
+      ))}
+    </View>
+  );
+}
+
 const TRAVEL_VIBES = [
   '여행 스타일이 잘 맞아요',
   '같이 다니면 잘 맞을 것 같아요',
@@ -18,10 +41,10 @@ const TRAVEL_VIBES = [
   '같은 속도로 여행하는 사람이에요',
 ];
 
-const BG = '#E8F0F8';
+const BG = '#FFF9D7';
 const NAVY = Colors.primary;        // #3B5178
-const NAVY_FAINT = 'rgba(59,81,120,0.12)';
-const NAVY_MID = 'rgba(59,81,120,0.3)';
+const NAVY_FAINT = 'rgba(59,81,120,0.10)';
+const NAVY_MID = 'rgba(59,81,120,0.25)';
 
 function TravelRing({ rate }: { rate: number }) {
   const [offset, setOffset] = useState(CIRCUMFERENCE);
@@ -116,33 +139,64 @@ export default function ConfirmedScreen() {
         </View>
       </Animated.View>
 
-      {/* Vibe phrase */}
-      <Animated.View style={[styles.vibeWrap, { transform: [{ translateY: slideAnim }] }]}>
-        <View style={styles.vibeLine} />
-        <Text style={styles.vibeText}>{vibe}</Text>
-        <View style={styles.vibeLine} />
-      </Animated.View>
-
-      {/* Summary card */}
+      {/* Boarding Pass card */}
       <Animated.View style={[styles.card, { transform: [{ translateY: slideAnim }] }]}>
+        {/* Header */}
         <View style={styles.cardHeader}>
-          <Text style={styles.cardDest}>{trip.destination.toUpperCase()}</Text>
+          <Text style={styles.cardHeaderLabel}>BOARDING PASS</Text>
           <View style={styles.stampWrap}>
             <Text style={styles.stampText}>CONFIRMED</Text>
           </View>
         </View>
-        <View style={styles.cardDivider} />
-        <View style={styles.cardRow}>
-          <Text style={styles.cardRowLabel}>여행지</Text>
-          <Text style={styles.cardRowValue}>{trip.destination}, {trip.country}</Text>
+
+        {/* Route: ICN → KIX */}
+        <View style={styles.routeRow}>
+          <View style={styles.routeCol}>
+            <Text style={styles.routeCode}>ICN</Text>
+            <Text style={styles.routeCity}>서울</Text>
+          </View>
+          <View style={styles.routeMiddle}>
+            <View style={styles.routeLine} />
+            <Text style={styles.routePlane}>✈</Text>
+            <View style={styles.routeLine} />
+          </View>
+          <View style={[styles.routeCol, { alignItems: 'flex-end' }]}>
+            <Text style={styles.routeCode}>{AIRPORT_CODES[trip.destination] ?? 'INT'}</Text>
+            <Text style={styles.routeCity}>{trip.destination}</Text>
+          </View>
         </View>
-        <View style={styles.cardRow}>
-          <Text style={styles.cardRowLabel}>일정</Text>
-          <Text style={styles.cardRowValue}>{trip.startDate} – {trip.endDate}</Text>
+
+        {/* Info grid */}
+        <View style={styles.infoGrid}>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>DATE</Text>
+            <Text style={styles.infoVal}>{trip.startDate?.replace(/-/g, '.')}</Text>
+          </View>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>UNTIL</Text>
+            <Text style={styles.infoVal}>{trip.endDate?.replace(/-/g, '.')}</Text>
+          </View>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>PASSENGER</Text>
+            <Text style={styles.infoVal}>{partner.nickname}</Text>
+          </View>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>MATCH</Text>
+            <Text style={styles.infoVal}>{matchRate}%</Text>
+          </View>
         </View>
-        <View style={styles.cardRow}>
-          <Text style={styles.cardRowLabel}>동행</Text>
-          <Text style={styles.cardRowValue}>{partner.nickname} · Verified Traveler</Text>
+
+        {/* Perforated divider */}
+        <View style={styles.perfRow}>
+          <View style={styles.perfNotchL} />
+          <View style={styles.perfDash} />
+          <View style={styles.perfNotchR} />
+        </View>
+
+        {/* Barcode */}
+        <View style={styles.barcodeWrap}>
+          <Barcode />
+          <Text style={styles.barcodeNum}>TM · {trip.startDate?.replace(/-/g, '')} · {AIRPORT_CODES[trip.destination] ?? 'INT'}</Text>
         </View>
       </Animated.View>
 
@@ -200,28 +254,100 @@ const styles = StyleSheet.create({
 
   card: {
     width: '100%',
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: '#FEFBEF',
+    borderRadius: 18,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    gap: 12,
+    borderColor: 'rgba(180,160,80,0.28)',
   },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardDest: { fontSize: 11, color: Colors.textMuted, fontWeight: '700', letterSpacing: 2.5 },
+
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 10,
+  },
+  cardHeaderLabel: {
+    fontSize: 8,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    letterSpacing: 2.5,
+  },
   stampWrap: {
     borderWidth: 1,
     borderColor: NAVY_MID,
     borderRadius: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 7,
     paddingVertical: 3,
     transform: [{ rotate: '-2deg' }],
   },
-  stampText: { fontSize: 9, color: NAVY, fontWeight: '700', letterSpacing: 1.5, opacity: 0.7 },
-  cardDivider: { height: 1, backgroundColor: Colors.cardBorder },
-  cardRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardRowLabel: { fontSize: 11, color: Colors.textMuted, fontWeight: '500', letterSpacing: 0.3 },
-  cardRowValue: { fontSize: 13, color: Colors.textPrimary, fontWeight: '400' },
+  stampText: { fontSize: 8, color: NAVY, fontWeight: '700', letterSpacing: 1.5, opacity: 0.65 },
+
+  routeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  routeCol: { alignItems: 'flex-start', minWidth: 60 },
+  routeCode: { fontSize: 28, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -1 },
+  routeCity: { fontSize: 10, color: Colors.textMuted, fontWeight: '500', letterSpacing: 0.5, marginTop: 2 },
+  routeMiddle: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 },
+  routeLine: { flex: 1, height: 1, backgroundColor: NAVY_FAINT },
+  routePlane: { fontSize: 16, marginHorizontal: 6, color: Colors.textMuted },
+
+  infoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    gap: 14,
+  },
+  infoCell: { width: '45%', gap: 3 },
+  infoLabel: { fontSize: 8, fontWeight: '700', color: Colors.textMuted, letterSpacing: 1.8, textTransform: 'uppercase' },
+  infoVal: { fontSize: 13, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.2 },
+
+  perfRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: -1,
+  },
+  perfNotchL: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: BG,
+    marginLeft: -8,
+  },
+  perfNotchR: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: BG,
+    marginRight: -8,
+  },
+  perfDash: {
+    flex: 1,
+    height: 1,
+    borderStyle: 'dashed',
+    borderTopWidth: 1,
+    borderColor: 'rgba(160,140,60,0.35)',
+  },
+
+  barcodeWrap: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    gap: 8,
+  },
+  barcodeNum: {
+    fontSize: 9,
+    color: Colors.textMuted,
+    fontWeight: '500',
+    letterSpacing: 1.5,
+    textAlign: 'center',
+  },
 
   actions: { width: '100%', gap: 14 },
   primaryBtn: {
