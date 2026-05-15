@@ -4,6 +4,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { Avatar } from '../../components/ui/Avatar';
+import { ArrowLeftIcon, MessageIcon } from '../../components/ui/Icon';
+import { startChat } from '../../services/chatService';
 
 const MOCK_POSTS: Record<string, MatePost[]> = {
   오사카: [
@@ -49,21 +51,27 @@ export default function MatesScreen() {
 
   const posts = MOCK_POSTS[selected] ?? [];
 
-  const handleChat = (userId: string) => {
-    Alert.alert('채팅 신청', '이 여행자에게 채팅을 신청할까요?', [
-      { text: '취소', style: 'cancel' },
-      { text: '신청하기', onPress: () => Alert.alert('완료', '채팅 신청을 보냈어요!') },
-    ]);
+  const handleChat = async (userId: string) => {
+    try {
+      const room = await startChat(userId);
+      router.push(`/chat/${room.id}`);
+    } catch {
+      Alert.alert('오류', '채팅을 시작할 수 없어요.');
+    }
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity
+          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)')}
+          style={styles.backBtn}
+        >
+          <ArrowLeftIcon color={Colors.textPrimary} size={20} />
         </TouchableOpacity>
-        <View>
+        <View style={styles.headerText}>
+          <Text style={styles.headerLabel}>MATES</Text>
           <Text style={styles.title}>메이트 모집</Text>
           <Text style={styles.subtitle}>같이 떠날 여행 동행을 찾아보세요</Text>
         </View>
@@ -104,7 +112,7 @@ export default function MatesScreen() {
           posts.map((post) => (
             <View key={post.id} style={styles.card}>
               <View style={styles.cardTop}>
-                <Avatar nickname={post.user.nickname} size={48} />
+                <Avatar nickname={post.user.nickname} size={46} />
                 <View style={styles.userInfo}>
                   <View style={styles.userNameRow}>
                     <Text style={styles.userName}>{post.user.nickname}</Text>
@@ -139,8 +147,10 @@ export default function MatesScreen() {
                 <TouchableOpacity
                   style={styles.chatBtn}
                   onPress={() => handleChat(post.user.id)}
+                  activeOpacity={0.85}
                 >
-                  <Text style={styles.chatBtnText}>💬 채팅하기</Text>
+                  <MessageIcon color={Colors.white} size={15} />
+                  <Text style={styles.chatBtnText}>채팅하기</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -153,25 +163,33 @@ export default function MatesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
+
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingTop: 20,
+    paddingBottom: 16,
     gap: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
-  backBtn: { padding: 4 },
-  backIcon: { fontSize: 22, color: Colors.textPrimary },
-  title: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
-  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  backBtn: { padding: 4, marginTop: 14 },
+  headerText: { flex: 1 },
+  headerLabel: {
+    fontSize: 10, fontWeight: '700', color: Colors.textMuted,
+    letterSpacing: 2.5, marginBottom: 4,
+  },
+  title: { fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.4 },
+  subtitle: { fontSize: 13, color: Colors.textMuted, marginTop: 3, fontWeight: '400' },
 
-  destScroll: { maxHeight: 52 },
+  destScroll: { maxHeight: 56 },
   destScrollContent: {
     paddingHorizontal: 20,
     gap: 8,
     alignItems: 'center',
     flexDirection: 'row',
-    paddingBottom: 8,
+    paddingVertical: 10,
   },
   destTab: {
     paddingHorizontal: 18,
@@ -182,11 +200,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.cardBorder,
   },
   destTabActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  destTabText: { fontSize: 14, color: Colors.textSecondary, fontWeight: '500' },
-  destTabTextActive: { color: Colors.white, fontWeight: '700' },
+  destTabText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
+  destTabTextActive: { color: Colors.white, fontWeight: '600' },
 
   scroll: { flex: 1 },
-  list: { padding: 20, gap: 16 },
+  list: { padding: 20, gap: 14 },
 
   card: {
     backgroundColor: Colors.white,
@@ -195,31 +213,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     gap: 14,
-    shadowColor: Colors.primary,
+    shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 1,
     shadowRadius: 8,
-    elevation: 2,
+    elevation: 1,
   },
   cardTop: { flexDirection: 'row', gap: 14, alignItems: 'flex-start' },
   userInfo: { flex: 1, gap: 4 },
   userNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  userName: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
-  userAge: { fontSize: 13, color: Colors.textSecondary },
+  userName: { fontSize: 15, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.2 },
+  userAge: { fontSize: 12, color: Colors.textMuted, fontWeight: '400' },
   verifiedBadge: {
-    backgroundColor: Colors.primaryBg,
-    borderRadius: 999,
-    paddingHorizontal: 8,
+    backgroundColor: 'rgba(110,125,98,0.12)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
     paddingVertical: 2,
   },
-  verifiedText: { fontSize: 10, color: Colors.primary, fontWeight: '700' },
-  destination: { fontSize: 13, color: Colors.textSecondary },
-  dates: { fontSize: 13, color: Colors.textSecondary },
+  verifiedText: { fontSize: 10, color: Colors.olive, fontWeight: '600' },
+  destination: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
+  dates: { fontSize: 12, color: Colors.textMuted, fontWeight: '400' },
 
   desc: {
     fontSize: 14,
-    color: Colors.textPrimary,
+    color: Colors.textSecondary,
     lineHeight: 22,
+    fontWeight: '400',
     backgroundColor: Colors.bg,
     borderRadius: 12,
     padding: 14,
@@ -227,31 +246,41 @@ const styles = StyleSheet.create({
 
   tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   tag: {
-    backgroundColor: Colors.primaryBg,
+    backgroundColor: Colors.primaryLight,
     borderRadius: 999,
-    paddingHorizontal: 12,
+    paddingHorizontal: 11,
     paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(59,81,120,0.1)',
   },
-  tagText: { fontSize: 12, color: Colors.primary, fontWeight: '600' },
+  tagText: { fontSize: 11, color: Colors.primary, fontWeight: '500' },
 
-  cardBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  cardBottom: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingTop: 2, borderTopWidth: 1, borderTopColor: Colors.cardBorder,
+  },
   countBadge: {
-    backgroundColor: Colors.pointTeal,
+    backgroundColor: 'rgba(180,217,204,0.4)',
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(91,158,110,0.2)',
   },
-  countText: { fontSize: 12, color: Colors.textPrimary, fontWeight: '600' },
+  countText: { fontSize: 11, color: Colors.green, fontWeight: '500' },
   chatBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     backgroundColor: Colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
   },
-  chatBtnText: { fontSize: 14, color: Colors.white, fontWeight: '700' },
+  chatBtnText: { fontSize: 13, color: Colors.white, fontWeight: '500', letterSpacing: -0.1 },
 
   empty: { paddingTop: 60, alignItems: 'center', gap: 12 },
   emptyIcon: { fontSize: 48 },
-  emptyTitle: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
-  emptyDesc: { fontSize: 13, color: Colors.textSecondary },
+  emptyTitle: { fontSize: 16, fontWeight: '500', color: Colors.textPrimary },
+  emptyDesc: { fontSize: 13, color: Colors.textMuted, fontWeight: '400' },
 });

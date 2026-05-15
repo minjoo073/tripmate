@@ -4,11 +4,14 @@ import { mockPosts } from '../mock/data';
 
 const USE_MOCK = !process.env.EXPO_PUBLIC_API_URL;
 
-export async function getPosts(category?: 'mate' | 'tips' | 'review'): Promise<Post[]> {
+export async function getPosts(category?: 'mate' | 'tips' | 'review', city?: string): Promise<Post[]> {
   if (USE_MOCK) {
-    return category ? mockPosts.filter((p) => p.category === category) : mockPosts;
+    let result = mockPosts;
+    if (category) result = result.filter((p) => p.category === category);
+    if (city && city !== '전체') result = result.filter((p) => p.trip?.destination === city);
+    return result;
   }
-  const { data } = await api.get('/community/posts', { params: { category } });
+  const { data } = await api.get('/community/posts', { params: { category, city } });
   return data;
 }
 

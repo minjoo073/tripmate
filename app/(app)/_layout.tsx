@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../../context/AuthContext';
+import { PersonalityProvider } from '../../context/PersonalityContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Platform, View, StyleSheet } from 'react-native';
 
@@ -21,6 +22,8 @@ function AppStack() {
       <Stack.Screen name="mates" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="profile-setup" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="travel-personality" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="trip-plan" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-destination" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-date" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-style" options={{ animation: 'slide_from_right' }} />
@@ -44,8 +47,10 @@ export default function AppLayout() {
             style={styles.phoneInner}
           >
             <AuthProvider>
-              <StatusBar style="auto" />
-              <AppStack />
+              <PersonalityProvider>
+                <StatusBar style="auto" />
+                <AppStack />
+              </PersonalityProvider>
             </AuthProvider>
           </SafeAreaProvider>
         </View>
@@ -56,8 +61,10 @@ export default function AppLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <StatusBar style="auto" />
-        <AppStack />
+        <PersonalityProvider>
+          <StatusBar style="auto" />
+          <AppStack />
+        </PersonalityProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

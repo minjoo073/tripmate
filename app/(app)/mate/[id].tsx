@@ -54,7 +54,7 @@ export default function MateProfileScreen() {
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       {/* Nav */}
       <View style={[styles.navBar, { paddingTop: insets.top + 12 }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.navBtn}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)')} style={styles.navBtn}>
           <ArrowLeftIcon color={Colors.textPrimary} size={20} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setLiked((l) => !l)} style={styles.navBtn}>
@@ -66,28 +66,49 @@ export default function MateProfileScreen() {
 
         {/* Hero */}
         <View style={styles.hero}>
-          <View style={styles.heroLeft}>
-            <Avatar nickname={user.nickname} size={76} />
+          <View style={styles.heroTop}>
+            <View style={styles.heroLeft}>
+              <Avatar nickname={user.nickname} size={76} />
+            </View>
+            <View style={styles.heroRight}>
+              <View style={styles.nameRow}>
+                <Text style={styles.name}>{user.nickname}</Text>
+                {user.isVerified && (
+                  <View style={styles.verifiedBadge}>
+                    <Text style={styles.verifiedBadgeText}>✓ Verified</Text>
+                  </View>
+                )}
+              </View>
+              <Text style={styles.hereMeta}>{user.age}세{user.mbti ? ` · ${user.mbti}` : ''}</Text>
+              <View style={styles.locationRow}>
+                <MapPinIcon color={Colors.textMuted} size={11} />
+                <Text style={styles.locationText}>{user.location}</Text>
+              </View>
+            </View>
           </View>
-          <View style={styles.heroRight}>
-            <View style={styles.nameRow}>
-              <Text style={styles.name}>{user.nickname}</Text>
-              {user.isVerified && (
-                <View style={styles.verifiedBadge}>
-                  <Text style={styles.verifiedBadgeText}>✓ Verified</Text>
-                </View>
-              )}
+
+          {/* Trust badges — right below profile */}
+          <View style={styles.heroBadges}>
+            {user.isVerified && (
+              <View style={[styles.heroBadge, styles.heroBadgeVerified]}>
+                <Text style={[styles.heroBadgeText, styles.heroBadgeTextVerified]}>✓ 신원 인증</Text>
+              </View>
+            )}
+            <View style={[styles.heroBadge, styles.heroBadgeClean]}>
+              <Text style={[styles.heroBadgeText, styles.heroBadgeTextClean]}>클린 이력</Text>
             </View>
-            <Text style={styles.hereMeta}>{user.age}세{user.mbti ? ` · ${user.mbti}` : ''}</Text>
-            <View style={styles.locationRow}>
-              <MapPinIcon color={Colors.textMuted} size={11} />
-              <Text style={styles.locationText}>{user.location}</Text>
+            <View style={[styles.heroBadge, styles.heroBadgeActive]}>
+              <Text style={[styles.heroBadgeText, styles.heroBadgeTextActive]}>최근 24h 활동</Text>
             </View>
-            <Text style={styles.heroVibe}>{vibe}</Text>
+            {user.travelCount >= 10 && (
+              <View style={[styles.heroBadge, styles.heroBadgeVet]}>
+                <Text style={[styles.heroBadgeText, styles.heroBadgeTextVet]}>베테랑</Text>
+              </View>
+            )}
           </View>
         </View>
 
-        {/* Trust System */}
+        {/* Stats card */}
         <View style={styles.trustCard}>
           <View style={styles.trustHeader}>
             <Text style={styles.trustTitle}>여행자 정보</Text>
@@ -115,26 +136,6 @@ export default function MateProfileScreen() {
               <Text style={styles.trustValue}>{user.rating}</Text>
               <Text style={styles.trustLabel}>평점</Text>
             </View>
-          </View>
-          <View style={styles.trustBadges}>
-            {user.isVerified && (
-              <View style={styles.trustBadge}>
-                <Text style={styles.trustBadgeText}>신원 인증 완료</Text>
-              </View>
-            )}
-            <View style={styles.trustBadge}>
-              <Text style={styles.trustBadgeText}>클린 이력</Text>
-            </View>
-            <View style={styles.trustBadge}>
-              <Text style={styles.trustBadgeText}>최근 24시간 활동</Text>
-            </View>
-            {user.travelCount >= 10 && (
-              <View style={[styles.trustBadge, styles.trustBadgeGold]}>
-                <Text style={[styles.trustBadgeText, styles.trustBadgeTextGold]}>
-                  베테랑 여행자
-                </Text>
-              </View>
-            )}
           </View>
         </View>
 
@@ -231,7 +232,11 @@ export default function MateProfileScreen() {
             onPress={handleChat}
             loading={chatLoading}
           />
-          <TouchableOpacity style={styles.secondaryAction} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.secondaryAction}
+            activeOpacity={0.7}
+            onPress={() => router.push(`/mate/reviews?userId=${user.id}`)}
+          >
             <Text style={styles.secondaryActionText}>여행 후기 전체 보기</Text>
           </TouchableOpacity>
         </View>
@@ -254,15 +259,15 @@ const styles = StyleSheet.create({
   scroll: { paddingBottom: 48 },
 
   hero: {
-    flexDirection: 'row',
-    gap: 18,
     paddingHorizontal: 24,
-    paddingBottom: 24,
+    paddingBottom: 20,
     paddingTop: 4,
     backgroundColor: Colors.card,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
+    gap: 16,
   },
+  heroTop: { flexDirection: 'row', gap: 18 },
   heroLeft: {},
   heroRight: { flex: 1, gap: 5, justifyContent: 'center' },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
@@ -287,12 +292,28 @@ const styles = StyleSheet.create({
   hereMeta: { fontSize: 12, color: Colors.textMuted },
   locationRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   locationText: { fontSize: 12, color: Colors.textMuted },
-  heroVibe: {
-    fontSize: 12,
-    color: Colors.dustBlue,
-    fontStyle: 'italic',
-    marginTop: 2,
+  // Hero trust badges
+  heroBadges: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  heroBadge: {
+    paddingHorizontal: 10, paddingVertical: 5,
+    borderRadius: 6,
   },
+  heroBadgeText: { fontSize: 11, fontWeight: '600' },
+
+  heroBadgeVerified: { backgroundColor: 'rgba(110,125,98,0.13)' },
+  heroBadgeTextVerified: { color: Colors.olive },
+
+  heroBadgeClean: { backgroundColor: 'rgba(107,140,173,0.13)' },
+  heroBadgeTextClean: { color: Colors.dustBlue },
+
+  heroBadgeActive: { backgroundColor: Colors.accentLight },
+  heroBadgeTextActive: { color: Colors.accent },
+
+  heroBadgeVet: {
+    backgroundColor: 'rgba(196,165,106,0.14)',
+    borderWidth: 1, borderColor: 'rgba(196,165,106,0.3)',
+  },
+  heroBadgeTextVet: { color: '#A08040' },
 
   trustCard: {
     margin: 20,
@@ -345,33 +366,6 @@ const styles = StyleSheet.create({
     width: 1,
     height: 28,
     backgroundColor: Colors.cardBorder,
-  },
-  trustBadges: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    paddingTop: 4,
-    borderTopWidth: 1,
-    borderTopColor: Colors.cardBorder,
-  },
-  trustBadge: {
-    backgroundColor: Colors.bgDeep,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 6,
-  },
-  trustBadgeGold: {
-    backgroundColor: 'rgba(196,160,82,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(196,160,82,0.3)',
-  },
-  trustBadgeText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
-  trustBadgeTextGold: {
-    color: '#A08040',
   },
 
   tripCard: {

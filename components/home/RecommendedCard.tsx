@@ -42,7 +42,7 @@ export function RecommendedCard({ item }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    width: 118,
+    width: 140,
     backgroundColor: Colors.card,
     borderRadius: 18,
     padding: 14,

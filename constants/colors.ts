@@ -39,7 +39,7 @@ export const Colors = {
   inputBorder: '#EAE4DC',
   navBorder: '#EAE4DC',
   textPlaceholder: '#ADA49C',
-  cardDark: '#2A2118',
+  cardDark: '#1C3F4F',
   chatBg: '#F0EAE2',
   primaryBg: '#EBF0F8',
   pointYellow: '#E8C882',

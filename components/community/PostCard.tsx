@@ -17,6 +17,22 @@ const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string
   review: { label: '로컬 추천', color: Colors.olive,   bg: '#EBF0E6'           },
 };
 
+const STYLE_TAG_COLORS: Record<string, { bg: string; text: string }> = {
+  '카페':       { bg: 'rgba(192,135,70,0.13)',  text: '#A07040' },
+  '맛집':       { bg: 'rgba(192,80,80,0.11)',   text: '#B04848' },
+  '현지시장':   { bg: 'rgba(192,135,70,0.13)',  text: '#A07040' },
+  '사진':       { bg: 'rgba(107,140,173,0.14)', text: '#4A7A9B' },
+  '힐링':       { bg: 'rgba(100,140,100,0.13)', text: '#4A7A50' },
+  '관광':       { bg: 'rgba(80,140,160,0.12)',  text: '#3A7A90' },
+  '역사/문화':  { bg: 'rgba(80,140,160,0.12)',  text: '#3A7A90' },
+  '액티비티':   { bg: 'rgba(100,100,200,0.12)', text: '#4040A0' },
+  '쇼핑':       { bg: 'rgba(170,110,190,0.12)', text: '#7A40A0' },
+  '나이트라이프':{ bg: 'rgba(60,60,100,0.12)',  text: '#404080' },
+  '배낭':       { bg: 'rgba(100,130,90,0.13)',  text: '#507040' },
+  '피식':       { bg: 'rgba(200,170,70,0.13)',  text: '#907020' },
+  '로컬':       { bg: 'rgba(100,140,100,0.13)', text: '#4A7A50' },
+};
+
 const CITY_COORDS: Record<string, string> = {
   '오사카': '34°N · 135°E',
   '도쿄':   '35°N · 139°E',
@@ -74,11 +90,14 @@ export function PostCard({ item }: Props) {
       {/* Tags */}
       {item.travelStyles.length > 0 && (
         <View style={styles.tagRow}>
-          {item.travelStyles.slice(0, 3).map((s) => (
-            <View key={s} style={styles.tag}>
-              <Text style={styles.tagText}>{s}</Text>
-            </View>
-          ))}
+          {item.travelStyles.slice(0, 3).map((s) => {
+            const tc = STYLE_TAG_COLORS[s] ?? { bg: Colors.bgDeep, text: Colors.textSecondary };
+            return (
+              <View key={s} style={[styles.tag, { backgroundColor: tc.bg }]}>
+                <Text style={[styles.tagText, { color: tc.text, fontWeight: '500' }]}>{s}</Text>
+              </View>
+            );
+          })}
         </View>
       )}
 

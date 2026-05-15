@@ -322,6 +322,33 @@ export function MapIcon({ color = '#1E2430', size = 22 }: P) {
   );
 }
 
+export function MoonIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+        {...base(color)}
+      />
+    </Svg>
+  );
+}
+
+export function SunIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx="12" cy="12" r="4" {...base(color)} />
+      <Path d="M12 2V4" {...base(color)} />
+      <Path d="M12 20V22" {...base(color)} />
+      <Path d="M4.22 4.22L5.64 5.64" {...base(color)} />
+      <Path d="M18.36 18.36L19.78 19.78" {...base(color)} />
+      <Path d="M2 12H4" {...base(color)} />
+      <Path d="M20 12H22" {...base(color)} />
+      <Path d="M4.22 19.78L5.64 18.36" {...base(color)} />
+      <Path d="M18.36 5.64L19.78 4.22" {...base(color)} />
+    </Svg>
+  );
+}
+
 export function ShareIcon({ color = '#1E2430', size = 22 }: P) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">

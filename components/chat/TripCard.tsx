@@ -9,14 +9,15 @@ interface Props {
   onReject?: () => void;
   showActions?: boolean;
   accepted?: boolean;
+  isOwn?: boolean;
 }
 
-export function TripCard({ trip, onAccept, onReject, showActions, accepted }: Props) {
+export function TripCard({ trip, onAccept, onReject, showActions, accepted, isOwn }: Props) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, isOwn ? styles.cardOwn : styles.cardPartner]}>
       <View style={styles.headingRow}>
         <Text style={styles.headingIcon}>🗺</Text>
-        <Text style={styles.heading}>여행 일정 공유</Text>
+        <Text style={styles.heading}>{isOwn ? '내 일정 공유' : '여행 일정 공유'}</Text>
       </View>
       <Text style={styles.title}>{trip.destination} 여행</Text>
       <Text style={styles.date}>📅  {trip.startDate} – {trip.endDate}</Text>
@@ -47,11 +48,16 @@ export function TripCard({ trip, onAccept, onReject, showActions, accepted }: Pr
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.cardDark,
     borderRadius: 20,
     padding: 18,
     marginVertical: 8,
     gap: 8,
+  },
+  cardPartner: {
+    backgroundColor: Colors.cardDark,   // 딥 틸 — 상대방
+  },
+  cardOwn: {
+    backgroundColor: Colors.primary,    // 네이비 — 내 카드 (버블과 동일 계열)
   },
   headingRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   headingIcon: { fontSize: 14 },
