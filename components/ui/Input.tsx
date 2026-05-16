@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
 import { Colors } from '../../constants/colors';
+import { EyeIcon, EyeOffIcon } from './Icon';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -25,8 +26,8 @@ export function Input({ label, isPassword, containerStyle, ...props }: InputProp
           {...props}
         />
         {isPassword && (
-          <TouchableOpacity onPress={() => setShowPassword((p) => !p)}>
-            <Text style={styles.eye}>{showPassword ? '숨기기' : '보기'}</Text>
+          <TouchableOpacity onPress={() => setShowPassword((p) => !p)} style={styles.eyeBtn}>
+            {showPassword ? <EyeOffIcon color={Colors.textMuted} size={18} /> : <EyeIcon color={Colors.textMuted} size={18} />}
           </TouchableOpacity>
         )}
       </View>
@@ -54,12 +55,8 @@ const styles = StyleSheet.create({
   focused: { borderColor: Colors.primary },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 13,
     color: Colors.textPrimary,
   },
-  eye: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    marginLeft: 8,
-  },
+  eyeBtn: { marginLeft: 8, padding: 2 },
 });

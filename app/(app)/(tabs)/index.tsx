@@ -9,9 +9,12 @@ import { MatchResult } from '../../../types';
 import { RecommendedCard } from '../../../components/home/RecommendedCard';
 import { useAuth } from '../../../context/AuthContext';
 import { getRecommended } from '../../../services/matchService';
+import { mockPosts } from '../../../mock/data';
 import {
-  BellIcon, SearchIcon, MapPinIcon, ArrowRightIcon,
+  BellIcon, SearchIcon, MapPinIcon, ArrowRightIcon, CalendarIcon,
 } from '../../../components/ui/Icon';
+import { StyleTag } from '../../../components/ui/StyleTag';
+import { getStyleColor } from '../../../constants/styleColors';
 
 const DESTINATIONS = [
   { name: '오사카', sub: 'Osaka, Japan', count: 34, color: '#E8DDD0' },
@@ -20,6 +23,33 @@ const DESTINATIONS = [
   { name: '파리', sub: 'Paris, France', count: 17, color: '#E8DDE8' },
   { name: '뉴욕', sub: 'New York, USA', count: 13, color: '#E0DDD8' },
 ];
+
+const DEST_COLORS: Record<string, { bg: string; text: string }> = {
+  '오사카': { bg: '#EDE3D8', text: '#7A5C3E' },
+  '도쿄':   { bg: '#D8E2EE', text: '#3A5878' },
+  '방콕':   { bg: '#D8EAE0', text: '#3A6B55' },
+  '파리':   { bg: '#EAD8EA', text: '#6B3A6B' },
+  '다낭':   { bg: '#D8EAE8', text: '#2E6860' },
+  '베트남': { bg: '#D8EAE8', text: '#2E6860' },
+};
+const DEFAULT_DEST = { bg: '#E8E2DA', text: '#5C5248' };
+
+const OPEN_TRIPS = mockPosts.filter((p) => p.category === 'mate').slice(0, 3);
+
+function tripNights(start?: string, end?: string) {
+  if (!start || !end) return null;
+  const n = Math.round((new Date(end).getTime() - new Date(start).getTime()) / 86400000);
+  return n > 0 ? `${n}박 ${n + 1}일` : null;
+}
+
+function tripDateLabel(start?: string, end?: string) {
+  if (!start) return '';
+  const s = new Date(start);
+  const e = end ? new Date(end) : null;
+  const sm = `${s.getMonth() + 1}/${s.getDate()}`;
+  const em = e ? `${e.getMonth() + 1}/${e.getDate()}` : '';
+  return e ? `${sm} – ${em}` : sm;
+}
 
 const TRAVEL_STORIES = [
   {
@@ -53,6 +83,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const [matches, setMatches] = useState<MatchResult[]>([]);
   const [destIdx, setDestIdx] = useState(0);
+  const [selectedMood, setSelectedMood] = useState('카페 투어');
 
   useEffect(() => {
     getRecommended().then(setMatches);
@@ -144,11 +175,25 @@ export default function HomeScreen() {
             <Text style={styles.sectionTitle}>오늘 인기 여행 스타일</Text>
           </View>
           <View style={styles.moodRow}>
-            {['카페 투어', '로컬 골목', '야경 산책', '현지 맛집', '필름카메라'].map((mood, i) => (
-              <TouchableOpacity key={mood} style={[styles.moodTag, i === 0 && styles.moodTagActive]}>
-                <Text style={[styles.moodTagText, i === 0 && styles.moodTagTextActive]}>{mood}</Text>
-              </TouchableOpacity>
-            ))}
+            {['카페 투어', '로컬 골목', '야경 산책', '현지 맛집', '필름카메라'].map((mood) => {
+              const active = mood === selectedMood;
+              const c = getStyleColor(mood);
+              return (
+                <TouchableOpacity
+                  key={mood}
+                  activeOpacity={0.75}
+                  onPress={() => setSelectedMood(mood)}
+                  style={[
+                    styles.moodTag,
+                    active && { backgroundColor: c.bg, borderColor: 'transparent' },
+                  ]}
+                >
+                  <Text style={[styles.moodTagText, active && { color: c.text, fontWeight: '600' }]}>
+                    {mood}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
@@ -206,43 +251,60 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        {/* Companion list */}
+        {/* Open trips */}
         <View style={styles.section}>
           <View style={styles.sectionHead}>
             <Text style={styles.sectionLabel}>OPEN TRIPS</Text>
             <Text style={styles.sectionTitle}>동행 모집 중</Text>
           </View>
-          {matches.slice(0, 3).map((item) => (
-            <TouchableOpacity
-              key={item.user.id}
-              style={styles.companionRow}
-              onPress={() => router.push(`/mate/${item.user.id}`)}
-              activeOpacity={0.82}
-            >
-              <View style={styles.companionAvatar}>
-                <Text style={styles.companionAvatarText}>{item.user.nickname[0]}</Text>
-              </View>
-              <View style={styles.companionInfo}>
-                <Text style={styles.companionName}>{item.user.nickname}</Text>
-                <View style={styles.companionDestRow}>
-                  <MapPinIcon color={Colors.textMuted} size={11} />
-                  <Text style={styles.companionDest}>
-                    {item.trip.destination} · {item.trip.startDate.slice(5, 7)}월
-                  </Text>
+          <TouchableOpacity style={styles.moreLinkRow} onPress={() => router.push('/(tabs)/community')}>
+            <Text style={styles.moreLink}>전체 보기</Text>
+            <ArrowRightIcon color={Colors.textMuted} size={13} />
+          </TouchableOpacity>
+          {OPEN_TRIPS.map((post) => {
+            const dest = post.trip?.destination ?? '';
+            const accent = DEST_COLORS[dest] ?? DEFAULT_DEST;
+            const nights = tripNights(post.trip?.startDate, post.trip?.endDate);
+            const dateLabel = tripDateLabel(post.trip?.startDate, post.trip?.endDate);
+            return (
+              <TouchableOpacity
+                key={post.id}
+                style={styles.tripCard}
+                onPress={() => router.push('/(tabs)/community')}
+                activeOpacity={0.82}
+              >
+                {/* Destination header */}
+                <View style={[styles.tripCardHeader, { backgroundColor: accent.bg }]}>
+                  <Text style={[styles.tripDest, { color: accent.text }]}>{dest}</Text>
+                  <View style={styles.tripDateRow}>
+                    <CalendarIcon color={accent.text} size={11} />
+                    <Text style={[styles.tripDate, { color: accent.text }]}>{dateLabel}</Text>
+                    {nights && <Text style={[styles.tripNights, { color: accent.text }]}>{nights}</Text>}
+                  </View>
                 </View>
-                <View style={styles.companionTagsRow}>
-                  {item.user.travelStyles.slice(0, 2).map((s) => (
-                    <View key={s} style={styles.companionTag}>
-                      <Text style={styles.companionTagText}>{s}</Text>
+                {/* Body */}
+                <View style={styles.tripCardBody}>
+                  <View style={styles.tripStylesRow}>
+                    {post.travelStyles.slice(0, 3).map((s) => (
+                      <StyleTag key={s} label={s} />
+                    ))}
+                  </View>
+                  <View style={styles.tripFooter}>
+                    <View style={styles.tripAuthorRow}>
+                      <View style={styles.tripAvatar}>
+                        <Text style={styles.tripAvatarText}>{post.author.nickname[0]}</Text>
+                      </View>
+                      <Text style={styles.tripAuthorName}>{post.author.nickname}</Text>
+                      <Text style={styles.tripAuthorAge}>{post.author.age}세</Text>
                     </View>
-                  ))}
+                    <View style={styles.tripRecruitBadge}>
+                      <Text style={styles.tripRecruitText}>1명 모집 중</Text>
+                    </View>
+                  </View>
                 </View>
-              </View>
-              <Text style={styles.companionStyle}>
-                {item.user.travelStyles[0] ?? '자유여행'}
-              </Text>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {/* Travel stories feed */}
@@ -497,59 +559,110 @@ const styles = StyleSheet.create({
 
   hScrollContent: { gap: 12, paddingBottom: 4, paddingRight: 24 },
 
-  companionRow: {
+  tripCard: {
     backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    marginBottom: 10,
+    borderRadius: 18,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
+    overflow: 'hidden',
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 1,
   },
-  companionAvatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+  tripCardHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  tripDest: {
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: -0.2,
+  },
+  tripDateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  tripDate: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  tripNights: {
+    fontSize: 10,
+    fontWeight: '400',
+    opacity: 0.7,
+  },
+  tripCardBody: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  tripStylesRow: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  tripStyleTag: {
+    backgroundColor: Colors.bgDeep,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  tripStyleText: {
+    fontSize: 11,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+  },
+  tripFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: Colors.cardBorder,
+  },
+  tripAuthorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+  },
+  tripAvatar: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: Colors.bgDeep,
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
   },
-  companionAvatarText: {
-    fontSize: 17,
+  tripAvatarText: {
+    fontSize: 11,
     fontWeight: '600',
     color: Colors.textSecondary,
   },
-  companionInfo: { flex: 1, gap: 4 },
-  companionName: {
-    fontSize: 14,
-    fontWeight: '600',
+  tripAuthorName: {
+    fontSize: 13,
+    fontWeight: '500',
     color: Colors.textPrimary,
   },
-  companionDestRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  companionDest: {
+  tripAuthorAge: {
     fontSize: 11,
     color: Colors.textMuted,
   },
-  companionTagsRow: { flexDirection: 'row', gap: 6, marginTop: 2 },
-  companionTag: {
-    backgroundColor: Colors.bgDeep,
+  tripRecruitBadge: {
+    backgroundColor: Colors.primaryLight,
     borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
-  companionTagText: {
-    fontSize: 10,
-    color: Colors.textSecondary,
-    fontWeight: '500',
-  },
-  companionStyle: {
+  tripRecruitText: {
     fontSize: 11,
-    color: Colors.textMuted,
-    fontWeight: '500',
-    flexShrink: 0,
+    color: Colors.primary,
+    fontWeight: '600',
   },
 
   storyCard: {

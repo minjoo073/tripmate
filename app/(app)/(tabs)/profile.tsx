@@ -6,7 +6,7 @@ import { Avatar } from '../../../components/ui/Avatar';
 import { useAuth } from '../../../context/AuthContext';
 import { usePersonality } from '../../../context/PersonalityContext';
 import { router } from 'expo-router';
-import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon, WaveIcon, MoonIcon, UsersIcon, CalendarIcon, EditIcon } from '../../../components/ui/Icon';
+import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon, WaveIcon, MoonIcon, UsersIcon, CalendarIcon, EditIcon, HeartIcon } from '../../../components/ui/Icon';
 
 const TABS = ['여행 기록', '리뷰', '저장'];
 
@@ -108,15 +108,27 @@ export default function ProfileScreen() {
         </ScrollView>
       </View>
 
-      {/* Upcoming trip banner */}
-      <TouchableOpacity style={styles.upcomingBanner} activeOpacity={0.85} onPress={() => router.push('/trip-plan')}>
-        <View style={styles.upcomingLeft}>
-          <Text style={styles.upcomingLabel}>NEXT JOURNEY</Text>
-          <Text style={styles.upcomingDest}>도쿄, 일본</Text>
-          <Text style={styles.upcomingDate}>2025.07.05 – 07.10</Text>
-        </View>
-        <ArrowRightIcon color={Colors.primary} size={16} />
+      {/* 찜한 동행자 shortcut — compact inline link */}
+      <TouchableOpacity style={styles.likedRow} onPress={() => router.push('/liked-mates')} activeOpacity={0.75}>
+        <HeartIcon color={Colors.accent} size={11} filled />
+        <Text style={styles.likedLabel}>찜한 동행자 <Text style={styles.likedCount}>3명</Text></Text>
+        <ArrowRightIcon color={Colors.textMuted} size={11} />
       </TouchableOpacity>
+
+      {/* Upcoming trip banner + new plan button */}
+      <View style={styles.upcomingWrap}>
+        <TouchableOpacity style={styles.upcomingBanner} activeOpacity={0.85} onPress={() => router.push('/trip-detail')}>
+          <View style={styles.upcomingLeft}>
+            <Text style={styles.upcomingLabel}>NEXT JOURNEY</Text>
+            <Text style={styles.upcomingDest}>도쿄, 일본</Text>
+            <Text style={styles.upcomingDate}>2025.07.05 – 07.10</Text>
+          </View>
+          <ArrowRightIcon color={Colors.primary} size={16} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.newTripBtn} onPress={() => router.push('/trip-plan')} activeOpacity={0.8}>
+          <Text style={styles.newTripBtnText}>+ 새 여행 계획</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Tabs — pill segmented control */}
       <View style={styles.tabsWrap}>
@@ -190,13 +202,24 @@ export default function ProfileScreen() {
         )}
 
         {activeTab === '저장' && (
-          <View style={styles.empty}>
-            <View style={styles.emptyIconBox}>
-              <BookmarkIcon color={Colors.textMuted} size={26} />
-            </View>
-            <Text style={styles.emptyTitle}>저장한 여행자가 없어요</Text>
-            <Text style={styles.emptyDesc}>마음에 드는 여행자를 저장해보세요</Text>
-          </View>
+          <>
+            <Text style={styles.sectionLabel}>버킷리스트 · 5</Text>
+            {[
+              { dest: '산토리니, 그리스', flag: '🇬🇷', note: '에게해 일몰을 꼭 보고 싶어요' },
+              { dest: '교토, 일본', flag: '🇯🇵', note: '벚꽃 시즌에 기모노 입고 걷기' },
+              { dest: '리스본, 포르투갈', flag: '🇵🇹', note: '파두 음악이 흐르는 골목' },
+              { dest: '나폴리, 이탈리아', flag: '🇮🇹', note: '진짜 나폴리 피자 먹기' },
+              { dest: '하바나, 쿠바', flag: '🇨🇺', note: '올드카와 살사 댄스' },
+            ].map((item) => (
+              <View key={item.dest} style={styles.wishCard}>
+                <Text style={styles.wishFlag}>{item.flag}</Text>
+                <View style={styles.wishInfo}>
+                  <Text style={styles.wishDest}>{item.dest}</Text>
+                  <Text style={styles.wishNote}>{item.note}</Text>
+                </View>
+              </View>
+            ))}
+          </>
         )}
       </ScrollView>
     </View>
@@ -264,9 +287,26 @@ const styles = StyleSheet.create({
   },
   moodTagText: { fontSize: 12, fontWeight: '500' },
 
-  upcomingBanner: {
+  likedRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    alignSelf: 'center',
+    marginTop: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    backgroundColor: Colors.accentLight,
+    borderRadius: 999,
+  },
+  likedLabel: { fontSize: 11, fontWeight: '500', color: Colors.textSecondary },
+  likedCount: { fontSize: 11, fontWeight: '700', color: Colors.accent },
+
+  upcomingWrap: {
     marginHorizontal: 20,
-    marginTop: 16,
+    marginTop: 10,
+    gap: 8,
+  },
+  upcomingBanner: {
     backgroundColor: Colors.primaryLight,
     borderRadius: 14,
     padding: 16,
@@ -275,6 +315,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(59,81,120,0.12)',
   },
+  newTripBtn: {
+    alignSelf: 'flex-end',
+    paddingHorizontal: 13,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: Colors.card,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+  },
+  newTripBtnText: { fontSize: 11, fontWeight: '500', color: Colors.textSecondary },
   upcomingLeft: { flex: 1, gap: 3 },
   upcomingLabel: {
     fontSize: 9,
@@ -413,6 +463,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.textSecondary,
   },
+
+  wishCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    marginBottom: 10,
+  },
+  wishFlag: { fontSize: 28 },
+  wishInfo: { flex: 1, gap: 3 },
+  wishDest: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
+  wishNote: { fontSize: 12, color: Colors.textSecondary, lineHeight: 17 },
+  wishDate: { fontSize: 10, color: Colors.textMuted, fontWeight: '500' },
 
   empty: { paddingTop: 56, alignItems: 'center', gap: 10 },
   emptyIconBox: { width: 56, height: 56, borderRadius: 16, backgroundColor: Colors.bgDeep, alignItems: 'center', justifyContent: 'center' },

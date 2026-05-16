@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { HeartIcon, ArrowLeftIcon, MapPinIcon, CalendarIcon } from '../../../components/ui/Icon';
+import { StyleTag } from '../../../components/ui/StyleTag';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -176,9 +177,7 @@ export default function MateProfileScreen() {
           <Text style={styles.sectionLabel}>여행 취향</Text>
           <View style={styles.tagRow}>
             {user.travelStyles.map((style) => (
-              <View key={style} style={styles.styleTag}>
-                <Text style={styles.styleTagText}>{style}</Text>
-              </View>
+              <StyleTag key={style} label={style} size="lg" />
             ))}
           </View>
         </View>
@@ -186,21 +185,17 @@ export default function MateProfileScreen() {
         {/* Travel personality */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>여행 성향</Text>
-          <View style={styles.personalityGrid}>
-            <View style={styles.personalityItem}>
-              <Text style={styles.personalityValue}>느긋한</Text>
-              <Text style={styles.personalityKey}>여행 속도</Text>
-            </View>
-            <View style={styles.personalityDivider} />
-            <View style={styles.personalityItem}>
-              <Text style={styles.personalityValue}>저녁형</Text>
-              <Text style={styles.personalityKey}>활동 시간</Text>
-            </View>
-            <View style={styles.personalityDivider} />
-            <View style={styles.personalityItem}>
-              <Text style={styles.personalityValue}>함께</Text>
-              <Text style={styles.personalityKey}>여행 스타일</Text>
-            </View>
+          <View style={styles.personalityRow}>
+            {[
+              { key: '여행 속도', value: '느긋한' },
+              { key: '활동 시간', value: '저녁형' },
+              { key: '스타일',   value: '함께' },
+            ].map(({ key, value }) => (
+              <View key={key} style={styles.personalityChip}>
+                <Text style={styles.personalityChipKey}>{key}</Text>
+                <Text style={styles.personalityChipValue}>{value}</Text>
+              </View>
+            ))}
           </View>
         </View>
 
@@ -330,8 +325,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   trustTitle: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
     color: Colors.textMuted,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
@@ -352,15 +347,16 @@ const styles = StyleSheet.create({
   },
   trustItem: { flex: 1, alignItems: 'center', gap: 4 },
   trustValue: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: '500',
     color: Colors.textPrimary,
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
   },
   trustLabel: {
-    fontSize: 10,
+    fontSize: 11,
     color: Colors.textMuted,
     textAlign: 'center',
+    fontWeight: '400',
   },
   trustDivider: {
     width: 1,
@@ -468,18 +464,28 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  personalityGrid: {
-    flexDirection: 'row',
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    padding: 16,
+  personalityRow: { flexDirection: 'row', gap: 8 },
+  personalityChip: {
+    flex: 1,
+    backgroundColor: Colors.bgDeep,
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    gap: 5,
   },
-  personalityItem: { flex: 1, alignItems: 'center', gap: 4 },
-  personalityValue: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
-  personalityKey: { fontSize: 10, color: Colors.textMuted, fontWeight: '400' },
-  personalityDivider: { width: 1, height: 28, backgroundColor: Colors.cardBorder },
+  personalityChipKey: {
+    fontSize: 10,
+    color: Colors.textMuted,
+    fontWeight: '500',
+    letterSpacing: 0.3,
+  },
+  personalityChipValue: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: Colors.textPrimary,
+    letterSpacing: -0.2,
+  },
 
   actions: { paddingHorizontal: 20, marginTop: 28, gap: 10 },
   secondaryAction: { alignItems: 'center', paddingVertical: 4 },

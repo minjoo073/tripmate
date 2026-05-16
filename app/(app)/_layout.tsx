@@ -17,13 +17,16 @@ function AppStack() {
       <Stack.Screen name="match/confirmed" options={{ animation: 'fade' }} />
       <Stack.Screen name="mate/[id]" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="chat/[id]" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="post/new" options={{ animation: 'slide_from_bottom' }} />
       <Stack.Screen name="post/[id]" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="mates" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="liked-mates" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="settings" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="profile-setup" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="travel-personality" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="trip-plan" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="trip-detail" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-destination" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-date" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-style" options={{ animation: 'slide_from_right' }} />
