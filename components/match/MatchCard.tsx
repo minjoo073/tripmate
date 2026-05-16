@@ -5,6 +5,7 @@ import { MatchResult } from '../../types';
 import { Avatar } from '../ui/Avatar';
 import { Colors } from '../../constants/colors';
 import { MapPinIcon } from '../ui/Icon';
+import { StyleTag } from '../ui/StyleTag';
 
 interface Props {
   item: MatchResult;
@@ -53,9 +54,7 @@ export function MatchCard({ item, rank }: Props) {
       {/* Travel style tags */}
       <View style={styles.tagRow}>
         {item.user.travelStyles.slice(0, 3).map((s) => (
-          <View key={s} style={styles.styleTag}>
-            <Text style={styles.styleTagText}>{s}</Text>
-          </View>
+          <StyleTag key={s} label={s} />
         ))}
       </View>
 
@@ -137,7 +136,8 @@ const styles = StyleSheet.create({
   // Trust badges
   trustRow: {
     flexDirection: 'row', gap: 6,
-    paddingTop: 2,
+    paddingTop: 12,
+    marginTop: 2,
     borderTopWidth: 1, borderTopColor: Colors.cardBorder,
   },
   badge: {

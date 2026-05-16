@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Line } from 'react-native-svg';
 import { Colors } from '../../../constants/colors';
 import { Avatar } from '../../../components/ui/Avatar';
-import { mockUsers, mockTrips } from '../../../mock/data';
+import { mockUsers, mockTrips, mockChatRooms } from '../../../mock/data';
 
 const RADIUS = 54;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -93,6 +93,8 @@ export default function ConfirmedScreen() {
 
   const partner = mockUsers.find((u) => u.id === partnerId) ?? mockUsers[1];
   const trip = mockTrips.find((t) => t.id === tripId) ?? mockTrips[0];
+  const chatRoom = mockChatRooms.find((r) => r.partner.id === partner.id);
+  const chatId = chatRoom?.id ?? 'c2';
   const matchRate = 97;
   const vibe = TRAVEL_VIBES[matchRate % TRAVEL_VIBES.length];
 
@@ -202,7 +204,7 @@ export default function ConfirmedScreen() {
 
       {/* Actions */}
       <Animated.View style={[styles.actions, { transform: [{ translateY: slideAnim }] }]}>
-        <TouchableOpacity style={styles.primaryBtn} onPress={() => router.push('/chat/c1')} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.primaryBtn} onPress={() => router.push(`/chat/${chatId}`)} activeOpacity={0.85}>
           <Text style={styles.primaryBtnText}>여행 이야기 시작하기</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.replace('/(tabs)/')} activeOpacity={0.7}>

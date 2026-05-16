@@ -288,6 +288,39 @@ export function UsersIcon({ color = '#1E2430', size = 22 }: P) {
   );
 }
 
+export function PlaneIcon({ color = '#1E2430', size = 22 }: P) {
+  const b = { stroke: color, strokeWidth: 1.2, strokeLinecap: SLC, strokeLinejoin: SLJ, fill: 'none' } as const;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M21 8.5C21 8.5 18 6 12 6C8 6 3.5 8 3.5 12C3.5 16 8 18 12 18C18 18 21 15.5 21 15.5" {...b} />
+      <Path d="M3 12H21" {...b} />
+      <Path d="M12 6V18" {...b} />
+      <Path d="M7.5 8.5L3 12L7.5 15.5" {...b} />
+      <Path d="M16.5 8.5L21 12L16.5 15.5" {...b} />
+    </Svg>
+  );
+}
+
+export function PlaneThinIcon({ color = '#1E2430', size = 22 }: P) {
+  const b = { stroke: color, strokeWidth: 1.2, strokeLinecap: SLC, strokeLinejoin: SLJ, fill: 'none' } as const;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M22 2L11 13" {...b} />
+      <Path d="M22 2L15 22L11 13L2 9L22 2Z" {...b} />
+    </Svg>
+  );
+}
+
+export function CompassIcon({ color = '#1E2430', size = 22 }: P) {
+  const b = { stroke: color, strokeWidth: 1.2, strokeLinecap: SLC, strokeLinejoin: SLJ, fill: 'none' } as const;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx="12" cy="12" r="10" {...b} />
+      <Path d="M16.24 7.76L14.12 14.12L7.76 16.24L9.88 9.88L16.24 7.76Z" {...b} />
+    </Svg>
+  );
+}
+
 export function PlaneTakeoffIcon({ color = '#1E2430', size = 22 }: P) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -349,6 +382,28 @@ export function SunIcon({ color = '#1E2430', size = 22 }: P) {
   );
 }
 
+export function EyeIcon({ color = '#1E2430', size = 20 }: P) {
+  const b = { stroke: color, strokeWidth: 1.4, strokeLinecap: SLC, strokeLinejoin: SLJ, fill: 'none' } as const;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M1 12C1 12 5 5 12 5C19 5 23 12 23 12C23 12 19 19 12 19C5 19 1 12 1 12Z" {...b} />
+      <Circle cx="12" cy="12" r="3" {...b} />
+    </Svg>
+  );
+}
+
+export function EyeOffIcon({ color = '#1E2430', size = 20 }: P) {
+  const b = { stroke: color, strokeWidth: 1.4, strokeLinecap: SLC, strokeLinejoin: SLJ, fill: 'none' } as const;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A18.45 18.45 0 0 1 5.06 6.06" {...b} />
+      <Path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A18.5 18.5 0 0 1 19.14 17.19" {...b} />
+      <Path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" {...b} />
+      <Path d="M1 1L23 23" {...b} />
+    </Svg>
+  );
+}
+
 export function ShareIcon({ color = '#1E2430', size = 22 }: P) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24">
@@ -357,6 +412,106 @@ export function ShareIcon({ color = '#1E2430', size = 22 }: P) {
       <Circle cx="18" cy="19" r="3" {...base(color)} />
       <Path d="M8.59 13.51L15.42 17.49" {...base(color)} />
       <Path d="M15.41 6.51L8.59 10.49" {...base(color)} />
+    </Svg>
+  );
+}
+
+// ── Travel style icons ──────────────────────────────────────────────────────
+
+export function SmileIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Circle cx="12" cy="12" r="10" {...base(color)} />
+      <Path d="M8 14s1.5 2 4 2 4-2 4-2" {...base(color)} />
+      <Circle cx="9" cy="10" r="1" fill={color} stroke="none" />
+      <Circle cx="15" cy="10" r="1" fill={color} stroke="none" />
+    </Svg>
+  );
+}
+
+export function ZapIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function CameraIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" {...base(color)} />
+      <Circle cx="12" cy="13" r="4" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function CoffeeIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M17 8h1a4 4 0 0 1 0 8h-1" {...base(color)} />
+      <Path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z" {...base(color)} />
+      <Path d="M6 2v2M10 2v2M14 2v2" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function UtensilsIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M8 3v7a2 2 0 0 0 4 0V3" {...base(color)} />
+      <Path d="M10 3v18" {...base(color)} />
+      <Path d="M15 3c2 0 5 1.5 5 5.5S17 14 15 14v8" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function BackpackIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M5 8h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z" {...base(color)} />
+      <Path d="M8 8V6a4 4 0 0 1 8 0v2" {...base(color)} />
+      <Rect x="9" y="13" width="6" height="4" rx="1" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function ShoppingBagIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" {...base(color)} />
+      <Path d="M3 6h18" {...base(color)} />
+      <Path d="M16 10a4 4 0 0 1-8 0" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function LandmarkIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M12 2L2 12H22L12 2Z" {...base(color)} />
+      <Path d="M3 22V12M21 22V12" {...base(color)} />
+      <Path d="M6 12v10M10 12v10M14 12v10M18 12v10" {...base(color)} />
+      <Path d="M2 22H22" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function StoreIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M3 3h18v4H3z" {...base(color)} />
+      <Path d="M3 7v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7" {...base(color)} />
+      <Path d="M9 11h6v10H9z" {...base(color)} />
+    </Svg>
+  );
+}
+
+export function LeafIcon({ color = '#1E2430', size = 22 }: P) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" {...base(color)} />
+      <Path d="M2 21c0-3 1.85-5.36 5.08-6c3.23-.65 4.62-2.36 5.92-4.65" {...base(color)} />
     </Svg>
   );
 }

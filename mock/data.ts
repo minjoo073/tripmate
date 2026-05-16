@@ -8,7 +8,7 @@ export const mockUsers: User[] = [
     gender: 'female',
     location: '서울',
     mbti: 'ENFP',
-    bio: '오사카 현지 맛집을 직접 찾아다니는 걸 좋아해요. 구글 맵핑한 리스트 300개 보유중 😎',
+    bio: '오사카 현지 맛집을 직접 찾아다니는 걸 좋아해요.\n\n구글 맵핑한 리스트 300개 보유중 😎',
     travelStyles: ['카페', '사진', '힐링'],
     travelCount: 15,
     rating: 4.9,
@@ -268,6 +268,7 @@ export const mockPosts: Post[] = [
     content: '방콕 왓포, 카오산로드, 짜뚜짝 시장 등 알차게 다닐 예정! 맛집, 사원, 쇼핑 모두 좋아하는 분 환영해요.',
     category: 'mate',
     travelStyles: ['맛집', '관광', '쇼핑'],
+    trip: { id: 'trip-p2', destination: '방콕', country: '태국', startDate: '2025-08-10', endDate: '2025-08-15', travelStyles: ['맛집', '관광', '쇼핑'] },
     likes: 28,
     comments: 7,
     createdAt: '2025-05-19T15:00:00',
@@ -290,6 +291,7 @@ export const mockPosts: Post[] = [
     content: '다낭 미케 비치, 바나힐, 호이안 3박 4일 계획 중이에요. 편하게 다닐 수 있는 분 찾아요!',
     category: 'mate',
     travelStyles: ['힐링', '액티비티'],
+    trip: { id: 'trip-p4', destination: '다낭', country: '베트남', startDate: '2025-06-27', endDate: '2025-06-30', travelStyles: ['힐링', '액티비티'] },
     likes: 19,
     comments: 8,
     createdAt: '2025-05-17T12:00:00',
@@ -302,6 +304,14 @@ export const mockPosts: Post[] = [
   { id: 'p10', author: mockUsers[2], title: '방콕 왓포 새벽 5시, 혼자 걷는 사원의 고요함 🛕', content: '관광객 없는 시간에 방문한 왓포는 완전히 다른 공간이었어요. 이른 새벽의 빛과 냄새, 그리고 혼자만의 조용한 시간을 기록합니다.', category: 'tips', travelStyles: ['역사/문화', '사진', '힐링'], trip: { id: 'trip-p10', destination: '방콕', country: '태국', startDate: '2025-03-10', endDate: '2025-03-15', travelStyles: ['역사/문화'] }, likes: 71, comments: 19, createdAt: '2025-05-10T07:00:00' },
   { id: 'p11', author: mockUsers[4], title: '파리 9월 꽃시장·마르셰 투어 동행 🌹', content: '관광 명소보다는 파리 로컬 마켓, 꽃시장, 골목 카페를 위주로 다니고 싶어요. 9월 10일~17일, 함께 걸을 분 찾아요.', category: 'mate', travelStyles: ['카페', '관광', '사진'], trip: { id: 'trip-p11', destination: '파리', country: '프랑스', startDate: '2025-09-10', endDate: '2025-09-17', travelStyles: ['카페', '관광'] }, likes: 22, comments: 9, createdAt: '2025-05-11T15:00:00' },
   { id: 'p12', author: mockUsers[1], title: '파리에서 필름카메라로 담은 7일 🎞️', content: '루브르보다 생루이섬, 에펠탑보다 비르아켐 다리. 관광지 말고 파리다운 파리를 35mm 필름에 담아왔어요.', category: 'tips', travelStyles: ['사진', '힐링', '관광'], trip: { id: 'trip-p12', destination: '파리', country: '프랑스', startDate: '2025-04-05', endDate: '2025-04-12', travelStyles: ['사진'] }, likes: 94, comments: 28, createdAt: '2025-05-09T12:00:00' },
+
+  // 로컬 추천 (review)
+  { id: 'r1', author: mockUsers[0], title: '도쿄 1박에 3만원대 게스트하우스 찾았어요 🏠', content: '신주쿠역 도보 8분. 청결하고 직원도 친절해요. 조식 포함에 로커까지 — 혼자 여행자한테는 최고의 가성비입니다. 예약은 Booking.com에서 3개월 전에 해야 빈방 있어요.', category: 'review', travelStyles: ['배낭', '힐링'], trip: { id: 'trip-r1', destination: '도쿄', country: '일본', startDate: '2025-04-10', endDate: '2025-04-14', travelStyles: ['배낭'] }, likes: 112, comments: 34, createdAt: '2025-05-15T09:00:00' },
+  { id: 'r2', author: mockUsers[4], title: '오사카 현지인만 아는 타코야키 골목 🐙', content: '도톤보리 말고 난바 뒷골목 "타코야키 요코초" 가보셨어요? 관광객 없고 1개 100엔짜리 포장마차들이 줄지어 있어요. 저녁 6시 이후 문 열어요.', category: 'review', travelStyles: ['맛집', '로컬', '현지시장'], trip: { id: 'trip-r2', destination: '오사카', country: '일본', startDate: '2025-05-01', endDate: '2025-05-05', travelStyles: ['맛집'] }, likes: 87, comments: 19, createdAt: '2025-05-14T18:00:00' },
+  { id: 'r3', author: mockUsers[2], title: '방콕 교통 완전 정복 — BTS vs 툭툭 vs 그랩 비교 🛺', content: 'BTS(전철): 관광지 이동 가성비 최고. 툭툭: 짧은 거리 흥정 필수, 바가지 주의. 그랩: 야간 이동 시 제일 안전하고 예측 가능. 숙소 픽업은 그랩 추천합니다.', category: 'review', travelStyles: ['관광', '배낭'], trip: { id: 'trip-r3', destination: '방콕', country: '태국', startDate: '2025-03-15', endDate: '2025-03-20', travelStyles: ['관광'] }, likes: 203, comments: 45, createdAt: '2025-05-12T10:00:00' },
+  { id: 'r4', author: mockUsers[1], title: '파리 슈퍼마켓 장보기 가이드 🧀', content: 'Monoprix, Carrefour City, Franprix 세 곳 중에 가격 대비 가장 좋은 건 Monoprix. 와인 €4~6면 충분히 맛있어요. 숙소에서 샤퀴테리 플레이트 만들어 먹는 게 파리 최고의 저녁입니다.', category: 'review', travelStyles: ['맛집', '힐링', '로컬'], trip: { id: 'trip-r4', destination: '파리', country: '프랑스', startDate: '2025-04-05', endDate: '2025-04-12', travelStyles: ['맛집'] }, likes: 76, comments: 22, createdAt: '2025-05-11T14:00:00' },
+  { id: 'r5', author: mockUsers[3], title: '도쿄 편의점 이것만은 꼭 먹어봐 🍙', content: '세븐일레븐: 연어 계란 샌드위치 / 로손: 카라아게 쿤 / 패밀리마트: 크림 찹쌀빵. 아침마다 편의점 투어하는 게 여행 하이라이트였어요. 각 지점마다 살짝씩 다른 한정 상품도 체크해보세요.', category: 'review', travelStyles: ['맛집', '카페'], trip: { id: 'trip-r5', destination: '도쿄', country: '일본', startDate: '2025-04-10', endDate: '2025-04-14', travelStyles: ['맛집'] }, likes: 154, comments: 38, createdAt: '2025-05-10T08:00:00' },
+  { id: 'r6', author: mockUsers[0], title: '방콕 마사지샵 — 바가지 없는 진짜 로컬 찾는 법 💆', content: '관광지 근처 네온사인 샵 말고 골목 안쪽을 찾아야 해요. 구글맵에서 별점 4.5 이상 + 리뷰 100개 이상인 곳 위주로 예약하면 실패 없어요. 타이 마사지 2시간 200밧(약 8천원)이 적정가입니다.', category: 'review', travelStyles: ['힐링', '로컬'], trip: { id: 'trip-r6', destination: '방콕', country: '태국', startDate: '2025-03-15', endDate: '2025-03-20', travelStyles: ['힐링'] }, likes: 91, comments: 27, createdAt: '2025-05-08T16:00:00' },
 ];
 
 export const TRAVEL_STYLES = [

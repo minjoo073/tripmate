@@ -13,25 +13,40 @@ import {
 type IconType = 'home' | 'explore' | 'community' | 'chat' | 'profile';
 
 function TabIcon({ focused, icon, label }: { focused: boolean; icon: IconType; label: string }) {
-  const color = focused ? Colors.primary : Colors.textMuted;
+  const activeColor = Colors.primary;
+  const inactiveColor = Colors.textMuted;
+  const color = focused ? activeColor : inactiveColor;
+
   const iconEl = {
-    home: <HomeIcon color={color} size={22} filled={focused} />,
-    explore: <ExploreIcon color={color} size={22} />,
-    community: <CommunityIcon color={color} size={22} filled={focused} />,
-    chat: <ChatNavIcon color={color} size={22} />,
-    profile: <ProfileNavIcon color={color} size={22} />,
+    home: <HomeIcon color={color} size={20} filled={focused} />,
+    explore: <ExploreIcon color={color} size={20} />,
+    community: <CommunityIcon color={color} size={20} filled={focused} />,
+    chat: <ChatNavIcon color={color} size={20} />,
+    profile: <ProfileNavIcon color={color} size={20} />,
   }[icon];
 
   return (
     <View style={tabStyles.wrap}>
-      {iconEl}
+      <View style={[tabStyles.pill, focused && tabStyles.pillActive]}>
+        {iconEl}
+      </View>
       <Text style={[tabStyles.label, focused && tabStyles.labelActive]}>{label}</Text>
     </View>
   );
 }
 
 const tabStyles = StyleSheet.create({
-  wrap: { alignItems: 'center', paddingTop: 10, paddingBottom: 2, width: 68, gap: 5 },
+  wrap: { alignItems: 'center', paddingTop: 8, paddingBottom: 2, width: 64, gap: 4 },
+  pill: {
+    width: 44,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pillActive: {
+    backgroundColor: Colors.primaryLight,
+  },
   label: { fontSize: 10, color: Colors.textMuted, fontWeight: '400', letterSpacing: 0.2 },
   labelActive: { color: Colors.primary, fontWeight: '600' },
 });

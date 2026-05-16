@@ -7,14 +7,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
 import { FindMateFilter } from '../../../types';
 import { TRAVEL_STYLES } from '../../../mock/data';
-import { ArrowLeftIcon } from '../../../components/ui/Icon';
+import {
+  ArrowLeftIcon, MapPinIcon, MapIcon, MoonIcon, CalendarIcon, VerifiedIcon, CompassIcon,
+  SmileIcon, ZapIcon, CameraIcon, CoffeeIcon, UtensilsIcon,
+  BackpackIcon, ShoppingBagIcon, LandmarkIcon, StoreIcon, LeafIcon,
+} from '../../../components/ui/Icon';
 
 const POPULAR_CITIES = ['오사카', '도쿄', '방콕', '파리', '발리', '뉴욕'];
 
-const STYLE_EMOJI: Record<string, string> = {
-  '피식': '😄', '액티비티': '🏄', '사진': '📸', '관광': '🗺️',
-  '힐링': '🧘', '카페': '☕', '배낭': '🎒', '쇼핑': '🛍️',
-  '맛집': '🍜', '역사/문화': '🏛️', '나이트라이프': '🌙', '현지시장': '🏪',
+const STYLE_ICON: Record<string, (color: string) => React.ReactNode> = {
+  '피식':      (c) => <SmileIcon color={c} size={22} />,
+  '액티비티':  (c) => <ZapIcon color={c} size={22} />,
+  '사진':      (c) => <CameraIcon color={c} size={22} />,
+  '관광':      (c) => <MapIcon color={c} size={22} />,
+  '힐링':      (c) => <LeafIcon color={c} size={22} />,
+  '카페':      (c) => <CoffeeIcon color={c} size={22} />,
+  '배낭':      (c) => <BackpackIcon color={c} size={22} />,
+  '쇼핑':      (c) => <ShoppingBagIcon color={c} size={22} />,
+  '맛집':      (c) => <UtensilsIcon color={c} size={22} />,
+  '역사/문화': (c) => <LandmarkIcon color={c} size={22} />,
+  '나이트라이프': (c) => <MoonIcon color={c} size={22} />,
+  '현지시장':  (c) => <StoreIcon color={c} size={22} />,
 };
 
 const GENDER_OPTIONS = ['무관', '여성', '남성'] as const;
@@ -142,7 +155,7 @@ export default function ExploreScreen() {
           <Text style={styles.cardLabel}>DESTINATION</Text>
           <Text style={styles.cardTitle}>어디로 떠나요?</Text>
           <View style={styles.destInputWrap}>
-            <Text style={styles.destInputIcon}>📍</Text>
+            <MapPinIcon color={Colors.textMuted} size={16} />
             <TextInput
               style={styles.destInput}
               value={destination}
@@ -217,7 +230,9 @@ export default function ExploreScreen() {
                   onPress={() => toggleStyle(style)}
                   activeOpacity={0.75}
                 >
-                  <Text style={styles.styleEmoji}>{STYLE_EMOJI[style] ?? '✈️'}</Text>
+                  <View style={styles.styleIconWrap}>
+                    {(STYLE_ICON[style] ?? ((c: string) => <CompassIcon color={c} size={22} />))(active ? Colors.primary : Colors.textMuted)}
+                  </View>
                   <Text style={[styles.styleText, active && styles.styleTextActive]}>{style}</Text>
                 </TouchableOpacity>
               );
@@ -265,20 +280,23 @@ export default function ExploreScreen() {
             <Text style={styles.toggleGroupLabel}>기타 옵션</Text>
             <View style={styles.toggleChips}>
               {([
-                { label: '일정 겹침', icon: '📅', value: scheduleOverlap, setter: setScheduleOverlap },
-                { label: '인증 완료', icon: '✅', value: verifiedOnly, setter: setVerifiedOnly },
-                { label: '비흡연자', icon: '🚭', value: noSmoking, setter: setNoSmoking },
-              ] as const).map(({ label, icon, value, setter }) => (
-                <TouchableOpacity
-                  key={label}
-                  style={[styles.toggleChip, value && styles.toggleChipActive]}
-                  onPress={() => toggleChip(setter as (v: boolean) => void, value)}
-                  activeOpacity={0.75}
-                >
-                  <Text style={styles.toggleChipIcon}>{icon}</Text>
-                  <Text style={[styles.toggleChipText, value && styles.toggleChipTextActive]}>{label}</Text>
-                </TouchableOpacity>
-              ))}
+                { label: '일정 겹침', renderIcon: (c: string) => <CalendarIcon color={c} size={14} />, value: scheduleOverlap, setter: setScheduleOverlap },
+                { label: '인증 완료', renderIcon: (c: string) => <VerifiedIcon color={c} size={14} />, value: verifiedOnly, setter: setVerifiedOnly },
+                { label: '비흡연자',  renderIcon: (c: string) => <LeafIcon color={c} size={14} />,     value: noSmoking, setter: setNoSmoking },
+              ] as const).map(({ label, renderIcon, value, setter }) => {
+                const iconColor = value ? Colors.primary : Colors.textSecondary;
+                return (
+                  <TouchableOpacity
+                    key={label}
+                    style={[styles.toggleChip, value && styles.toggleChipActive]}
+                    onPress={() => toggleChip(setter as (v: boolean) => void, value)}
+                    activeOpacity={0.75}
+                  >
+                    {renderIcon(iconColor)}
+                    <Text style={[styles.toggleChipText, value && styles.toggleChipTextActive]}>{label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         </View>
@@ -357,7 +375,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: Colors.cardBorder,
     marginBottom: 16,
   },
-  destInputIcon: { fontSize: 16 },
   destInput: { flex: 1, fontSize: 16, color: Colors.textPrimary, fontWeight: '400' },
   cityRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   cityChip: {
@@ -394,7 +411,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   styleCellActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
-  styleEmoji: { fontSize: 22 },
+  styleIconWrap: { width: 22, height: 22, alignItems: 'center', justifyContent: 'center' },
   styleText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
   styleTextActive: { color: Colors.primary, fontWeight: '600' },
 
@@ -412,7 +429,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg,
   },
   toggleChipActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
-  toggleChipIcon: { fontSize: 14 },
   toggleChipText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
   toggleChipTextActive: { color: Colors.primary, fontWeight: '600' },
 

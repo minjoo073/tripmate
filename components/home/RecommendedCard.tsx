@@ -5,6 +5,7 @@ import { MatchResult } from '../../types';
 import { Avatar } from '../ui/Avatar';
 import { Colors } from '../../constants/colors';
 import { MapPinIcon } from '../ui/Icon';
+import { StyleTag } from '../ui/StyleTag';
 
 interface Props {
   item: MatchResult;
@@ -28,11 +29,7 @@ export function RecommendedCard({ item }: Props) {
         <MapPinIcon color={Colors.textMuted} size={10} />
         <Text style={styles.destination} numberOfLines={1}>{item.trip.destination}</Text>
       </View>
-      <View style={styles.styleTag}>
-        <Text style={styles.styleTagText} numberOfLines={1}>
-          {item.user.travelStyles[0] ?? '자유여행'}
-        </Text>
-      </View>
+      <StyleTag label={item.user.travelStyles[0] ?? '자유여행'} size="sm" />
       <View style={styles.rateRow}>
         <Text style={styles.rateText}>재동행 {recompanionRate}%</Text>
       </View>
@@ -78,18 +75,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.textMuted,
     fontWeight: '400',
-  },
-  styleTag: {
-    backgroundColor: Colors.bgDeep,
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    marginTop: 1,
-  },
-  styleTagText: {
-    fontSize: 10,
-    color: Colors.textSecondary,
-    fontWeight: '500',
   },
   rateRow: {
     marginTop: 2,

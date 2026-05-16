@@ -37,7 +37,11 @@ export async function sendMessage(roomId: string, content: string): Promise<Mess
 }
 
 export async function acceptCompanion(roomId: string): Promise<void> {
-  if (USE_MOCK) return;
+  if (USE_MOCK) {
+    const room = mockChatRooms.find((r) => r.id === roomId);
+    if (room) room.status = 'accepted';
+    return;
+  }
   await api.post(`/chat/rooms/${roomId}/accept`);
 }
 
