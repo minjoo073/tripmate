@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   headerText: { flex: 1 },
   headerLabel: {
     fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 4,
+    letterSpacing: 2.5, marginBottom: 8,
   },
   headerTitle: {
     fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.4,

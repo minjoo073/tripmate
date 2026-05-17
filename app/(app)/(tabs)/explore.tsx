@@ -16,18 +16,18 @@ import {
 const POPULAR_CITIES = ['오사카', '도쿄', '방콕', '파리', '발리', '뉴욕'];
 
 const STYLE_ICON: Record<string, (color: string) => React.ReactNode> = {
-  '피식':      (c) => <SmileIcon color={c} size={22} />,
-  '액티비티':  (c) => <ZapIcon color={c} size={22} />,
-  '사진':      (c) => <CameraIcon color={c} size={22} />,
-  '관광':      (c) => <MapIcon color={c} size={22} />,
-  '힐링':      (c) => <LeafIcon color={c} size={22} />,
-  '카페':      (c) => <CoffeeIcon color={c} size={22} />,
-  '배낭':      (c) => <BackpackIcon color={c} size={22} />,
-  '쇼핑':      (c) => <ShoppingBagIcon color={c} size={22} />,
-  '맛집':      (c) => <UtensilsIcon color={c} size={22} />,
-  '역사/문화': (c) => <LandmarkIcon color={c} size={22} />,
-  '나이트라이프': (c) => <MoonIcon color={c} size={22} />,
-  '현지시장':  (c) => <StoreIcon color={c} size={22} />,
+  '피식':      (c) => <SmileIcon color={c} size={17} />,
+  '액티비티':  (c) => <ZapIcon color={c} size={17} />,
+  '사진':      (c) => <CameraIcon color={c} size={17} />,
+  '관광':      (c) => <MapIcon color={c} size={17} />,
+  '힐링':      (c) => <LeafIcon color={c} size={17} />,
+  '카페':      (c) => <CoffeeIcon color={c} size={17} />,
+  '배낭':      (c) => <BackpackIcon color={c} size={17} />,
+  '쇼핑':      (c) => <ShoppingBagIcon color={c} size={17} />,
+  '맛집':      (c) => <UtensilsIcon color={c} size={17} />,
+  '역사/문화': (c) => <LandmarkIcon color={c} size={17} />,
+  '나이트라이프': (c) => <MoonIcon color={c} size={17} />,
+  '현지시장':  (c) => <StoreIcon color={c} size={17} />,
 };
 
 const GENDER_OPTIONS = ['무관', '여성', '남성'] as const;
@@ -80,10 +80,10 @@ const filterRowStyles = StyleSheet.create({
     overflow: 'hidden',
   },
   segBtn: {
-    flex: 1, paddingVertical: 10, alignItems: 'center',
+    flex: 1, paddingVertical: 7, alignItems: 'center',
   },
   segBtnActive: { backgroundColor: Colors.primary },
-  segText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
+  segText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
   segTextActive: { color: Colors.white, fontWeight: '600' },
 });
 
@@ -231,7 +231,7 @@ export default function ExploreScreen() {
                   activeOpacity={0.75}
                 >
                   <View style={styles.styleIconWrap}>
-                    {(STYLE_ICON[style] ?? ((c: string) => <CompassIcon color={c} size={22} />))(active ? Colors.primary : Colors.textMuted)}
+                    {(STYLE_ICON[style] ?? ((c: string) => <CompassIcon color={c} size={17} />))(active ? Colors.primary : Colors.textMuted)}
                   </View>
                   <Text style={[styles.styleText, active && styles.styleTextActive]}>{style}</Text>
                 </TouchableOpacity>
@@ -334,19 +334,19 @@ const styles = StyleSheet.create({
   headerText: { flex: 1 },
   headerLabel: {
     fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 4,
+    letterSpacing: 2.5, marginBottom: 8,
   },
   title: {
     fontSize: 26, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5,
   },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 20, gap: 14 },
+  content: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
 
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 22,
+    borderRadius: 18,
+    padding: 16,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     shadowColor: Colors.cardShadow,
@@ -357,98 +357,98 @@ const styles = StyleSheet.create({
   },
   cardLabel: {
     fontSize: 9, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 4,
+    letterSpacing: 2.5, marginBottom: 3,
   },
   cardTitle: {
-    fontSize: 17, fontWeight: '500', color: Colors.textPrimary,
-    letterSpacing: -0.2, marginBottom: 16,
+    fontSize: 15, fontWeight: '500', color: Colors.textPrimary,
+    letterSpacing: -0.2, marginBottom: 12,
   },
   cardSub: {
-    fontSize: 11, color: Colors.textMuted, marginTop: -10, marginBottom: 16,
+    fontSize: 11, color: Colors.textMuted, marginTop: -8, marginBottom: 12,
   },
 
   // Destination
   destInputWrap: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: Colors.bg, borderRadius: 14,
-    paddingHorizontal: 16, paddingVertical: 14,
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: Colors.bg, borderRadius: 12,
+    paddingHorizontal: 12, paddingVertical: 10,
     borderWidth: 1.5, borderColor: Colors.cardBorder,
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  destInput: { flex: 1, fontSize: 16, color: Colors.textPrimary, fontWeight: '400' },
-  cityRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  destInput: { flex: 1, fontSize: 14, color: Colors.textPrimary, fontWeight: '400' },
+  cityRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   cityChip: {
-    paddingHorizontal: 14, paddingVertical: 7,
+    paddingHorizontal: 12, paddingVertical: 5,
     borderRadius: 999, borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
   cityChipActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
-  cityChipText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
+  cityChipText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
   cityChipTextActive: { color: Colors.primary, fontWeight: '600' },
 
   // Dates
   dateCard: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.bg, borderRadius: 16,
-    padding: 20, borderWidth: 1, borderColor: Colors.cardBorder,
+    backgroundColor: Colors.bg, borderRadius: 12,
+    padding: 14, borderWidth: 1, borderColor: Colors.cardBorder,
   },
-  dateSide: { flex: 1, alignItems: 'center', gap: 8 },
+  dateSide: { flex: 1, alignItems: 'center', gap: 5 },
   dateRole: { fontSize: 10, fontWeight: '600', color: Colors.textMuted, letterSpacing: 0.5 },
   dateInput: {
-    fontSize: 22, fontWeight: '300', color: Colors.textPrimary,
-    letterSpacing: -0.5, textAlign: 'center', minWidth: 80,
+    fontSize: 18, fontWeight: '300', color: Colors.textPrimary,
+    letterSpacing: -0.5, textAlign: 'center', minWidth: 70,
   },
-  dateArrow: { paddingHorizontal: 12, alignItems: 'center' },
-  dateArrowLine: { fontSize: 16, color: Colors.textMuted },
+  dateArrow: { paddingHorizontal: 10, alignItems: 'center' },
+  dateArrowLine: { fontSize: 14, color: Colors.textMuted },
 
   // Style grid
-  styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   styleCell: {
     width: '30%', flexGrow: 1,
-    paddingVertical: 14, borderRadius: 14,
-    alignItems: 'center', gap: 6,
+    paddingVertical: 10, borderRadius: 12,
+    alignItems: 'center', gap: 4,
     borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
   styleCellActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
-  styleIconWrap: { width: 22, height: 22, alignItems: 'center', justifyContent: 'center' },
-  styleText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
+  styleIconWrap: { width: 18, height: 18, alignItems: 'center', justifyContent: 'center' },
+  styleText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
   styleTextActive: { color: Colors.primary, fontWeight: '600' },
 
   // Filter stack
-  filterStack: { gap: 18 },
+  filterStack: { gap: 14 },
   divider: { height: 1, backgroundColor: Colors.cardBorder },
   toggleGroupLabel: {
-    fontSize: 12, fontWeight: '600', color: Colors.textSecondary,
+    fontSize: 11, fontWeight: '600', color: Colors.textSecondary,
   },
-  toggleChips: { flexDirection: 'row', gap: 10 },
+  toggleChips: { flexDirection: 'row', gap: 8 },
   toggleChip: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 5, paddingVertical: 12,
-    borderRadius: 12, borderWidth: 1, borderColor: Colors.cardBorder,
+    gap: 5, paddingVertical: 9,
+    borderRadius: 10, borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
   toggleChipActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
-  toggleChipText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
+  toggleChipText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
   toggleChipTextActive: { color: Colors.primary, fontWeight: '600' },
 
   // Bottom CTA
   bottomBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 20, paddingTop: 14,
+    backgroundColor: Colors.bg,
+    paddingHorizontal: 20, paddingTop: 10,
     borderTopWidth: 1, borderTopColor: Colors.cardBorder,
-    gap: 8,
+    gap: 6,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  bottomHint: { fontSize: 12, color: Colors.textMuted, textAlign: 'center', fontWeight: '400' },
+  bottomHint: { fontSize: 11, color: Colors.textMuted, textAlign: 'center', fontWeight: '400' },
   searchBtn: {
-    backgroundColor: Colors.primary, borderRadius: 16,
-    height: 52, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: Colors.primary, borderRadius: 12,
+    height: 44, alignItems: 'center', justifyContent: 'center',
   },
-  searchBtnText: { fontSize: 16, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
+  searchBtnText: { fontSize: 14, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
 });

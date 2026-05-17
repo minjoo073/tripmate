@@ -1,6 +1,12 @@
 import api from './api';
 import { ChatRoom, Message, Trip } from '../types';
-import { mockChatRooms, mockMessages, mockMessagesC1, mockMessagesC2, mockMyTrip } from '../mock/data';
+import { mockChatRooms, mockMessages, mockMessagesC1, mockMessagesC2, mockMessagesC3, mockMyTrip, mockUsers } from '../mock/data';
+
+const dynamicRooms = new Map<string, ChatRoom>();
+
+export function getDynamicRoom(id: string): ChatRoom | undefined {
+  return dynamicRooms.get(id);
+}
 
 const USE_MOCK = !process.env.EXPO_PUBLIC_API_URL;
 
@@ -14,6 +20,8 @@ export async function getMessages(roomId: string): Promise<Message[]> {
   if (USE_MOCK) {
     if (roomId === 'c1') return mockMessagesC1;
     if (roomId === 'c2') return mockMessagesC2;
+    if (roomId === 'c3') return [];
+    if (roomId.startsWith('dyn_')) return [];
     return mockMessages;
   }
   const { data } = await api.get(`/chat/rooms/${roomId}/messages`);
@@ -53,7 +61,25 @@ export async function rejectCompanion(roomId: string): Promise<void> {
 export async function startChat(userId: string): Promise<ChatRoom> {
   if (USE_MOCK) {
     const existing = mockChatRooms.find((r) => r.partner.id === userId);
-    return existing ?? mockChatRooms[0];
+    if (existing) return existing;
+
+    const dynKey = `dyn_${userId}`;
+    if (dynamicRooms.has(dynKey)) return dynamicRooms.get(dynKey)!;
+
+    const partner = mockUsers.find((u) => u.id === userId);
+    if (partner) {
+      const room: ChatRoom = {
+        id: dynKey,
+        partner,
+        lastMessage: '',
+        lastMessageAt: new Date().toISOString(),
+        unreadCount: 0,
+        status: 'tips',
+      };
+      dynamicRooms.set(dynKey, room);
+      return room;
+    }
+    return mockChatRooms[0];
   }
   const { data } = await api.post('/chat/rooms', { userId });
   return data;

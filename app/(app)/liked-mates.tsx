@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,12 +7,15 @@ import { ArrowLeftIcon, HeartIcon, MapPinIcon } from '../../components/ui/Icon';
 import { Avatar } from '../../components/ui/Avatar';
 import { StyleTag } from '../../components/ui/StyleTag';
 import { mockMatchResults } from '../../mock/data';
+import { JoinSheet } from '../../components/mate/JoinSheet';
+import { MatchResult } from '../../types';
 
 // Mock: 찜한 동행자 목록 (첫 3명)
 const LIKED = mockMatchResults.slice(0, 3);
 
 export default function LikedMatesScreen() {
   const insets = useSafeAreaInsets();
+  const [joinTarget, setJoinTarget] = useState<MatchResult | null>(null);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -114,11 +117,28 @@ export default function LikedMatesScreen() {
                     <Text style={[styles.badgeText, styles.badgeTextResponse]}>응답 빠름</Text>
                   </View>
                 </View>
+
+                <TouchableOpacity
+                  style={styles.joinBtn}
+                  onPress={(e) => { e.stopPropagation?.(); setJoinTarget(item); }}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.joinBtnText}>동행 신청</Text>
+                </TouchableOpacity>
               </TouchableOpacity>
             );
           })}
         </ScrollView>
       )}
+
+      <JoinSheet
+        visible={!!joinTarget}
+        onClose={() => setJoinTarget(null)}
+        userId={joinTarget?.user.id ?? ''}
+        nickname={joinTarget?.user.nickname ?? ''}
+        destination={joinTarget?.trip.destination}
+        dates={`${joinTarget?.trip.startDate} – ${joinTarget?.trip.endDate}`}
+      />
     </View>
   );
 }
@@ -140,7 +160,7 @@ const styles = StyleSheet.create({
   headerText: { flex: 1 },
   headerLabel: {
     fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 4,
+    letterSpacing: 2.5, marginBottom: 8,
   },
   title: {
     fontSize: 26, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5,
@@ -219,6 +239,12 @@ const styles = StyleSheet.create({
   badgeTextRetrip: { color: Colors.dustBlue },
   badgeResponse: { backgroundColor: Colors.accentLight },
   badgeTextResponse: { color: Colors.accent },
+
+  joinBtn: {
+    backgroundColor: Colors.primary, borderRadius: 12,
+    paddingVertical: 11, alignItems: 'center',
+  },
+  joinBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
 
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: 40 },
   emptyIconBox: {

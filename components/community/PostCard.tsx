@@ -19,12 +19,17 @@ const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string
 };
 
 const CITY_COORDS: Record<string, string> = {
-  '오사카': '34°N · 135°E',
-  '도쿄':   '35°N · 139°E',
-  '방콕':   '13°N · 100°E',
-  '파리':   '48°N · 002°E',
-  '뉴욕':   '40°N · 073°W',
+  '오사카':     '34°N · 135°E',
+  '도쿄':       '35°N · 139°E',
+  '방콕':       '13°N · 100°E',
+  '파리':       '48°N · 002°E',
+  '뉴욕':       '40°N · 073°W',
   '바르셀로나': '41°N · 002°E',
+  '발리':       '08°S · 115°E',
+  '프라하':     '50°N · 014°E',
+  '리스본':     '38°N · 009°W',
+  '이스탄불':   '41°N · 028°E',
+  '다낭':       '16°N · 108°E',
 };
 
 export function PostCard({ item }: Props) {

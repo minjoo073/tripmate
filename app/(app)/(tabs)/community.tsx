@@ -20,6 +20,7 @@ type TabKey = typeof TABS[number]['key'];
 const FEATURED_POSTS = [
   {
     id: 'f1',
+    postId: 'p6',
     city: '오사카',
     coords: '34°N · 135°E',
     tag: '여행 기록',
@@ -32,6 +33,7 @@ const FEATURED_POSTS = [
   },
   {
     id: 'f2',
+    postId: 'p8',
     city: '도쿄',
     coords: '35°N · 139°E',
     tag: '동행 찾기',
@@ -44,7 +46,7 @@ const FEATURED_POSTS = [
   },
 ];
 
-const CITY_TAGS = ['전체', '오사카', '도쿄', '방콕', '파리', '바르셀로나', '뉴욕'];
+const CITY_TAGS = ['전체', '오사카', '도쿄', '방콕', '파리', '바르셀로나', '뉴욕', '발리', '프라하', '리스본', '이스탄불', '다낭'];
 
 export default function CommunityScreen() {
   const insets = useSafeAreaInsets();
@@ -92,7 +94,7 @@ export default function CommunityScreen() {
             contentContainerStyle={styles.featuredScroll}
           >
             {FEATURED_POSTS.map((post) => (
-              <TouchableOpacity key={post.id} style={styles.featuredCard} activeOpacity={0.82}>
+              <TouchableOpacity key={post.id} style={styles.featuredCard} activeOpacity={0.82} onPress={() => router.push(`/post/${post.postId}`)}>
                 <View style={styles.featuredCardBg} />
                 <View style={styles.featuredTop}>
                   <Text style={styles.featuredCoords}>{post.coords}</Text>
@@ -196,7 +198,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.textMuted,
     letterSpacing: 2.5,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   title: {
     fontSize: 22,

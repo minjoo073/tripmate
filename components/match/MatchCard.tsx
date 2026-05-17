@@ -10,9 +10,10 @@ import { StyleTag } from '../ui/StyleTag';
 interface Props {
   item: MatchResult;
   rank: number;
+  onJoin?: (item: MatchResult) => void;
 }
 
-export function MatchCard({ item, rank }: Props) {
+export function MatchCard({ item, rank, onJoin }: Props) {
   const filledDots = Math.round(item.matchRate / 20);
   const reRate = 80 + (item.user.travelCount % 15);
 
@@ -73,6 +74,16 @@ export function MatchCard({ item, rank }: Props) {
           <Text style={[styles.badgeText, styles.badgeTextResponse]}>응답 빠름</Text>
         </View>
       </View>
+
+      {onJoin && (
+        <TouchableOpacity
+          style={styles.joinBtn}
+          onPress={(e) => { e.stopPropagation?.(); onJoin(item); }}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.joinBtnText}>동행 신청</Text>
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 }
@@ -162,4 +173,12 @@ const styles = StyleSheet.create({
   // 응답 빠름 — warm accent
   badgeResponse: { backgroundColor: Colors.accentLight },
   badgeTextResponse: { color: Colors.accent },
+
+  joinBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingVertical: 11,
+    alignItems: 'center',
+  },
+  joinBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
 });

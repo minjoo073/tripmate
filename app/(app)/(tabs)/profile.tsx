@@ -11,8 +11,8 @@ import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon, Wa
 const TABS = ['여행 기록', '리뷰', '저장'];
 
 const MOCK_TRIPS = [
-  { id: '1', dest: '오사카, 일본', date: '2025.06.15 – 06.19', companion: '조승연', rating: 5, status: 'done' },
   { id: '2', dest: '도쿄, 일본', date: '2025.07.05 – 07.10', companion: '예정', rating: 0, status: 'upcoming' },
+  { id: '1', dest: '오사카, 일본', date: '2025.06.15 – 06.19', companion: '조승연', rating: 5, status: 'done' },
   { id: '3', dest: '방콕, 태국', date: '2024.12.20 – 12.25', companion: '한소희', rating: 5, status: 'done' },
 ];
 
@@ -38,7 +38,12 @@ export default function ProfileScreen() {
   const [activeTab, setActiveTab] = useState('여행 기록');
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.outerScroll}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}
+        showsVerticalScrollIndicator={false}
+      >
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <TouchableOpacity style={styles.settingsBtn} onPress={() => router.push('/settings')}>
@@ -146,7 +151,7 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <View style={styles.scrollContent}>
 
         {activeTab === '여행 기록' && (
           <>
@@ -221,6 +226,7 @@ export default function ProfileScreen() {
             ))}
           </>
         )}
+      </View>
       </ScrollView>
     </View>
   );
@@ -365,8 +371,9 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 13, color: Colors.textMuted, fontWeight: '400' },
   tabTextActive: { color: Colors.textPrimary, fontWeight: '600' },
 
+  outerScroll: { flex: 1 },
   scroll: { flex: 1 },
-  scrollContent: { padding: 20, paddingBottom: 48 },
+  scrollContent: { padding: 20 },
 
   visitedWrap: { marginBottom: 20 },
   visitedTitle: {
