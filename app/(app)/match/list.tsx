@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,11 +7,13 @@ import { MatchResult } from '../../../types';
 import { MatchCard } from '../../../components/match/MatchCard';
 import { mockMatchResults } from '../../../mock/data';
 import { ArrowLeftIcon } from '../../../components/ui/Icon';
+import { JoinSheet } from '../../../components/mate/JoinSheet';
 
 export default function MatchListScreen() {
   const insets = useSafeAreaInsets();
   const { results: resultsParam } = useLocalSearchParams<{ results: string }>();
   const results: MatchResult[] = resultsParam ? JSON.parse(resultsParam) : mockMatchResults;
+  const [joinTarget, setJoinTarget] = useState<MatchResult | null>(null);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
@@ -31,9 +33,23 @@ export default function MatchListScreen() {
         showsVerticalScrollIndicator={false}
       >
         {results.map((item, index) => (
-          <MatchCard key={item.user.id} item={item} rank={index + 1} />
+          <MatchCard
+            key={item.user.id}
+            item={item}
+            rank={index + 1}
+            onJoin={(item) => setJoinTarget(item)}
+          />
         ))}
       </ScrollView>
+
+      <JoinSheet
+        visible={!!joinTarget}
+        onClose={() => setJoinTarget(null)}
+        userId={joinTarget?.user.id ?? ''}
+        nickname={joinTarget?.user.nickname ?? ''}
+        destination={joinTarget?.trip.destination}
+        dates={joinTarget ? `${joinTarget.trip.startDate} – ${joinTarget.trip.endDate}` : undefined}
+      />
     </View>
   );
 }
@@ -57,7 +73,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.textMuted,
     letterSpacing: 2.5,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   title: {
     fontSize: 22,

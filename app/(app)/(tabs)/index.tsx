@@ -365,14 +365,14 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingHorizontal: 28,
     paddingTop: 28,
-    paddingBottom: 18,
+    paddingBottom: 22,
   },
   appLabel: {
     fontSize: 10,
     fontWeight: '700',
     color: Colors.textMuted,
     letterSpacing: 2.5,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   tagline: {
     fontSize: 24,
@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   bellBtn: { padding: 4 },
 
   scroll: { flex: 1 },
-  scrollContent: { paddingTop: 16 },
+  scrollContent: { paddingTop: 20 },
 
   searchBar: {
     flexDirection: 'row',
@@ -422,13 +422,13 @@ const styles = StyleSheet.create({
   },
 
   section: { marginBottom: 36, paddingHorizontal: 28 },
-  sectionHead: { marginBottom: 4 },
+  sectionHead: { marginBottom: 6 },
   sectionLabel: {
     fontSize: 10,
     fontWeight: '700',
     color: Colors.textMuted,
     letterSpacing: 2,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   sectionTitle: {
     fontSize: 20,
@@ -747,7 +747,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 7,
     paddingHorizontal: 28,
-    paddingVertical: 10,
+    paddingVertical: 13,
     backgroundColor: Colors.primaryLight,
   },
   statsBarDot: {

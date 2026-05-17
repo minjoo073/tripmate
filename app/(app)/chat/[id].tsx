@@ -11,7 +11,7 @@ import { Message, ChatRoom } from '../../../types';
 import { ChatBubble } from '../../../components/chat/ChatBubble';
 import { TripCard } from '../../../components/chat/TripCard';
 import { Avatar } from '../../../components/ui/Avatar';
-import { getMessages, sendMessage, sendTripCard, acceptCompanion, rejectCompanion } from '../../../services/chatService';
+import { getMessages, sendMessage, sendTripCard, acceptCompanion, rejectCompanion, getDynamicRoom } from '../../../services/chatService';
 import { mockChatRooms, mockMyTrip } from '../../../mock/data';
 
 export default function ChatRoomScreen() {
@@ -30,7 +30,7 @@ export default function ChatRoomScreen() {
   const slideAnim = useRef(new Animated.Value(320)).current;
 
   useEffect(() => {
-    const found = mockChatRooms.find((r) => r.id === id) ?? mockChatRooms[0];
+    const found = mockChatRooms.find((r) => r.id === id) ?? getDynamicRoom(id) ?? mockChatRooms[0];
     setRoom(found);
     setAccepted(found.status === 'accepted');
     if (id) getMessages(id).then((msgs) => {

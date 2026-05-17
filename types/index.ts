@@ -51,7 +51,7 @@ export interface ChatRoom {
   lastMessageAt: string;
   unreadCount: number;
   trip?: Trip;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'tips';
 }
 
 export interface Message {

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { Avatar } from '../../components/ui/Avatar';
-import { ArrowLeftIcon, MessageIcon } from '../../components/ui/Icon';
-import { startChat } from '../../services/chatService';
+import { ArrowLeftIcon } from '../../components/ui/Icon';
+import { router } from 'expo-router';
+import { JoinSheet } from '../../components/mate/JoinSheet';
 
 const MOCK_POSTS: Record<string, MatePost[]> = {
   오사카: [
@@ -48,17 +49,9 @@ export default function MatesScreen() {
   const insets = useSafeAreaInsets();
   const { destination: paramDest } = useLocalSearchParams<{ destination?: string }>();
   const [selected, setSelected] = useState<string>(paramDest ?? '오사카');
+  const [joinTarget, setJoinTarget] = useState<MatePost | null>(null);
 
   const posts = MOCK_POSTS[selected] ?? [];
-
-  const handleChat = async (userId: string) => {
-    try {
-      const room = await startChat(userId);
-      router.push(`/chat/${room.id}`);
-    } catch {
-      Alert.alert('오류', '채팅을 시작할 수 없어요.');
-    }
-  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -146,17 +139,25 @@ export default function MatesScreen() {
                 </View>
                 <TouchableOpacity
                   style={styles.chatBtn}
-                  onPress={() => handleChat(post.user.id)}
+                  onPress={() => setJoinTarget(post)}
                   activeOpacity={0.85}
                 >
-                  <MessageIcon color={Colors.white} size={15} />
-                  <Text style={styles.chatBtnText}>채팅하기</Text>
+                  <Text style={styles.chatBtnText}>동행 신청</Text>
                 </TouchableOpacity>
               </View>
             </View>
           ))
         )}
       </ScrollView>
+
+      <JoinSheet
+        visible={!!joinTarget}
+        onClose={() => setJoinTarget(null)}
+        userId={joinTarget?.user.id ?? ''}
+        nickname={joinTarget?.user.nickname ?? ''}
+        destination={joinTarget?.destination}
+        dates={joinTarget?.dates}
+      />
     </View>
   );
 }
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
   headerText: { flex: 1 },
   headerLabel: {
     fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 4,
+    letterSpacing: 2.5, marginBottom: 8,
   },
   title: { fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.4 },
   subtitle: { fontSize: 13, color: Colors.textMuted, marginTop: 3, fontWeight: '400' },

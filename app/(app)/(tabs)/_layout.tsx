@@ -13,42 +13,41 @@ import {
 type IconType = 'home' | 'explore' | 'community' | 'chat' | 'profile';
 
 function TabIcon({ focused, icon, label }: { focused: boolean; icon: IconType; label: string }) {
-  const activeColor = Colors.primary;
-  const inactiveColor = Colors.textMuted;
-  const color = focused ? activeColor : inactiveColor;
+  const color = focused ? Colors.primary : Colors.textMuted;
 
   const iconEl = {
-    home: <HomeIcon color={color} size={20} filled={focused} />,
-    explore: <ExploreIcon color={color} size={20} />,
-    community: <CommunityIcon color={color} size={20} filled={focused} />,
-    chat: <ChatNavIcon color={color} size={20} />,
-    profile: <ProfileNavIcon color={color} size={20} />,
+    home: <HomeIcon color={color} size={22} filled={focused} />,
+    explore: <ExploreIcon color={color} size={22} />,
+    community: <CommunityIcon color={color} size={22} filled={focused} />,
+    chat: <ChatNavIcon color={color} size={22} />,
+    profile: <ProfileNavIcon color={color} size={22} />,
   }[icon];
 
   return (
     <View style={tabStyles.wrap}>
-      <View style={[tabStyles.pill, focused && tabStyles.pillActive]}>
+      <View style={tabStyles.iconWrap}>
         {iconEl}
       </View>
       <Text style={[tabStyles.label, focused && tabStyles.labelActive]}>{label}</Text>
+      <View style={tabStyles.indicator}>
+        {focused && <View style={tabStyles.indicatorBar} />}
+      </View>
     </View>
   );
 }
 
 const tabStyles = StyleSheet.create({
-  wrap: { alignItems: 'center', paddingTop: 8, paddingBottom: 2, width: 64, gap: 4 },
-  pill: {
-    width: 44,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pillActive: {
-    backgroundColor: Colors.primaryLight,
-  },
+  wrap: { alignItems: 'center', paddingTop: 12, paddingBottom: 4, width: 64, gap: 4 },
+  iconWrap: { alignItems: 'center', justifyContent: 'center' },
   label: { fontSize: 10, color: Colors.textMuted, fontWeight: '400', letterSpacing: 0.2 },
   labelActive: { color: Colors.primary, fontWeight: '600' },
+  indicator: { height: 2, width: 20 },
+  indicatorBar: {
+    height: 2,
+    width: 20,
+    borderRadius: 1,
+    backgroundColor: Colors.primary,
+  },
 });
 
 export default function TabsLayout() {
@@ -59,15 +58,15 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 74 + insets.bottom,
-          backgroundColor: Colors.card,
+          height: 80 + insets.bottom,
+          backgroundColor: Colors.bg,
           borderTopWidth: 1,
           borderTopColor: Colors.cardBorder,
-          shadowColor: 'rgba(42,33,24,0.08)',
-          shadowOffset: { width: 0, height: -4 },
+          shadowColor: 'rgba(42,33,24,0.06)',
+          shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 1,
-          shadowRadius: 16,
-          elevation: 6,
+          shadowRadius: 12,
+          elevation: 4,
           paddingBottom: insets.bottom,
         },
         tabBarShowLabel: false,
