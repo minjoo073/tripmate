@@ -56,15 +56,11 @@ export function PostCard({ item }: Props) {
       {/* Title */}
       <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
 
-      {/* Content */}
-      <Text style={styles.content} numberOfLines={2}>{item.content}</Text>
-
       {/* Destination with coords — shown when trip data exists */}
       {destination ? (
         <View style={styles.destRow}>
           <MapPinIcon color={Colors.textMuted} size={11} />
           <Text style={styles.destText}>{destination}</Text>
-          {coords && <Text style={styles.coords}>{coords}</Text>}
         </View>
       ) : null}
 
@@ -112,11 +108,11 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.card,
     borderRadius: 18,
-    padding: 18,
-    marginBottom: 12,
+    padding: 20,
+    marginBottom: 14,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    gap: 10,
+    gap: 12,
   },
   topRow: {
     flexDirection: 'row',

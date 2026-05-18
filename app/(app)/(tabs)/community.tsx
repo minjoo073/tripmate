@@ -95,21 +95,14 @@ export default function CommunityScreen() {
           >
             {FEATURED_POSTS.map((post) => (
               <TouchableOpacity key={post.id} style={styles.featuredCard} activeOpacity={0.82} onPress={() => router.push(`/post/${post.postId}`)}>
-                <View style={styles.featuredCardBg} />
-                <View style={styles.featuredTop}>
-                  <Text style={styles.featuredCoords}>{post.coords}</Text>
-                  <View style={[styles.featuredTagWrap, { backgroundColor: 'rgba(255,255,255,0.12)' }]}>
-                    <Text style={styles.featuredTag}>{post.tag}</Text>
-                  </View>
+                <View style={[styles.featuredTagWrap, { backgroundColor: 'rgba(255,255,255,0.12)', alignSelf: 'flex-start' }]}>
+                  <Text style={styles.featuredTag}>{post.tag}</Text>
                 </View>
-                <View style={styles.featuredBottom}>
-                  <Text style={styles.featuredCity}>{post.city}</Text>
-                  <Text style={styles.featuredTitle} numberOfLines={2}>{post.title}</Text>
-                  <Text style={styles.featuredDesc} numberOfLines={2}>{post.desc}</Text>
-                  <View style={styles.featuredFooter}>
-                    <Text style={styles.featuredAuthor}>{post.author}</Text>
-                    <Text style={styles.featuredDate}>{post.date} · ♡ {post.likes}</Text>
-                  </View>
+                <Text style={styles.featuredCity}>{post.city}</Text>
+                <Text style={styles.featuredTitle} numberOfLines={1}>{post.title}</Text>
+                <View style={styles.featuredFooter}>
+                  <Text style={styles.featuredAuthor}>{post.author}</Text>
+                  <Text style={styles.featuredDate}>{post.date} · ♡ {post.likes}</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -168,9 +161,7 @@ export default function CommunityScreen() {
         {/* Route sharing banner */}
         <TouchableOpacity style={styles.routeBanner} activeOpacity={0.85}>
           <View style={styles.routeBannerLeft}>
-            <Text style={styles.routeBannerLabel}>ROUTE ARCHIVE</Text>
             <Text style={styles.routeBannerTitle}>여행 루트 공유</Text>
-            <Text style={styles.routeBannerDesc}>내가 걸었던 길을 지도 위에 기록해보세요</Text>
           </View>
           <ArrowRightIcon color={Colors.textMuted} size={15} />
         </TouchableOpacity>
@@ -184,7 +175,7 @@ const styles = StyleSheet.create({
 
   header: {
     paddingHorizontal: 24,
-    paddingTop: 20,
+    paddingTop: 44,
     paddingBottom: 16,
     backgroundColor: Colors.bg,
   },
@@ -239,13 +230,12 @@ const styles = StyleSheet.create({
     paddingRight: 24,
   },
   featuredCard: {
-    width: 260,
-    height: 200,
+    width: 240,
     borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: Colors.primary,
     padding: 20,
-    justifyContent: 'space-between',
+    gap: 6,
   },
   featuredCardBg: {
     position: 'absolute',
@@ -288,10 +278,9 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   featuredTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
     color: Colors.white,
-    lineHeight: 23,
     letterSpacing: -0.2,
   },
   featuredDesc: {
@@ -303,8 +292,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 4,
-    paddingTop: 10,
+    marginTop: 8,
+    paddingTop: 8,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.1)',
   },

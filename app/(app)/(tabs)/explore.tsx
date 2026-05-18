@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 12,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 44,
     paddingBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,

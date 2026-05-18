@@ -45,33 +45,29 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 28 }]}>
         <TouchableOpacity style={styles.settingsBtn} onPress={() => router.push('/settings')}>
           <SettingsIcon color={Colors.textMuted} size={20} />
         </TouchableOpacity>
 
-        <Avatar nickname={user?.nickname ?? '나'} size={68} />
-
-        <View style={styles.nameWrap}>
-          <Text style={styles.nickname}>{user?.nickname ?? '여행자'}</Text>
-          <View style={styles.verifiedRow}>
-            <View style={styles.verifiedDot} />
-            <Text style={styles.verifiedText}>인증된 여행자</Text>
+        {/* Top row: avatar left, info right */}
+        <View style={styles.profileRow}>
+          <View style={styles.avatarRing}>
+            <Avatar nickname={user?.nickname ?? '나'} size={72} />
+          </View>
+          <View style={styles.profileInfo}>
+            <Text style={styles.nickname}>{user?.nickname ?? '여행자'}</Text>
+            <View style={styles.verifiedRow}>
+              <View style={styles.verifiedDot} />
+              <Text style={styles.verifiedText}>인증된 여행자</Text>
+            </View>
+            <TouchableOpacity style={styles.editBtn} onPress={() => router.push('/profile-setup')}>
+              <Text style={styles.editBtnText}>프로필 편집</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        <View style={styles.metaRow}>
-          <MapPinIcon color={Colors.textMuted} size={11} />
-          <Text style={styles.metaText}>서울, 한국</Text>
-          <Text style={styles.metaSep}>·</Text>
-          <Text style={styles.metaText}>최근 1시간 내 활동</Text>
-        </View>
-
-        <TouchableOpacity style={styles.editBtn} onPress={() => router.push('/profile-setup')}>
-          <Text style={styles.editBtnText}>프로필 편집</Text>
-        </TouchableOpacity>
-
-        {/* Personality mini — compact below edit button */}
+        {/* Personality */}
         <TouchableOpacity style={styles.personalityMini} onPress={() => router.push('/travel-personality')} activeOpacity={0.7}>
           <Text style={styles.personalityMiniText}>
             {personality.pace} · {personality.time} · {personality.companion} · {personality.planning}
@@ -79,35 +75,40 @@ export default function ProfileScreen() {
           <EditIcon color={Colors.textMuted} size={11} />
         </TouchableOpacity>
 
-        <View style={styles.statsRow}>
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>3</Text>
-            <Text style={styles.statLabel}>여행</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>4.9</Text>
-            <Text style={styles.statLabel}>평점</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>92%</Text>
-            <Text style={styles.statLabel}>재동행률</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>128</Text>
-            <Text style={styles.statLabel}>함께한 분</Text>
+        <View style={styles.statsCard}>
+          <View style={styles.statsRow}>
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>3</Text>
+              <Text style={styles.statLabel}>여행</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>4.9</Text>
+              <Text style={styles.statLabel}>평점</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>92%</Text>
+              <Text style={styles.statLabel}>재동행률</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.stat}>
+              <Text style={styles.statValue}>128</Text>
+              <Text style={styles.statLabel}>함께한 분</Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Travel moods */}
-      <View style={styles.moodRow}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.moodContent}>
+        {/* Travel moods — integrated into header */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.moodContent}
+          style={styles.moodScroll}
+        >
           {TRAVEL_MOODS.map((mood) => (
-            <View key={mood.label} style={[styles.moodTag, { backgroundColor: mood.bg }]}>
-              <Text style={[styles.moodTagText, { color: mood.text }]}>{mood.label}</Text>
+            <View key={mood.label} style={styles.moodTag}>
+              <Text style={styles.moodTagText}>{mood.label}</Text>
             </View>
           ))}
         </ScrollView>
@@ -208,21 +209,19 @@ export default function ProfileScreen() {
 
         {activeTab === '저장' && (
           <>
-            <Text style={styles.sectionLabel}>버킷리스트 · 5</Text>
+            <Text style={styles.sectionLabel}>저장한 글 · 4</Text>
             {[
-              { dest: '산토리니, 그리스', flag: '🇬🇷', note: '에게해 일몰을 꼭 보고 싶어요' },
-              { dest: '교토, 일본', flag: '🇯🇵', note: '벚꽃 시즌에 기모노 입고 걷기' },
-              { dest: '리스본, 포르투갈', flag: '🇵🇹', note: '파두 음악이 흐르는 골목' },
-              { dest: '나폴리, 이탈리아', flag: '🇮🇹', note: '진짜 나폴리 피자 먹기' },
-              { dest: '하바나, 쿠바', flag: '🇨🇺', note: '올드카와 살사 댄스' },
+              { id: 'p5', category: '동행 찾기', title: '오사카 6월 말 같이 걸을 분 구해요', categoryColor: Colors.primary, categoryBg: Colors.primaryLight },
+              { id: 'p6', category: '여행 기록', title: '도톤보리 뒷골목의 오래된 카페들', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
+              { id: 'p8', category: '여행 기록', title: '도쿄 야시장과 이자카야, 밤이 더 아름다운 도시', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
+              { id: 'p2', category: '동행 찾기', title: '방콕 5박 6일 + 동행 1명 모집', categoryColor: Colors.primary, categoryBg: Colors.primaryLight },
             ].map((item) => (
-              <View key={item.dest} style={styles.wishCard}>
-                <Text style={styles.wishFlag}>{item.flag}</Text>
-                <View style={styles.wishInfo}>
-                  <Text style={styles.wishDest}>{item.dest}</Text>
-                  <Text style={styles.wishNote}>{item.note}</Text>
+              <TouchableOpacity key={item.id} style={styles.savedRow} activeOpacity={0.7} onPress={() => router.push(`/post/${item.id}`)}>
+                <View style={[styles.savedCatBadge, { backgroundColor: item.categoryBg }]}>
+                  <Text style={[styles.savedCatText, { color: item.categoryColor }]}>{item.category}</Text>
                 </View>
-              </View>
+                <Text style={styles.savedTitle} numberOfLines={1}>{item.title}</Text>
+              </TouchableOpacity>
             ))}
           </>
         )}
@@ -237,16 +236,23 @@ const styles = StyleSheet.create({
 
   header: {
     backgroundColor: Colors.card,
-    alignItems: 'center',
-    paddingBottom: 20,
+    paddingBottom: 24,
     paddingHorizontal: 24,
-    gap: 8,
+    gap: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
   },
   settingsBtn: { position: 'absolute', top: 20, right: 20, padding: 6 },
 
-  nameWrap: { alignItems: 'center', gap: 5 },
+  profileRow: { flexDirection: 'row', alignItems: 'center', gap: 18 },
+  profileInfo: { flex: 1, gap: 6 },
+  avatarRing: {
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    borderRadius: 999,
+    padding: 3,
+  },
+  nameWrap: { gap: 5 },
   nickname: { fontSize: 20, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.3 },
   verifiedRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   verifiedDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.olive },
@@ -260,6 +266,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
+    alignSelf: 'flex-start',
   },
   personalityMiniText: {
     fontSize: 11,
@@ -270,28 +277,38 @@ const styles = StyleSheet.create({
   editBtn: {
     backgroundColor: Colors.bg,
     borderRadius: 999,
-    paddingHorizontal: 18,
-    paddingVertical: 7,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    marginTop: 2,
+    alignSelf: 'flex-start',
   },
   editBtnText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
 
-  statsRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4, width: '100%' },
+  statsCard: {
+    backgroundColor: Colors.bgDeep,
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
+    width: '100%',
+  },
+  statsRow: { flexDirection: 'row', alignItems: 'center', width: '100%' },
   stat: { flex: 1, alignItems: 'center', gap: 3, minWidth: 0 },
   statValue: { fontSize: 17, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.3 },
   statLabel: { fontSize: 10, color: Colors.textMuted, textAlign: 'center' },
   statDivider: { width: 1, height: 24, backgroundColor: Colors.cardBorder, flexShrink: 0 },
 
-  moodRow: { backgroundColor: Colors.card, borderBottomWidth: 1, borderBottomColor: Colors.cardBorder },
-  moodContent: { paddingHorizontal: 20, paddingVertical: 12, gap: 8, flexDirection: 'row' },
+  moodScroll: { width: '100%' },
+  moodContent: { gap: 8, flexDirection: 'row' },
   moodTag: {
     borderRadius: 999,
     paddingHorizontal: 13,
-    paddingVertical: 5,
+    paddingVertical: 6,
+    backgroundColor: Colors.bg,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
   },
-  moodTagText: { fontSize: 12, fontWeight: '500' },
+  moodTagText: { fontSize: 12, fontWeight: '400', color: Colors.textSecondary },
 
   likedRow: {
     flexDirection: 'row',
@@ -471,22 +488,32 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
 
-  wishCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 14,
-    padding: 16,
+  savedRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    marginBottom: 10,
+    gap: 10,
+    paddingVertical: 13,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
-  wishFlag: { fontSize: 28 },
-  wishInfo: { flex: 1, gap: 3 },
-  wishDest: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
-  wishNote: { fontSize: 12, color: Colors.textSecondary, lineHeight: 17 },
-  wishDate: { fontSize: 10, color: Colors.textMuted, fontWeight: '500' },
+  savedCatBadge: {
+    borderRadius: 4,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    flexShrink: 0,
+  },
+  savedCatText: {
+    fontSize: 9,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  savedTitle: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '400',
+    color: Colors.textPrimary,
+    letterSpacing: -0.1,
+  },
 
   empty: { paddingTop: 56, alignItems: 'center', gap: 10 },
   emptyIconBox: { width: 56, height: 56, borderRadius: 16, backgroundColor: Colors.bgDeep, alignItems: 'center', justifyContent: 'center' },
