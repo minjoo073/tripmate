@@ -102,12 +102,6 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Live stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statsBarDot} />
-        <Text style={styles.statsBarText}>지금 <Text style={styles.statsBarHighlight}>127명</Text>이 여행 메이트를 찾고 있어요</Text>
-      </View>
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 48 }]}
@@ -129,7 +123,6 @@ export default function HomeScreen() {
         {/* Destinations */}
         <View style={styles.section}>
           <View style={styles.sectionHead}>
-            <Text style={styles.sectionLabel}>POPULAR NOW</Text>
             <Text style={styles.sectionTitle}>지금 떠나는 도시들</Text>
           </View>
           <ScrollView
@@ -150,7 +143,6 @@ export default function HomeScreen() {
                 activeOpacity={0.82}
               >
                 <Text style={styles.destName}>{d.name}</Text>
-                <Text style={styles.destSub}>{d.sub}</Text>
                 <View style={styles.destCount}>
                   <Text style={styles.destCountText}>{d.count}명 모집 중</Text>
                 </View>
@@ -171,7 +163,6 @@ export default function HomeScreen() {
         {/* Today's mood */}
         <View style={styles.section}>
           <View style={styles.sectionHead}>
-            <Text style={styles.sectionLabel}>TODAY'S MOOD</Text>
             <Text style={styles.sectionTitle}>오늘 인기 여행 스타일</Text>
           </View>
           <View style={styles.moodRow}>
@@ -211,9 +202,6 @@ export default function HomeScreen() {
             <Text style={styles.connectionTitle}>
               같은 속도로 여행할{'\n'}메이트를 찾아드려요
             </Text>
-            <Text style={styles.connectionSub}>
-              여행지 · 일정 · 취향 · 신뢰도 분석
-            </Text>
             <View style={styles.connectionDots}>
               {['오사카', '도쿄', '파리', '방콕'].map((city, i) => (
                 <View key={city} style={[styles.dot, i === 1 && styles.dotActive]}>
@@ -227,7 +215,6 @@ export default function HomeScreen() {
         {/* Companion suggestions */}
         <View style={styles.section}>
           <View style={styles.sectionHead}>
-            <Text style={styles.sectionLabel}>TRAVEL COMPANIONS</Text>
             <Text style={styles.sectionTitle}>함께할 여행자</Text>
           </View>
           <TouchableOpacity
@@ -254,7 +241,6 @@ export default function HomeScreen() {
         {/* Open trips */}
         <View style={styles.section}>
           <View style={styles.sectionHead}>
-            <Text style={styles.sectionLabel}>OPEN TRIPS</Text>
             <Text style={styles.sectionTitle}>동행 모집 중</Text>
           </View>
           <TouchableOpacity style={styles.moreLinkRow} onPress={() => router.push('/(tabs)/community')}>
@@ -310,7 +296,6 @@ export default function HomeScreen() {
         {/* Travel stories feed */}
         <View style={styles.section}>
           <View style={styles.sectionHead}>
-            <Text style={styles.sectionLabel}>TRAVEL STORIES</Text>
             <Text style={styles.sectionTitle}>여행자들의 이야기</Text>
           </View>
           <TouchableOpacity
@@ -332,7 +317,6 @@ export default function HomeScreen() {
                   <Text style={[styles.storyTag, { color: story.tagColor }]}>{story.tag}</Text>
                 </View>
                 <Text style={styles.storyTitle}>{story.title}</Text>
-                <Text style={styles.storyDesc}>{story.desc}</Text>
               </View>
               <View style={styles.storyCityBox}>
                 <Text style={styles.storyCityText}>{story.city}</Text>
@@ -348,7 +332,6 @@ export default function HomeScreen() {
           activeOpacity={0.88}
         >
           <Text style={styles.myTripPromptTitle}>내 여행 기록</Text>
-          <Text style={styles.myTripPromptSub}>방문한 도시 · 동행 후기 · 예정 여행</Text>
           <ArrowRightIcon color={Colors.textMuted} size={15} />
         </TouchableOpacity>
       </ScrollView>
@@ -364,7 +347,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     paddingHorizontal: 28,
-    paddingTop: 28,
+    paddingTop: 44,
     paddingBottom: 22,
   },
   appLabel: {
@@ -421,21 +404,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  section: { marginBottom: 36, paddingHorizontal: 28 },
+  section: { marginBottom: 44, paddingHorizontal: 28 },
   sectionHead: { marginBottom: 6 },
-  sectionLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: Colors.textMuted,
-    letterSpacing: 2,
-    marginBottom: 6,
-  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '500',
     color: Colors.textPrimary,
     letterSpacing: -0.3,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   moreLinkRow: {
     flexDirection: 'row',
@@ -471,8 +447,8 @@ const styles = StyleSheet.create({
   destCard: {
     width: 130,
     borderRadius: 16,
-    padding: 16,
-    gap: 4,
+    padding: 20,
+    gap: 6,
   },
   destName: {
     fontSize: 18,
@@ -506,7 +482,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: Colors.primary,
   },
-  connectionInner: { padding: 18 },
+  connectionInner: { padding: 24 },
   connectionTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -668,15 +644,15 @@ const styles = StyleSheet.create({
   storyCard: {
     backgroundColor: Colors.card,
     borderRadius: 16,
-    padding: 18,
+    padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    marginBottom: 10,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
-  storyLeft: { flex: 1, gap: 5 },
+  storyLeft: { flex: 1, gap: 8 },
   storyTagWrap: {
     backgroundColor: Colors.accentLight,
     borderRadius: 4,
@@ -741,21 +717,6 @@ const styles = StyleSheet.create({
     color: Colors.textMuted,
     marginRight: 12,
   },
-
-  statsBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 7,
-    paddingHorizontal: 28,
-    paddingVertical: 13,
-    backgroundColor: Colors.primaryLight,
-  },
-  statsBarDot: {
-    width: 6, height: 6, borderRadius: 3,
-    backgroundColor: Colors.olive,
-  },
-  statsBarText: { fontSize: 12, color: Colors.dustBlue, fontWeight: '400' },
-  statsBarHighlight: { fontWeight: '700', color: Colors.primary },
 
   moodRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   moodTag: {
