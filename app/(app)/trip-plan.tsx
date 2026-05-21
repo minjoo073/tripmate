@@ -32,8 +32,7 @@ export default function TripPlanScreen() {
   }
 
   function handleSave() {
-    // 저장 후 프로필로 이동 (실제 구현 시 API 연동)
-    router.replace('/(tabs)/profile');
+    router.replace('/(tabs)/');
   }
 
   return (
@@ -44,7 +43,7 @@ export default function TripPlanScreen() {
       <View style={[styles.root, { paddingTop: insets.top }]}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.replace('/(tabs)/profile')}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => router.replace('/(tabs)/')}>
             <ArrowLeftIcon color={Colors.textPrimary} size={20} />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
