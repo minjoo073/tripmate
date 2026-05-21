@@ -55,7 +55,7 @@ export default function TripPlanScreen() {
 
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
+          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 120 }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   headerRight: { width: 36 },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 20, gap: 28 },
+  content: { paddingHorizontal: 24, paddingTop: 28, gap: 32 },
 
   hint: {
     fontSize: 12,
