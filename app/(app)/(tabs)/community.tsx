@@ -37,7 +37,7 @@ const FEATURED_POSTS = [
     city: '도쿄',
     coords: '35°N · 139°E',
     tag: '동행 찾기',
-    tagColor: Colors.primary,
+    tagColor: Colors.accent,
     title: '진보초 서점 골목 같이 걸을 분',
     desc: '7월 초 3박 4일, 필름카메라 들고 천천히 걷는 여행. 빠른 일정 싫어하는 분.',
     author: '박승현',
@@ -325,8 +325,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.cardBorder,
   },
   cityTagActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
   },
   cityTagText: {
     fontSize: 12,

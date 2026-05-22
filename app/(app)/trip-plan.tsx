@@ -4,6 +4,7 @@ import {
   TextInput, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { ArrowLeftIcon, MapPinIcon, CalendarIcon, UsersIcon } from '../../components/ui/Icon';
@@ -31,7 +32,15 @@ export default function TripPlanScreen() {
     );
   }
 
-  function handleSave() {
+  async function handleSave() {
+    await AsyncStorage.setItem('trip_plan', JSON.stringify({
+      destination,
+      startDate,
+      endDate,
+      themes,
+      companions,
+      memo,
+    }));
     router.replace('/(tabs)/');
   }
 
@@ -252,11 +261,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.cardBorder,
   },
   tagActive: {
-    backgroundColor: Colors.primaryLight,
-    borderColor: Colors.primary,
+    backgroundColor: Colors.accentLight,
+    borderColor: Colors.accent,
   },
   tagText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
-  tagTextActive: { color: Colors.primary, fontWeight: '500' },
+  tagTextActive: { color: Colors.accent, fontWeight: '500' },
 
   companionRow: { flexDirection: 'row', gap: 8 },
   companionBtn: {
@@ -269,11 +278,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.cardBorder,
   },
   companionBtnActive: {
-    backgroundColor: Colors.primaryLight,
-    borderColor: Colors.primary,
+    backgroundColor: Colors.accentLight,
+    borderColor: Colors.accent,
   },
   companionText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
-  companionTextActive: { color: Colors.primary, fontWeight: '500' },
+  companionTextActive: { color: Colors.accent, fontWeight: '500' },
 
   memoInput: { fontSize: 13 },
   charCount: { fontSize: 10, color: Colors.textMuted, textAlign: 'right', marginTop: -4 },

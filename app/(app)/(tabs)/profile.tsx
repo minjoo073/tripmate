@@ -99,41 +99,42 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Travel moods — integrated into header */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.moodContent}
-          style={styles.moodScroll}
-        >
-          {TRAVEL_MOODS.map((mood) => (
-            <View key={mood.label} style={styles.moodTag}>
-              <Text style={styles.moodTagText}>{mood.label}</Text>
-            </View>
-          ))}
-        </ScrollView>
+        {/* Travel moods — hashtag style */}
+        <Text style={styles.moodText}>
+          {TRAVEL_MOODS.map((m) => `#${m.label.replace(' ', '')}`).join(' · ')}
+        </Text>
       </View>
 
-      {/* 찜한 동행자 shortcut — compact inline link */}
-      <TouchableOpacity style={styles.likedRow} onPress={() => router.push('/liked-mates')} activeOpacity={0.75}>
-        <HeartIcon color={Colors.accent} size={11} filled />
-        <Text style={styles.likedLabel}>찜한 동행자 <Text style={styles.likedCount}>3명</Text></Text>
-        <ArrowRightIcon color={Colors.textMuted} size={11} />
-      </TouchableOpacity>
+      {/* Journey section — unified card */}
+      <View style={styles.journeySection}>
+        <View style={styles.journeyCard}>
+          <TouchableOpacity style={styles.nextTripRow} activeOpacity={0.85} onPress={() => router.push('/trip-detail')}>
+            <View style={styles.nextTripLeft}>
+              <Text style={styles.nextTripEyebrow}>NEXT JOURNEY</Text>
+              <Text style={styles.nextTripDest}>도쿄, 일본</Text>
+              <Text style={styles.nextTripDate}>2025.07.05 – 07.10</Text>
+            </View>
+            <ArrowRightIcon color={Colors.primary} size={16} />
+          </TouchableOpacity>
 
-      {/* Upcoming trip banner + new plan button */}
-      <View style={styles.upcomingWrap}>
-        <TouchableOpacity style={styles.upcomingBanner} activeOpacity={0.85} onPress={() => router.push('/trip-detail')}>
-          <View style={styles.upcomingLeft}>
-            <Text style={styles.upcomingLabel}>NEXT JOURNEY</Text>
-            <Text style={styles.upcomingDest}>도쿄, 일본</Text>
-            <Text style={styles.upcomingDate}>2025.07.05 – 07.10</Text>
+          <View style={styles.journeyDivider} />
+
+          <View style={styles.journeyActions}>
+            <TouchableOpacity style={styles.likedBtn} onPress={() => router.push('/liked-mates')} activeOpacity={0.75}>
+              <HeartIcon color={Colors.accent} size={12} filled />
+              <Text style={styles.likedLabel}>찜한 동행자 <Text style={styles.likedCount}>3명</Text></Text>
+              <ArrowRightIcon color={Colors.textMuted} size={10} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.newTripBtn} onPress={() => router.push('/trip-plan')} activeOpacity={0.8}>
+              <Text style={styles.newTripBtnText}>+ 새 여행 계획</Text>
+            </TouchableOpacity>
           </View>
-          <ArrowRightIcon color={Colors.primary} size={16} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.newTripBtn} onPress={() => router.push('/trip-plan')} activeOpacity={0.8}>
-          <Text style={styles.newTripBtnText}>+ 새 여행 계획</Text>
-        </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* 나의 기록 section header */}
+      <View style={styles.recordHeader}>
+        <Text style={styles.recordTitle}>나의 기록</Text>
       </View>
 
       {/* Tabs — pill segmented control */}
@@ -211,10 +212,10 @@ export default function ProfileScreen() {
           <>
             <Text style={styles.sectionLabel}>저장한 글 · 4</Text>
             {[
-              { id: 'p5', category: '동행 찾기', title: '오사카 6월 말 같이 걸을 분 구해요', categoryColor: Colors.primary, categoryBg: Colors.primaryLight },
+              { id: 'p5', category: '동행 찾기', title: '오사카 6월 말 같이 걸을 분 구해요', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
               { id: 'p6', category: '여행 기록', title: '도톤보리 뒷골목의 오래된 카페들', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
               { id: 'p8', category: '여행 기록', title: '도쿄 야시장과 이자카야, 밤이 더 아름다운 도시', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
-              { id: 'p2', category: '동행 찾기', title: '방콕 5박 6일 + 동행 1명 모집', categoryColor: Colors.primary, categoryBg: Colors.primaryLight },
+              { id: 'p2', category: '동행 찾기', title: '방콕 5박 6일 + 동행 1명 모집', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
             ].map((item) => (
               <TouchableOpacity key={item.id} style={styles.savedRow} activeOpacity={0.7} onPress={() => router.push(`/post/${item.id}`)}>
                 <View style={[styles.savedCatBadge, { backgroundColor: item.categoryBg }]}>
@@ -298,48 +299,59 @@ const styles = StyleSheet.create({
   statLabel: { fontSize: 10, color: Colors.textMuted, textAlign: 'center' },
   statDivider: { width: 1, height: 24, backgroundColor: Colors.cardBorder, flexShrink: 0 },
 
-  moodScroll: { width: '100%' },
-  moodContent: { gap: 8, flexDirection: 'row' },
-  moodTag: {
-    borderRadius: 999,
-    paddingHorizontal: 13,
-    paddingVertical: 6,
-    backgroundColor: Colors.bg,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+  moodText: {
+    fontSize: 12,
+    color: Colors.textMuted,
+    fontWeight: '400',
+    letterSpacing: 0.1,
   },
-  moodTagText: { fontSize: 12, fontWeight: '400', color: Colors.textSecondary },
 
-  likedRow: {
+  journeySection: {
+    marginHorizontal: 20,
+    marginTop: 10,
+  },
+  journeyCard: {
+    backgroundColor: Colors.primaryLight,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(59,81,120,0.12)',
+    overflow: 'hidden',
+  },
+  nextTripRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  nextTripLeft: { flex: 1, gap: 3 },
+  nextTripEyebrow: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: Colors.primary,
+    letterSpacing: 2,
+    marginBottom: 2,
+  },
+  nextTripDest: { fontSize: 15, fontWeight: '600', color: Colors.primary, letterSpacing: -0.2 },
+  nextTripDate: { fontSize: 11, color: Colors.dustBlue },
+  journeyDivider: {
+    height: 1,
+    backgroundColor: 'rgba(59,81,120,0.10)',
+    marginHorizontal: 16,
+  },
+  journeyActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+  },
+  likedBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-    alignSelf: 'center',
-    marginTop: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    backgroundColor: Colors.accentLight,
-    borderRadius: 999,
   },
   likedLabel: { fontSize: 11, fontWeight: '500', color: Colors.textSecondary },
   likedCount: { fontSize: 11, fontWeight: '700', color: Colors.accent },
-
-  upcomingWrap: {
-    marginHorizontal: 20,
-    marginTop: 10,
-    gap: 8,
-  },
-  upcomingBanner: {
-    backgroundColor: Colors.primaryLight,
-    borderRadius: 14,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(59,81,120,0.12)',
-  },
   newTripBtn: {
-    alignSelf: 'flex-end',
     paddingHorizontal: 13,
     paddingVertical: 6,
     borderRadius: 999,
@@ -348,16 +360,18 @@ const styles = StyleSheet.create({
     borderColor: Colors.cardBorder,
   },
   newTripBtnText: { fontSize: 11, fontWeight: '500', color: Colors.textSecondary },
-  upcomingLeft: { flex: 1, gap: 3 },
-  upcomingLabel: {
-    fontSize: 9,
-    fontWeight: '700',
-    color: Colors.primary,
-    letterSpacing: 2,
-    marginBottom: 2,
+
+  recordHeader: {
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 4,
   },
-  upcomingDest: { fontSize: 15, fontWeight: '600', color: Colors.primary, letterSpacing: -0.2 },
-  upcomingDate: { fontSize: 11, color: Colors.dustBlue },
+  recordTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    letterSpacing: -0.1,
+  },
 
   tabsWrap: {
     paddingHorizontal: 20,
