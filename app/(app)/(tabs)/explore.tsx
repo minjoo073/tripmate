@@ -82,7 +82,7 @@ const filterRowStyles = StyleSheet.create({
   segBtn: {
     flex: 1, paddingVertical: 7, alignItems: 'center',
   },
-  segBtnActive: { backgroundColor: Colors.primary },
+  segBtnActive: { backgroundColor: Colors.accent },
   segText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
   segTextActive: { color: Colors.white, fontWeight: '600' },
 });
@@ -231,7 +231,7 @@ export default function ExploreScreen() {
                   activeOpacity={0.75}
                 >
                   <View style={styles.styleIconWrap}>
-                    {(STYLE_ICON[style] ?? ((c: string) => <CompassIcon color={c} size={17} />))(active ? Colors.primary : Colors.textMuted)}
+                    {(STYLE_ICON[style] ?? ((c: string) => <CompassIcon color={c} size={17} />))(active ? Colors.accent : Colors.textMuted)}
                   </View>
                   <Text style={[styles.styleText, active && styles.styleTextActive]}>{style}</Text>
                 </TouchableOpacity>
@@ -284,7 +284,7 @@ export default function ExploreScreen() {
                 { label: '인증 완료', renderIcon: (c: string) => <VerifiedIcon color={c} size={14} />, value: verifiedOnly, setter: setVerifiedOnly },
                 { label: '비흡연자',  renderIcon: (c: string) => <LeafIcon color={c} size={14} />,     value: noSmoking, setter: setNoSmoking },
               ] as const).map(({ label, renderIcon, value, setter }) => {
-                const iconColor = value ? Colors.primary : Colors.textSecondary;
+                const iconColor = value ? Colors.accent : Colors.textSecondary;
                 return (
                   <TouchableOpacity
                     key={label}
@@ -382,9 +382,9 @@ const styles = StyleSheet.create({
     borderRadius: 999, borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
-  cityChipActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
+  cityChipActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
   cityChipText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
-  cityChipTextActive: { color: Colors.primary, fontWeight: '600' },
+  cityChipTextActive: { color: Colors.accent, fontWeight: '600' },
 
   // Dates
   dateCard: {
@@ -410,10 +410,10 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
-  styleCellActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
+  styleCellActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
   styleIconWrap: { width: 18, height: 18, alignItems: 'center', justifyContent: 'center' },
   styleText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
-  styleTextActive: { color: Colors.primary, fontWeight: '600' },
+  styleTextActive: { color: Colors.accent, fontWeight: '600' },
 
   // Filter stack
   filterStack: { gap: 14 },
@@ -428,9 +428,9 @@ const styles = StyleSheet.create({
     borderRadius: 10, borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
-  toggleChipActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
+  toggleChipActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
   toggleChipText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
-  toggleChipTextActive: { color: Colors.primary, fontWeight: '600' },
+  toggleChipTextActive: { color: Colors.accent, fontWeight: '600' },
 
   // Bottom CTA
   bottomBar: {

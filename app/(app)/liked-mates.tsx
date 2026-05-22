@@ -5,13 +5,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { ArrowLeftIcon, HeartIcon, MapPinIcon } from '../../components/ui/Icon';
 import { Avatar } from '../../components/ui/Avatar';
-import { StyleTag } from '../../components/ui/StyleTag';
-import { mockMatchResults } from '../../mock/data';
+import { CalendarIcon } from '../../components/ui/Icon';
+import { mockMatchResults, mockMyTrip } from '../../mock/data';
 import { JoinSheet } from '../../components/mate/JoinSheet';
 import { MatchResult } from '../../types';
 
 // Mock: 찜한 동행자 목록 (첫 3명)
 const LIKED = mockMatchResults.slice(0, 3);
+
+function getOverlap(mateStart: string, mateEnd: string) {
+  const s = mockMyTrip.startDate > mateStart ? mockMyTrip.startDate : mateStart;
+  const e = mockMyTrip.endDate < mateEnd ? mockMyTrip.endDate : mateEnd;
+  if (s > e) return null;
+  const days = Math.round((new Date(e).getTime() - new Date(s).getTime()) / 86400000) + 1;
+  const myTotal = Math.round((new Date(mockMyTrip.endDate).getTime() - new Date(mockMyTrip.startDate).getTime()) / 86400000) + 1;
+  const fmt = (d: string) => d.slice(5).replace('-', '.');
+  return { label: `${fmt(s)} – ${fmt(e)}`, days, isFull: days >= myTotal };
+}
 
 export default function LikedMatesScreen() {
   const insets = useSafeAreaInsets();
@@ -54,6 +64,7 @@ export default function LikedMatesScreen() {
           {LIKED.map((item) => {
             const reRate = 80 + (item.user.travelCount % 15);
             const filledDots = Math.round(item.matchRate / 20);
+            const overlap = getOverlap(item.trip.startDate, item.trip.endDate);
             return (
               <TouchableOpacity
                 key={item.user.id}
@@ -72,8 +83,12 @@ export default function LikedMatesScreen() {
                     <View style={styles.destRow}>
                       <MapPinIcon color={Colors.textMuted} size={11} />
                       <Text style={styles.dest}>{item.trip.destination}</Text>
-                      <Text style={styles.dateSep}>·</Text>
-                      <Text style={styles.date}>{item.trip.startDate.slice(5, 7)}월</Text>
+                    </View>
+                    <View style={styles.overlapRow}>
+                      <CalendarIcon color={overlap ? Colors.accent : Colors.textMuted} size={10} />
+                      <Text style={[styles.overlapText, !overlap && styles.overlapTextNone]}>
+                        {overlap ? `${overlap.label} · ${overlap.days}일 겹침` : '일정 겹침 없음'}
+                      </Text>
                     </View>
                   </View>
                   {/* Match rate + heart */}
@@ -95,27 +110,18 @@ export default function LikedMatesScreen() {
                   </View>
                 </View>
 
-                {/* Tags */}
-                <View style={styles.tagRow}>
-                  {item.user.travelStyles.slice(0, 3).map((s) => (
-                    <StyleTag key={s} label={s} />
-                  ))}
-                </View>
+                {/* Tags — plain text */}
+                <Text style={styles.stylesText}>
+                  {item.user.travelStyles.slice(0, 3).join(' · ')}
+                </Text>
 
-                {/* Trust badges */}
+                {/* Trust — inline text */}
                 <View style={styles.trustRow}>
                   {item.user.isVerified && (
-                    <View style={[styles.badge, styles.badgeVerified]}>
-                      <View style={styles.verifiedBadgeDot} />
-                      <Text style={[styles.badgeText, styles.badgeTextVerified]}>인증 완료</Text>
-                    </View>
+                    <Text style={styles.trustVerified}>● 인증</Text>
                   )}
-                  <View style={[styles.badge, styles.badgeRetrip]}>
-                    <Text style={[styles.badgeText, styles.badgeTextRetrip]}>재동행 {reRate}%</Text>
-                  </View>
-                  <View style={[styles.badge, styles.badgeResponse]}>
-                    <Text style={[styles.badgeText, styles.badgeTextResponse]}>응답 빠름</Text>
-                  </View>
+                  <Text style={styles.trustMeta}>재동행 {reRate}%</Text>
+                  <Text style={styles.trustMeta}>응답 빠름</Text>
                 </View>
 
                 <TouchableOpacity
@@ -205,8 +211,9 @@ const styles = StyleSheet.create({
   name: { fontSize: 16, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
   destRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
   dest: { fontSize: 12, color: Colors.textSecondary },
-  dateSep: { fontSize: 12, color: Colors.textMuted },
-  date: { fontSize: 12, color: Colors.textMuted },
+  overlapRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  overlapText: { fontSize: 11, color: Colors.accent, fontWeight: '500' },
+  overlapTextNone: { color: Colors.textMuted, fontWeight: '400' },
 
   rightCol: { alignItems: 'flex-end', gap: 8 },
   matchWrap: { alignItems: 'flex-end', gap: 5 },
@@ -220,25 +227,19 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
 
-  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  stylesText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: '400',
+  },
 
   trustRow: {
-    flexDirection: 'row', gap: 6,
+    flexDirection: 'row', gap: 10,
     paddingTop: 12,
     borderTopWidth: 1, borderTopColor: Colors.cardBorder,
   },
-  badge: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    borderRadius: 6, paddingHorizontal: 9, paddingVertical: 5,
-  },
-  badgeText: { fontSize: 10, fontWeight: '600' },
-  badgeVerified: { backgroundColor: 'rgba(110,125,98,0.12)' },
-  verifiedBadgeDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.olive },
-  badgeTextVerified: { color: Colors.olive },
-  badgeRetrip: { backgroundColor: 'rgba(107,140,173,0.13)' },
-  badgeTextRetrip: { color: Colors.dustBlue },
-  badgeResponse: { backgroundColor: Colors.accentLight },
-  badgeTextResponse: { color: Colors.accent },
+  trustVerified: { fontSize: 11, color: Colors.olive, fontWeight: '500' },
+  trustMeta: { fontSize: 11, color: Colors.textMuted, fontWeight: '400' },
 
   joinBtn: {
     backgroundColor: Colors.primary, borderRadius: 12,

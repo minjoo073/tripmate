@@ -97,7 +97,7 @@ const CITY_LATLNG: Record<string, { lat: number; lng: number }> = {
 };
 
 const CATEGORY_META: Record<string, { label: string; subLabel: string; color: string; bg: string }> = {
-  mate:   { label: '동행 찾기', subLabel: 'TRAVEL MATE',    color: Colors.primary,  bg: Colors.primaryLight },
+  mate:   { label: '동행 찾기', subLabel: 'TRAVEL MATE',    color: Colors.accent,   bg: Colors.accentLight  },
   tips:   { label: '여행 기록', subLabel: 'TRAVEL LOG',     color: Colors.accent,   bg: Colors.accentLight  },
   review: { label: '로컬 추천', subLabel: 'LOCAL PICK',     color: Colors.olive,    bg: '#EBF0E6'           },
 };
@@ -541,12 +541,12 @@ const styles = StyleSheet.create({
   tripCoords: { fontSize: 10, color: Colors.textMuted, letterSpacing: 0.8 },
   tripDateRow: { flexDirection: 'row' },
   tripDatePill: {
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.accentLight,
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
-  tripDateText: { fontSize: 11, color: Colors.primary, fontWeight: '600', letterSpacing: 0.2 },
+  tripDateText: { fontSize: 11, color: Colors.accent, fontWeight: '600', letterSpacing: 0.2 },
 
   mapSection: { gap: 10 },
   mapCard: {
@@ -660,14 +660,14 @@ const styles = StyleSheet.create({
   },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   tag: {
-    backgroundColor: Colors.bgDeep,
+    backgroundColor: Colors.accentLight,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: 'rgba(196,135,90,0.25)',
   },
-  tagText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
+  tagText: { fontSize: 12, color: Colors.accent, fontWeight: '500' },
 
   scheduleCard: {
     backgroundColor: Colors.card,

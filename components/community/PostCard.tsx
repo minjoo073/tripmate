@@ -12,9 +12,9 @@ interface Props {
 }
 
 const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  all:    { label: '동행 찾기', color: Colors.primary, bg: Colors.primaryLight },
-  mate:   { label: '동행 찾기', color: Colors.primary, bg: Colors.primaryLight },
-  tips:   { label: '여행 기록', color: Colors.accent,  bg: Colors.accentLight  },
+  all:    { label: '동행 찾기', color: Colors.accent, bg: Colors.accentLight },
+  mate:   { label: '동행 찾기', color: Colors.accent, bg: Colors.accentLight },
+  tips:   { label: '여행 기록', color: Colors.dustBlue, bg: Colors.primaryLight },
   review: { label: '로컬 추천', color: Colors.olive,   bg: '#EBF0E6'           },
 };
 
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   tripDateRow: {
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: Colors.accentLight,
     borderRadius: 6,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   },
   tripDate: {
     fontSize: 11,
-    color: Colors.primary,
+    color: Colors.accent,
     fontWeight: '500',
     letterSpacing: 0.2,
   },

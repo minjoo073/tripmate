@@ -3,6 +3,7 @@ import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, Easing,
 } from 'react-native';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
 import { MatchResult, Post } from '../../../types';
@@ -184,13 +185,16 @@ export default function HomeScreen() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isListExpanded, setIsListExpanded] = useState(false);
   const [navyHeight, setNavyHeight] = useState(400);
+  const [hasTripPlan, setHasTripPlan] = useState(false);
   const expandAnim = useRef(new Animated.Value(-20)).current;
   const listOpacity = useRef(new Animated.Value(1)).current;
   const detailOpacity = useRef(new Animated.Value(0)).current;
-  const hasTripPlan = false;
 
   useEffect(() => {
     getRecommended().then(setMatches);
+    AsyncStorage.getItem('trip_plan').then((stored) => {
+      if (stored) setHasTripPlan(true);
+    }).catch(() => {});
   }, []);
 
   // Trigger detail/list fade AFTER React commits re-render
@@ -274,7 +278,7 @@ export default function HomeScreen() {
         <View style={styles.liveRow}>
           <View style={styles.liveDot} />
           <Text style={styles.liveText}>
-            지금 <Text style={styles.liveNum}>2,847명</Text>이 동행을 찾고 있어요
+            지금 <Text style={styles.liveNum}>{OPEN_TRIPS.length}개</Text> 동행 모집 중
           </Text>
         </View>
         <TouchableOpacity
@@ -310,6 +314,15 @@ export default function HomeScreen() {
 
       {/* ── Band 3: beige — slides up over navy on recruit tap ── */}
       <Animated.View style={[styles.band, styles.bandBeige, { marginTop: expandAnim }]}>
+        {/* Drag handle */}
+        <TouchableOpacity
+          style={styles.dragHandleArea}
+          onPress={!selectedPost ? (isListExpanded ? closeList : openList) : undefined}
+          activeOpacity={0.6}
+        >
+          <View style={styles.dragHandle} />
+        </TouchableOpacity>
+
         {/* Header */}
         <View style={styles.bandHeaderRow}>
           <TouchableOpacity
@@ -411,7 +424,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={[styles.detailCta, { backgroundColor: accent.text }]}
               activeOpacity={0.85}
-              onPress={() => router.push('/(tabs)/community')}
+              onPress={() => router.push(`/post/${post.id}`)}
             >
               <Text style={styles.detailCtaText}>동행 신청하기</Text>
             </TouchableOpacity>
@@ -438,9 +451,20 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 24,
-    paddingTop: 28,
+    paddingTop: 12,
     paddingBottom: 32,
     zIndex: 3,
+  },
+  dragHandleArea: {
+    alignItems: 'center',
+    paddingBottom: 16,
+  },
+  dragHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.textMuted,
+    opacity: 0.4,
   },
 
   topBar: {

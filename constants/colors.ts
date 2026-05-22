@@ -17,30 +17,30 @@ export const Colors = {
   muteGoldBorder: 'rgba(198,165,106,0.3)',
 
   // Backgrounds
-  bg: '#F8F4EF',             // Warm Ivory
-  bgDeep: '#F0EAE2',         // Soft Beige
-  bgCard: '#FDFBF9',         // Near-white warm
+  bg: '#F5F8FC',             // Cool Light Blue
+  bgDeep: '#EBF0F6',         // Cool Blue-Gray
+  bgCard: '#FAFCFF',         // Near-white cool
 
   // Surfaces
   card: '#FFFFFF',
-  cardBorder: '#EAE4DC',     // Warm sand border
-  cardShadow: 'rgba(42, 33, 24, 0.05)',
+  cardBorder: '#DDE4EE',     // Cool blue border
+  cardShadow: 'rgba(28, 43, 58, 0.06)',
 
   // Text
-  textPrimary: '#2A2118',    // Warm near-black
-  textSecondary: '#7A706A',  // Warm gray
-  textMuted: '#ADA49C',      // Muted warm gray
+  textPrimary: '#1C2B3A',    // Cool dark navy
+  textSecondary: '#5B6E82',  // Cool blue-gray
+  textMuted: '#8EA0B5',      // Cool muted blue-gray
   textOnDark: '#FFFFFF',
 
   // Legacy aliases
   white: '#FFFFFF',
   stamp: '#8B4040',
   inputBg: '#FFFFFF',
-  inputBorder: '#EAE4DC',
-  navBorder: '#EAE4DC',
-  textPlaceholder: '#ADA49C',
+  inputBorder: '#DDE4EE',
+  navBorder: '#DDE4EE',
+  textPlaceholder: '#8EA0B5',
   cardDark: '#1C3F4F',
-  chatBg: '#F0EAE2',
+  chatBg: '#EBF0F6',
   primaryBg: '#EBF0F8',
   pointYellow: '#E8C882',
   pointBlueGray: '#EBF0F8',

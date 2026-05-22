@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  useWindowDimensions,
+  useWindowDimensions, Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Colors } from '../constants/colors';
@@ -23,7 +23,7 @@ const FEATURES = [
     icon: '💬',
     title: '실시간 채팅',
     desc: '매칭 후 바로 일정을 공유하고 채팅으로 세부 계획을 맞춰가세요.',
-    color: Colors.pointPurple,
+    color: '#E8D8E8',
   },
   {
     icon: '🌍',
@@ -111,17 +111,24 @@ function Stars({ count }: { count: number }) {
 export default function LandingPage() {
   const { width } = useWindowDimensions();
   const isWide = width > 700;
+  const scrollRef = useRef<ScrollView>(null);
+  const [featuresY, setFeaturesY] = useState(0);
+  const [reviewsY, setReviewsY] = useState(0);
 
   return (
-    <ScrollView style={styles.root} showsVerticalScrollIndicator={false}>
+    <ScrollView ref={scrollRef} style={styles.root} showsVerticalScrollIndicator={false}>
 
       {/* ── NAV ── */}
       <View style={styles.nav}>
         <View style={styles.navInner}>
           <Text style={styles.logo}>✈️ TripMate</Text>
           <View style={styles.navLinks}>
-            <Text style={styles.navLink}>서비스 소개</Text>
-            <Text style={styles.navLink}>이용 후기</Text>
+            <TouchableOpacity onPress={() => scrollRef.current?.scrollTo({ y: featuresY, animated: true })}>
+              <Text style={styles.navLink}>서비스 소개</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => scrollRef.current?.scrollTo({ y: reviewsY, animated: true })}>
+              <Text style={styles.navLink}>이용 후기</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.navCta} onPress={() => router.push('/(tabs)/')}>
               <Text style={styles.navCtaText}>앱 체험하기</Text>
             </TouchableOpacity>
@@ -192,7 +199,7 @@ export default function LandingPage() {
       </View>
 
       {/* ── FEATURES ── */}
-      <View style={styles.section}>
+      <View style={styles.section} onLayout={(e) => setFeaturesY(e.nativeEvent.layout.y)}>
         <Text style={styles.sectionBadge}>왜 TripMate인가요?</Text>
         <Text style={styles.sectionTitle}>여행의 모든 걱정,{'\n'}TripMate가 해결해드려요</Text>
         <Text style={styles.sectionSub}>
@@ -255,7 +262,7 @@ export default function LandingPage() {
       </View>
 
       {/* ── REVIEWS ── */}
-      <View style={[styles.section, { backgroundColor: Colors.bg }]}>
+      <View style={[styles.section, { backgroundColor: Colors.bg }]} onLayout={(e) => setReviewsY(e.nativeEvent.layout.y)}>
         <Text style={styles.sectionBadge}>실제 사용자 후기</Text>
         <Text style={styles.sectionTitle}>TripMate로 만난{'\n'}여행, 그 후기들</Text>
         <View style={styles.reviewList}>
@@ -287,12 +294,12 @@ export default function LandingPage() {
           <Text style={styles.ctaBtnText}>무료로 시작하기 →</Text>
         </TouchableOpacity>
         <View style={styles.ctaStores}>
-          <View style={styles.storeBtn}>
+          <TouchableOpacity style={styles.storeBtn} onPress={() => Alert.alert('준비 중', 'App Store 버전이 곧 출시될 예정이에요!')} activeOpacity={0.75}>
             <Text style={styles.storeBtnText}>🍎 App Store</Text>
-          </View>
-          <View style={styles.storeBtn}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.storeBtn} onPress={() => Alert.alert('준비 중', 'Google Play 버전이 곧 출시될 예정이에요!')} activeOpacity={0.75}>
             <Text style={styles.storeBtnText}>▶ Google Play</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <Text style={styles.ctaNote}>iOS · Android · Web 모두 지원</Text>
       </View>
@@ -431,7 +438,7 @@ const styles = StyleSheet.create({
   mockBadgeText: { fontSize: 13, fontWeight: '800', color: Colors.primary },
   statsBar: {
     flexDirection: 'row',
-    backgroundColor: Colors.textPrimary,
+    backgroundColor: Colors.primary,
     paddingVertical: 28,
     paddingHorizontal: 16,
     justifyContent: 'space-around',
