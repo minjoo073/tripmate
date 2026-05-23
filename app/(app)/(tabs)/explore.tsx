@@ -48,17 +48,17 @@ function SegmentRow<T extends string>({
   onChange: (v: T) => void;
 }) {
   return (
-    <View style={filterRowStyles.wrap}>
-      <Text style={filterRowStyles.label}>{label}</Text>
-      <View style={filterRowStyles.seg}>
+    <View style={segStyles.wrap}>
+      <Text style={segStyles.label}>{label}</Text>
+      <View style={segStyles.seg}>
         {options.map((opt) => (
           <TouchableOpacity
             key={opt}
-            style={[filterRowStyles.segBtn, value === opt && filterRowStyles.segBtnActive]}
+            style={[segStyles.segBtn, value === opt && segStyles.segBtnActive]}
             onPress={() => onChange(opt)}
             activeOpacity={0.75}
           >
-            <Text style={[filterRowStyles.segText, value === opt && filterRowStyles.segTextActive]}>
+            <Text style={[segStyles.segText, value === opt && segStyles.segTextActive]}>
               {opt}
             </Text>
           </TouchableOpacity>
@@ -68,21 +68,19 @@ function SegmentRow<T extends string>({
   );
 }
 
-const filterRowStyles = StyleSheet.create({
+const segStyles = StyleSheet.create({
   wrap: { gap: 8 },
   label: { fontSize: 12, fontWeight: '600', color: Colors.textSecondary },
   seg: {
     flexDirection: 'row',
-    backgroundColor: Colors.bg,
+    backgroundColor: Colors.bgDeep,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
     overflow: 'hidden',
   },
   segBtn: {
-    flex: 1, paddingVertical: 7, alignItems: 'center',
+    flex: 1, paddingVertical: 8, alignItems: 'center',
   },
-  segBtnActive: { backgroundColor: Colors.accent },
+  segBtnActive: { backgroundColor: Colors.accent, borderRadius: 10 },
   segText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
   segTextActive: { color: Colors.white, fontWeight: '600' },
 });
@@ -94,7 +92,6 @@ export default function ExploreScreen() {
   const [endDate, setEndDate] = useState('');
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
 
-  // Filters
   const [gender, setGender] = useState<GenderOption>('무관');
   const [ageGroup, setAgeGroup] = useState<AgeOption>('무관');
   const [companionCount, setCompanionCount] = useState<CompanionOption>('무관');
@@ -107,8 +104,6 @@ export default function ExploreScreen() {
       prev.includes(style) ? prev.filter((s) => s !== style) : [...prev, style],
     );
   };
-
-  const toggleChip = (setter: (v: boolean) => void, current: boolean) => setter(!current);
 
   const handleSearch = () => {
     const filter: FindMateFilter = {
@@ -130,6 +125,7 @@ export default function ExploreScreen() {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -150,29 +146,28 @@ export default function ExploreScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* 어디로? */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>DESTINATION</Text>
-          <Text style={styles.cardTitle}>어디로 떠나요?</Text>
-          <View style={styles.destInputWrap}>
-            <MapPinIcon color={Colors.textMuted} size={16} />
+        {/* ── 목적지 ── */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>어디로 떠나요?</Text>
+          <View style={styles.inputWrap}>
+            <MapPinIcon color={Colors.textMuted} size={15} />
             <TextInput
-              style={styles.destInput}
+              style={styles.input}
               value={destination}
               onChangeText={setDestination}
               placeholder="도시 또는 국가"
               placeholderTextColor={Colors.textMuted}
             />
           </View>
-          <View style={styles.cityRow}>
+          <View style={styles.chipRow}>
             {POPULAR_CITIES.map((city) => (
               <TouchableOpacity
                 key={city}
-                style={[styles.cityChip, destination === city && styles.cityChipActive]}
+                style={[styles.chip, destination === city && styles.chipActive]}
                 onPress={() => setDestination(destination === city ? '' : city)}
                 activeOpacity={0.75}
               >
-                <Text style={[styles.cityChipText, destination === city && styles.cityChipTextActive]}>
+                <Text style={[styles.chipText, destination === city && styles.chipTextActive]}>
                   {city}
                 </Text>
               </TouchableOpacity>
@@ -180,13 +175,14 @@ export default function ExploreScreen() {
           </View>
         </View>
 
-        {/* 언제? */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>DATES</Text>
-          <Text style={styles.cardTitle}>언제 떠나요?</Text>
-          <View style={styles.dateCard}>
+        <View style={styles.divider} />
+
+        {/* ── 날짜 ── */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>언제 떠나요?</Text>
+          <View style={styles.dateRow}>
             <View style={styles.dateSide}>
-              <Text style={styles.dateRole}>출발</Text>
+              <Text style={styles.dateLabel}>출발</Text>
               <TextInput
                 style={styles.dateInput}
                 value={startDate}
@@ -197,11 +193,9 @@ export default function ExploreScreen() {
                 maxLength={5}
               />
             </View>
-            <View style={styles.dateArrow}>
-              <Text style={styles.dateArrowLine}>—</Text>
-            </View>
+            <Text style={styles.dateArrow}>—</Text>
             <View style={styles.dateSide}>
-              <Text style={styles.dateRole}>귀국</Text>
+              <Text style={styles.dateLabel}>귀국</Text>
               <TextInput
                 style={styles.dateInput}
                 value={endDate}
@@ -215,11 +209,16 @@ export default function ExploreScreen() {
           </View>
         </View>
 
-        {/* 여행 스타일 */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>TRAVEL STYLE</Text>
-          <Text style={styles.cardTitle}>어떤 여행을 즐기나요?</Text>
-          <Text style={styles.cardSub}>여러 개 선택할 수 있어요</Text>
+        <View style={styles.divider} />
+
+        {/* ── 여행 스타일 ── */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>어떤 여행을 즐기나요?</Text>
+            {selectedStyles.length > 0 && (
+              <Text style={styles.selectedCount}>{selectedStyles.length}개 선택됨</Text>
+            )}
+          </View>
           <View style={styles.styleGrid}>
             {TRAVEL_STYLES.map((style) => {
               const active = selectedStyles.includes(style);
@@ -240,63 +239,37 @@ export default function ExploreScreen() {
           </View>
         </View>
 
-        {/* 추가 조건 */}
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>FILTERS</Text>
-          <Text style={styles.cardTitle}>추가 조건</Text>
+        <View style={styles.divider} />
+
+        {/* ── 추가 조건 ── */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>추가 조건</Text>
 
           <View style={styles.filterStack}>
-            {/* 성별 */}
-            <SegmentRow
-              label="성별"
-              options={GENDER_OPTIONS}
-              value={gender}
-              onChange={setGender}
-            />
+            <SegmentRow label="성별" options={GENDER_OPTIONS} value={gender} onChange={setGender} />
+            <View style={styles.filterDivider} />
+            <SegmentRow label="나이대" options={AGE_OPTIONS} value={ageGroup} onChange={setAgeGroup} />
+            <View style={styles.filterDivider} />
+            <SegmentRow label="동행 인원" options={COMPANION_OPTIONS} value={companionCount} onChange={setCompanionCount} />
+            <View style={styles.filterDivider} />
 
-            <View style={styles.divider} />
-
-            {/* 나이대 */}
-            <SegmentRow
-              label="나이대"
-              options={AGE_OPTIONS}
-              value={ageGroup}
-              onChange={setAgeGroup}
-            />
-
-            <View style={styles.divider} />
-
-            {/* 동행 인원 */}
-            <SegmentRow
-              label="동행 인원"
-              options={COMPANION_OPTIONS}
-              value={companionCount}
-              onChange={setCompanionCount}
-            />
-
-            <View style={styles.divider} />
-
-            {/* 토글 칩 옵션들 */}
             <Text style={styles.toggleGroupLabel}>기타 옵션</Text>
             <View style={styles.toggleChips}>
               {([
                 { label: '일정 겹침', renderIcon: (c: string) => <CalendarIcon color={c} size={14} />, value: scheduleOverlap, setter: setScheduleOverlap },
                 { label: '인증 완료', renderIcon: (c: string) => <VerifiedIcon color={c} size={14} />, value: verifiedOnly, setter: setVerifiedOnly },
                 { label: '비흡연자',  renderIcon: (c: string) => <LeafIcon color={c} size={14} />,     value: noSmoking, setter: setNoSmoking },
-              ] as const).map(({ label, renderIcon, value, setter }) => {
-                const iconColor = value ? Colors.accent : Colors.textSecondary;
-                return (
-                  <TouchableOpacity
-                    key={label}
-                    style={[styles.toggleChip, value && styles.toggleChipActive]}
-                    onPress={() => toggleChip(setter as (v: boolean) => void, value)}
-                    activeOpacity={0.75}
-                  >
-                    {renderIcon(iconColor)}
-                    <Text style={[styles.toggleChipText, value && styles.toggleChipTextActive]}>{label}</Text>
-                  </TouchableOpacity>
-                );
-              })}
+              ] as const).map(({ label, renderIcon, value, setter }) => (
+                <TouchableOpacity
+                  key={label}
+                  style={[styles.toggleChip, value && styles.toggleChipActive]}
+                  onPress={() => (setter as (v: boolean) => void)(!value)}
+                  activeOpacity={0.75}
+                >
+                  {renderIcon(value ? Colors.accent : Colors.textSecondary)}
+                  <Text style={[styles.toggleChipText, value && styles.toggleChipTextActive]}>{label}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         </View>
@@ -329,6 +302,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
+    backgroundColor: Colors.card,
   },
   backBtn: { padding: 4, marginTop: 16 },
   headerText: { flex: 1 },
@@ -341,72 +315,77 @@ const styles = StyleSheet.create({
   },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
+  content: { paddingTop: 4 },
 
-  card: {
-    backgroundColor: Colors.white,
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 1,
+  section: {
+    paddingHorizontal: 22,
+    paddingVertical: 24,
+    gap: 14,
+    backgroundColor: Colors.card,
   },
-  cardLabel: {
-    fontSize: 9, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 3,
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
   },
-  cardTitle: {
-    fontSize: 15, fontWeight: '500', color: Colors.textPrimary,
-    letterSpacing: -0.2, marginBottom: 12,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.textPrimary,
+    letterSpacing: -0.2,
   },
-  cardSub: {
-    fontSize: 11, color: Colors.textMuted, marginTop: -8, marginBottom: 12,
+  selectedCount: {
+    fontSize: 12,
+    color: Colors.accent,
+    fontWeight: '600',
+  },
+  divider: {
+    height: 8,
+    backgroundColor: Colors.bgDeep,
   },
 
-  // Destination
-  destInputWrap: {
+  inputWrap: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     backgroundColor: Colors.bg, borderRadius: 12,
-    paddingHorizontal: 12, paddingVertical: 10,
-    borderWidth: 1.5, borderColor: Colors.cardBorder,
-    marginBottom: 12,
+    paddingHorizontal: 14, paddingVertical: 12,
+    borderWidth: 1, borderColor: Colors.cardBorder,
   },
-  destInput: { flex: 1, fontSize: 14, color: Colors.textPrimary, fontWeight: '400' },
-  cityRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  cityChip: {
-    paddingHorizontal: 12, paddingVertical: 5,
+  input: { flex: 1, fontSize: 15, color: Colors.textPrimary },
+
+  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
+  chip: {
+    paddingHorizontal: 13, paddingVertical: 6,
     borderRadius: 999, borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
-  cityChipActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
-  cityChipText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
-  cityChipTextActive: { color: Colors.accent, fontWeight: '600' },
+  chipActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
+  chipText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
+  chipTextActive: { color: Colors.accent, fontWeight: '600' },
 
-  // Dates
-  dateCard: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.bg, borderRadius: 12,
-    padding: 14, borderWidth: 1, borderColor: Colors.cardBorder,
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: Colors.bg,
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
   },
-  dateSide: { flex: 1, alignItems: 'center', gap: 5 },
-  dateRole: { fontSize: 10, fontWeight: '600', color: Colors.textMuted, letterSpacing: 0.5 },
+  dateSide: { flex: 1, alignItems: 'center', gap: 6 },
+  dateLabel: { fontSize: 10, fontWeight: '600', color: Colors.textMuted, letterSpacing: 0.5 },
   dateInput: {
-    fontSize: 18, fontWeight: '300', color: Colors.textPrimary,
+    fontSize: 20, fontWeight: '300', color: Colors.textPrimary,
     letterSpacing: -0.5, textAlign: 'center', minWidth: 70,
   },
-  dateArrow: { paddingHorizontal: 10, alignItems: 'center' },
-  dateArrowLine: { fontSize: 14, color: Colors.textMuted },
+  dateArrow: { fontSize: 16, color: Colors.textMuted },
 
-  // Style grid
   styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   styleCell: {
     width: '30%', flexGrow: 1,
-    paddingVertical: 10, borderRadius: 12,
-    alignItems: 'center', gap: 4,
+    paddingVertical: 11, borderRadius: 12,
+    alignItems: 'center', gap: 5,
     borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
@@ -415,11 +394,10 @@ const styles = StyleSheet.create({
   styleText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
   styleTextActive: { color: Colors.accent, fontWeight: '600' },
 
-  // Filter stack
   filterStack: { gap: 14 },
-  divider: { height: 1, backgroundColor: Colors.cardBorder },
+  filterDivider: { height: 1, backgroundColor: Colors.bgDeep },
   toggleGroupLabel: {
-    fontSize: 11, fontWeight: '600', color: Colors.textSecondary,
+    fontSize: 12, fontWeight: '600', color: Colors.textSecondary,
   },
   toggleChips: { flexDirection: 'row', gap: 8 },
   toggleChip: {
@@ -432,11 +410,10 @@ const styles = StyleSheet.create({
   toggleChipText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
   toggleChipTextActive: { color: Colors.accent, fontWeight: '600' },
 
-  // Bottom CTA
   bottomBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
-    backgroundColor: Colors.bg,
-    paddingHorizontal: 20, paddingTop: 10,
+    backgroundColor: Colors.card,
+    paddingHorizontal: 20, paddingTop: 12,
     borderTopWidth: 1, borderTopColor: Colors.cardBorder,
     gap: 6,
     shadowColor: '#000',
@@ -448,7 +425,7 @@ const styles = StyleSheet.create({
   bottomHint: { fontSize: 11, color: Colors.textMuted, textAlign: 'center', fontWeight: '400' },
   searchBtn: {
     backgroundColor: Colors.primary, borderRadius: 12,
-    height: 44, alignItems: 'center', justifyContent: 'center',
+    height: 48, alignItems: 'center', justifyContent: 'center',
   },
-  searchBtnText: { fontSize: 14, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
+  searchBtnText: { fontSize: 15, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
 });

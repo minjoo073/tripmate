@@ -11,69 +11,53 @@ interface Props {
   item: Post;
 }
 
-const CATEGORY_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  all:    { label: '동행 찾기', color: Colors.accent, bg: Colors.accentLight },
-  mate:   { label: '동행 찾기', color: Colors.accent, bg: Colors.accentLight },
-  tips:   { label: '여행 기록', color: Colors.dustBlue, bg: Colors.primaryLight },
-  review: { label: '로컬 추천', color: Colors.olive,   bg: '#EBF0E6'           },
-};
-
-const CITY_COORDS: Record<string, string> = {
-  '오사카':     '34°N · 135°E',
-  '도쿄':       '35°N · 139°E',
-  '방콕':       '13°N · 100°E',
-  '파리':       '48°N · 002°E',
-  '뉴욕':       '40°N · 073°W',
-  '바르셀로나': '41°N · 002°E',
-  '발리':       '08°S · 115°E',
-  '프라하':     '50°N · 014°E',
-  '리스본':     '38°N · 009°W',
-  '이스탄불':   '41°N · 028°E',
-  '다낭':       '16°N · 108°E',
+const CATEGORY_LABELS: Record<string, { label: string; color: string; dotColor: string }> = {
+  all:    { label: '동행 찾기', color: Colors.accent,   dotColor: Colors.accent },
+  mate:   { label: '동행 찾기', color: Colors.accent,   dotColor: Colors.accent },
+  tips:   { label: '여행 기록', color: Colors.dustBlue, dotColor: Colors.dustBlue },
+  review: { label: '로컬 추천', color: Colors.olive,    dotColor: Colors.olive },
 };
 
 export function PostCard({ item }: Props) {
   const time = new Date(item.createdAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
   const cat = CATEGORY_LABELS[item.category ?? 'all'] ?? CATEGORY_LABELS['all'];
   const destination = item.trip?.destination ?? '';
-  const coords = CITY_COORDS[destination] ?? null;
   const isMatePost = item.category === 'mate';
 
   return (
     <TouchableOpacity
-      style={styles.card}
-      activeOpacity={0.82}
+      style={styles.row}
+      activeOpacity={0.72}
       onPress={() => router.push(`/post/${item.id}`)}
     >
-      {/* Top: category + date */}
+      {/* Category dot + label + time */}
       <View style={styles.topRow}>
-        <View style={[styles.catBadge, { backgroundColor: cat.bg }]}>
-          <Text style={[styles.catText, { color: cat.color }]}>{cat.label}</Text>
-        </View>
+        <View style={[styles.catDot, { backgroundColor: cat.dotColor }]} />
+        <Text style={[styles.catText, { color: cat.color }]}>{cat.label}</Text>
         <Text style={styles.time}>{time}</Text>
       </View>
 
       {/* Title */}
       <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
 
-      {/* Destination with coords — shown when trip data exists */}
-      {destination ? (
-        <View style={styles.destRow}>
-          <MapPinIcon color={Colors.textMuted} size={11} />
-          <Text style={styles.destText}>{destination}</Text>
+      {/* Location + date */}
+      {(destination || (isMatePost && item.trip)) ? (
+        <View style={styles.metaRow}>
+          {destination ? (
+            <>
+              <MapPinIcon color={Colors.textMuted} size={10} />
+              <Text style={styles.metaText}>{destination}</Text>
+            </>
+          ) : null}
+          {isMatePost && item.trip && (
+            <Text style={styles.metaDate}>
+              {destination ? ' · ' : ''}{item.trip.startDate} – {item.trip.endDate}
+            </Text>
+          )}
         </View>
       ) : null}
 
-      {/* Companion post: show trip date range */}
-      {isMatePost && item.trip && (
-        <View style={styles.tripDateRow}>
-          <Text style={styles.tripDate}>
-            {item.trip.startDate} – {item.trip.endDate}
-          </Text>
-        </View>
-      )}
-
-      {/* Tags */}
+      {/* Travel style tags */}
       {item.travelStyles.length > 0 && (
         <View style={styles.tagRow}>
           {item.travelStyles.slice(0, 3).map((s) => (
@@ -82,22 +66,20 @@ export function PostCard({ item }: Props) {
         </View>
       )}
 
-      {/* Footer */}
+      {/* Footer: author + stats */}
       <View style={styles.footer}>
         <View style={styles.authorRow}>
-          <Avatar nickname={item.author.nickname} size={22} />
+          <Avatar nickname={item.author.nickname} size={18} />
           <Text style={styles.authorName}>{item.author.nickname}</Text>
-          <Text style={styles.authorLocation}>{item.author.location}</Text>
+          {item.author.location ? (
+            <Text style={styles.authorMeta}> · {item.author.location}</Text>
+          ) : null}
         </View>
         <View style={styles.statsRow}>
-          <View style={styles.statItem}>
-            <HeartIcon color={Colors.textMuted} size={12} />
-            <Text style={styles.stat}>{item.likes}</Text>
-          </View>
-          <View style={styles.statItem}>
-            <MessageIcon color={Colors.textMuted} size={12} />
-            <Text style={styles.stat}>{item.comments}</Text>
-          </View>
+          <HeartIcon color={Colors.textMuted} size={11} />
+          <Text style={styles.stat}>{item.likes}</Text>
+          <MessageIcon color={Colors.textMuted} size={11} />
+          <Text style={styles.stat}>{item.comments}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -105,114 +87,90 @@ export function PostCard({ item }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.card,
-    borderRadius: 18,
-    padding: 20,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    gap: 12,
+  row: {
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+    gap: 9,
   },
   topRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 6,
   },
-  catBadge: {
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+  catDot: {
+    width: 5,
+    height: 5,
+    borderRadius: 3,
   },
   catText: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
+    flex: 1,
   },
   time: {
     fontSize: 10,
     color: Colors.textMuted,
   },
   title: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
     color: Colors.textPrimary,
-    lineHeight: 22,
-    letterSpacing: -0.2,
+    lineHeight: 23,
+    letterSpacing: -0.3,
   },
-  content: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 20,
-    fontWeight: '400',
-  },
-  destRow: {
+  metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 3,
   },
-  destText: {
+  metaText: {
     fontSize: 11,
     color: Colors.textMuted,
     fontWeight: '500',
   },
-  coords: {
-    fontSize: 10,
+  metaDate: {
+    fontSize: 11,
     color: Colors.textMuted,
-    opacity: 0.6,
-    letterSpacing: 0.3,
   },
-  tripDateRow: {
-    backgroundColor: Colors.accentLight,
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    alignSelf: 'flex-start',
-  },
-  tripDate: {
-    fontSize: 11,
-    color: Colors.accent,
-    fontWeight: '500',
-    letterSpacing: 0.2,
-  },
-  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  tag: {
-    backgroundColor: Colors.bgDeep,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-  },
-  tagText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
-    fontWeight: '400',
+  tagRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 5,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 6,
-    borderTopWidth: 1,
-    borderTopColor: Colors.cardBorder,
+    marginTop: 2,
   },
   authorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 7,
+    gap: 5,
     flex: 1,
     minWidth: 0,
   },
   authorName: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
-    color: Colors.textPrimary,
+    color: Colors.textSecondary,
   },
-  authorLocation: {
+  authorMeta: {
     fontSize: 11,
     color: Colors.textMuted,
     flexShrink: 1,
   },
-  statsRow: { flexDirection: 'row', gap: 12, flexShrink: 0 },
-  statItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  stat: { fontSize: 11, color: Colors.textMuted },
+  statsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    flexShrink: 0,
+  },
+  stat: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    marginRight: 3,
+  },
 });

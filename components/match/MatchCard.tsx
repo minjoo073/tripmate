@@ -13,98 +13,107 @@ interface Props {
   onJoin?: (item: MatchResult) => void;
 }
 
+function matchColor(rate: number) {
+  if (rate >= 90) return Colors.olive;
+  if (rate >= 80) return Colors.dustBlue;
+  return Colors.accent;
+}
+
 export function MatchCard({ item, rank, onJoin }: Props) {
-  const filledDots = Math.round(item.matchRate / 20);
   const reRate = 80 + (item.user.travelCount % 15);
+  const accentColor = matchColor(item.matchRate);
 
   return (
     <TouchableOpacity
       style={styles.card}
-      activeOpacity={0.82}
+      activeOpacity={0.8}
       onPress={() => router.push(`/mate/${item.user.id}`)}
     >
-      {/* Top row */}
-      <View style={styles.cardTop}>
-        <View style={styles.avatarWrap}>
-          <Avatar nickname={item.user.nickname} size={52} />
-          {item.user.isVerified && <View style={styles.verifiedDot} />}
-        </View>
-        <View style={styles.info}>
-          <Text style={styles.name}>{item.user.nickname}</Text>
-          <View style={styles.destRow}>
-            <MapPinIcon color={Colors.textMuted} size={11} />
-            <Text style={styles.dest}>{item.trip.destination}</Text>
-            <Text style={styles.dateSep}>·</Text>
-            <Text style={styles.date}>{item.trip.startDate.slice(5, 7)}월</Text>
+      {/* Left accent bar — intensity encodes match rate */}
+      <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
+
+      <View style={styles.inner}>
+        {/* Top row */}
+        <View style={styles.cardTop}>
+          <View style={styles.avatarWrap}>
+            <Avatar nickname={item.user.nickname} size={50} />
+            {item.user.isVerified && <View style={styles.verifiedDot} />}
+          </View>
+          <View style={styles.info}>
+            <Text style={styles.name}>{item.user.nickname}</Text>
+            <View style={styles.destRow}>
+              <MapPinIcon color={Colors.textMuted} size={11} />
+              <Text style={styles.dest}>{item.trip.destination}</Text>
+              <Text style={styles.dateSep}>·</Text>
+              <Text style={styles.date}>{item.trip.startDate.slice(5, 7)}월</Text>
+            </View>
+          </View>
+          {/* Match rate */}
+          <View style={styles.matchWrap}>
+            <Text style={[styles.matchPct, { color: accentColor }]}>{item.matchRate}%</Text>
+            <Text style={styles.matchLabel}>매칭</Text>
           </View>
         </View>
-        {/* Match rate */}
-        <View style={styles.matchWrap}>
-          <Text style={styles.matchPct}>{item.matchRate}%</Text>
-          <View style={styles.compatDots}>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <View
-                key={i}
-                style={[styles.compatDot, i <= filledDots && styles.compatDotFilled]}
-              />
-            ))}
+
+        {/* Travel style tags */}
+        <View style={styles.tagRow}>
+          {item.user.travelStyles.slice(0, 3).map((s) => (
+            <StyleTag key={s} label={s} />
+          ))}
+        </View>
+
+        {/* Footer: trust badges + CTA */}
+        <View style={styles.footer}>
+          <View style={styles.trustRow}>
+            {item.user.isVerified && (
+              <View style={styles.badge}>
+                <View style={styles.verifiedBadgeDot} />
+                <Text style={styles.badgeVerifiedText}>인증</Text>
+              </View>
+            )}
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>재동행 {reRate}%</Text>
+            </View>
           </View>
+
+          {onJoin && (
+            <TouchableOpacity
+              style={styles.joinBtn}
+              onPress={(e) => { e.stopPropagation?.(); onJoin(item); }}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.joinBtnText}>동행 신청</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
-
-      {/* Travel style tags */}
-      <View style={styles.tagRow}>
-        {item.user.travelStyles.slice(0, 3).map((s) => (
-          <StyleTag key={s} label={s} />
-        ))}
-      </View>
-
-      {/* Trust badges */}
-      <View style={styles.trustRow}>
-        {item.user.isVerified && (
-          <View style={[styles.badge, styles.badgeVerified]}>
-            <View style={styles.verifiedBadgeDot} />
-            <Text style={[styles.badgeText, styles.badgeTextVerified]}>인증 완료</Text>
-          </View>
-        )}
-        <View style={[styles.badge, styles.badgeRetrip]}>
-          <Text style={[styles.badgeText, styles.badgeTextRetrip]}>재동행 {reRate}%</Text>
-        </View>
-        <View style={[styles.badge, styles.badgeResponse]}>
-          <Text style={[styles.badgeText, styles.badgeTextResponse]}>응답 빠름</Text>
-        </View>
-      </View>
-
-      {onJoin && (
-        <TouchableOpacity
-          style={styles.joinBtn}
-          onPress={(e) => { e.stopPropagation?.(); onJoin(item); }}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.joinBtnText}>동행 신청</Text>
-        </TouchableOpacity>
-      )}
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: 'row',
     backgroundColor: Colors.card,
     borderRadius: 18,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    gap: 14,
-    marginBottom: 12,
+    marginBottom: 10,
+    overflow: 'hidden',
     shadowColor: Colors.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 8,
     elevation: 1,
   },
+  accentBar: {
+    width: 4,
+    flexShrink: 0,
+  },
+  inner: {
+    flex: 1,
+    padding: 18,
+    gap: 12,
+  },
 
-  // Top row
   cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   avatarWrap: { position: 'relative' },
   verifiedDot: {
@@ -120,65 +129,59 @@ const styles = StyleSheet.create({
   dateSep: { fontSize: 12, color: Colors.textMuted },
   date: { fontSize: 12, color: Colors.textMuted },
 
-  // Match rate
-  matchWrap: { alignItems: 'flex-end', gap: 5 },
+  matchWrap: { alignItems: 'flex-end', gap: 1 },
   matchPct: {
-    fontSize: 13, fontWeight: '700',
-    color: Colors.primary, letterSpacing: -0.3,
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: -0.5,
   },
-  compatDots: { flexDirection: 'row', gap: 3 },
-  compatDot: {
-    width: 5, height: 5, borderRadius: 3,
+  matchLabel: {
+    fontSize: 10,
+    color: Colors.textMuted,
+    fontWeight: '400',
+  },
+
+  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: Colors.bgDeep,
+  },
+  trustRow: { flexDirection: 'row', gap: 6, flexShrink: 1 },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     backgroundColor: Colors.bgDeep,
   },
-  compatDotFilled: { backgroundColor: Colors.dustBlue },
-
-  // Style tags — soft navy tint
-  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  styleTag: {
-    backgroundColor: Colors.primaryLight,
-    paddingHorizontal: 10, paddingVertical: 5,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(59,81,120,0.12)',
+  badgeText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: Colors.textSecondary,
   },
-  styleTagText: { fontSize: 11, color: Colors.primary, fontWeight: '600' },
-
-  // Trust badges
-  trustRow: {
-    flexDirection: 'row', gap: 6,
-    paddingTop: 12,
-    marginTop: 2,
-    borderTopWidth: 1, borderTopColor: Colors.cardBorder,
-  },
-  badge: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    borderRadius: 6,
-    paddingHorizontal: 9, paddingVertical: 5,
-  },
-  badgeText: { fontSize: 10, fontWeight: '600' },
-
-  // 인증 완료 — olive green
-  badgeVerified: { backgroundColor: 'rgba(110,125,98,0.12)' },
   verifiedBadgeDot: {
     width: 5, height: 5, borderRadius: 3,
     backgroundColor: Colors.olive,
   },
-  badgeTextVerified: { color: Colors.olive },
-
-  // 재동행 — dust blue
-  badgeRetrip: { backgroundColor: 'rgba(107,140,173,0.13)' },
-  badgeTextRetrip: { color: Colors.dustBlue },
-
-  // 응답 빠름 — warm accent
-  badgeResponse: { backgroundColor: Colors.accentLight },
-  badgeTextResponse: { color: Colors.accent },
+  badgeVerifiedText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: Colors.olive,
+  },
 
   joinBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 12,
-    paddingVertical: 11,
-    alignItems: 'center',
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    flexShrink: 0,
   },
-  joinBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
+  joinBtnText: { fontSize: 12, fontWeight: '600', color: Colors.white },
 });

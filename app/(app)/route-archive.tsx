@@ -1,34 +1,12 @@
 import React, { useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, LayoutChangeEvent, Pressable,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, LayoutChangeEvent, Pressable, Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Polygon, Circle, Line, Rect, G, Path } from 'react-native-svg';
 import { Colors } from '../../constants/colors';
 import { ArrowLeftIcon } from '../../components/ui/Icon';
 
-function pin(lon: number, lat: number) {
-  return { x: lon + 180, y: 90 - lat };
-}
-
-const OCEAN  = '#D4DFEC';
-const LAND   = '#EDE8DF';
-const BORDER = '#CFC8BA';
-const GRID   = 'rgba(255,255,255,0.32)';
-
-const CONTINENTS = [
-  '15,22 40,18 62,17 82,15 103,15 122,26 130,44 120,47 110,64 93,74 72,69 60,56 55,40 40,30',
-  '110,64 116,68 120,72 115,74 110,72 107,67',
-  '100,76 122,75 136,87 145,94 148,101 143,113 130,129 115,145 112,145 107,137 103,126 100,94',
-  '170,54 186,47 196,46 212,45 222,48 220,20 205,18 190,20 182,28 178,38',
-  '148,10 163,8 172,14 168,24 154,26 142,22 142,14',
-  '163,75 196,74 224,78 233,78 226,88 229,103 220,119 210,125 196,125 193,118 191,108 190,90 190,83 180,85',
-  '222,48 220,18 240,18 280,22 310,24 340,22 340,30 320,42 307,52 295,64 290,68 285,80 284,88 268,84 260,82 255,90 260,82 252,68 246,74 236,78 224,78 218,66 216,54',
-  '318,48 322,50 320,56 316,58 313,55 314,50',
-  '294,112 308,108 317,102 324,108 333,118 330,128 325,130 316,125 304,125 296,124',
-  '344,126 347,124 348,130 345,132',
-];
 
 const CITIES = [
   // Thailand 2024
@@ -62,6 +40,18 @@ const STATS = [
   { value: '2',  label: '예정' },
 ];
 
+const TRIPS = [
+  { year: '2024', flag: '🇹🇭', country: '태국',         cities: ['치앙마이'],                          start: '2024.12.19', end: '2024.12.26' },
+  { year: '2024', flag: '🇪🇸', country: '스페인',        cities: ['세비야', '마드리드', '바르셀로나'],   start: '2024.03.01', end: '2024.03.12' },
+  { year: '2024', flag: '🇻🇳', country: '베트남',        cities: ['호치민', '나트랑', '다낭'],           start: '2024.01.02', end: '2024.01.12' },
+  { year: '2023', flag: '🇭🇺', country: '중앙유럽',      cities: ['부다페스트', '빈', '프라하'],         start: '2023.05.08', end: '2023.05.18' },
+  { year: '2023', flag: '🇫🇷', country: '프랑스',        cities: ['파리'],                              start: '2023.04.05', end: '2023.04.10' },
+  { year: '2022', flag: '🇮🇹', country: '이탈리아 · 몰타', cities: ['밀라노', '로마', '몰타'],           start: '2022.06.09', end: '2022.07.05' },
+  { year: '2021', flag: '🇨🇳', country: '중국',          cities: ['칭다오'],                            start: '2021.08.04', end: '2021.08.09' },
+];
+
+const TRIP_YEARS = Array.from(new Set(TRIPS.map((t) => t.year)));
+
 export default function RouteArchiveScreen() {
   const insets = useSafeAreaInsets();
   const [active, setActive] = useState<string | null>(null);
@@ -75,7 +65,7 @@ export default function RouteArchiveScreen() {
   const activeCity = CITIES.find((c) => c.city === active) ?? null;
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    <View style={[styles.root, { paddingTop: insets.top + 12 }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -93,100 +83,100 @@ export default function RouteArchiveScreen() {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 32 }]}
+        contentContainerStyle={{ paddingTop: 20, paddingBottom: insets.bottom + 32 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Map */}
-        <View style={styles.mapCard} onLayout={onMapLayout}>
+        {/* Map — full bleed, OSM zoom-1 tiles + city pins */}
+        <View style={styles.mapSection} onLayout={onMapLayout}>
           {mapW > 0 && (
-            <Svg width={mapW} height={mapH} viewBox="0 0 360 180">
-              <Rect x={0} y={0} width={360} height={180} fill={OCEAN} />
-
-              {/* Grid */}
-              <Line x1={0}   y1={90}    x2={360} y2={90}    stroke={GRID} strokeWidth={0.6} />
-              <Line x1={180} y1={0}     x2={180} y2={180}   stroke={GRID} strokeWidth={0.6} />
-              <Line x1={0}   y1={66.5}  x2={360} y2={66.5}  stroke={GRID} strokeWidth={0.3} strokeDasharray="3 5" />
-              <Line x1={0}   y1={113.5} x2={360} y2={113.5} stroke={GRID} strokeWidth={0.3} strokeDasharray="3 5" />
-              <Line x1={90}  y1={0}     x2={90}  y2={180}   stroke={GRID} strokeWidth={0.3} />
-              <Line x1={270} y1={0}     x2={270} y2={180}   stroke={GRID} strokeWidth={0.3} />
-
-              {/* Continents */}
-              {CONTINENTS.map((pts, i) => (
-                <Polygon key={i} points={pts} fill={LAND} stroke={BORDER} strokeWidth={0.55} />
-              ))}
-
-              {/* City pins — clean teardrop shape */}
-              {CITIES.map((c) => {
-                const p = pin(c.lon, c.lat);
-                const isActive = active === c.city;
-                const color = isActive ? Colors.primary : Colors.accent;
-                const r = isActive ? 4 : 2.8;
-                const offset = isActive ? 5 : 3.5;
+            <View style={{ width: mapW, height: mapH, overflow: 'hidden', backgroundColor: '#d4e0eb' }}>
+              {([[0,0],[1,0],[0,1],[1,1]] as [number,number][]).map(([tx, ty]) => {
+                const tileScale = mapW / 512;
                 return (
-                  <G key={c.city}>
-                    {/* Circle head */}
-                    <Circle
-                      cx={p.x} cy={p.y - offset} r={r}
-                      fill={color} stroke="white" strokeWidth={0.8}
-                    />
-                    {/* Triangle tail */}
-                    <Path
-                      d={`M ${p.x - r * 0.65},${p.y - offset + r * 0.6}
-                          L ${p.x + r * 0.65},${p.y - offset + r * 0.6}
-                          L ${p.x},${p.y + r * 0.5} Z`}
-                      fill={color}
-                    />
-                    {/* Inner dot (selected only) */}
-                    {isActive && (
-                      <Circle cx={p.x} cy={p.y - offset} r={1.5} fill="white" opacity={0.95} />
-                    )}
-                  </G>
+                  <Image
+                    key={`${tx}${ty}`}
+                    source={{ uri: `https://a.tile.openstreetmap.org/1/${tx}/${ty}.png` }}
+                    style={{
+                      position: 'absolute',
+                      left: tx * 256 * tileScale,
+                      top: ty * 256 * tileScale,
+                      width: 256 * tileScale,
+                      height: 256 * tileScale,
+                    }}
+                  />
                 );
               })}
-            </Svg>
+              {CITIES.map((c) => {
+                const n = 2;
+                const tileX = (c.lon + 180) / 360 * n;
+                const latRad = c.lat * Math.PI / 180;
+                const tileY = (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n;
+                const tileScale = mapW / 512;
+                const px = tileX * 256 * tileScale;
+                const py = tileY * 256 * tileScale;
+                const isActive = active === c.city;
+                const size = isActive ? 11 : 7;
+                return (
+                  <TouchableOpacity
+                    key={c.city}
+                    style={{ position: 'absolute', left: px - size / 2, top: py - size / 2 }}
+                    onPress={() => setActive(active === c.city ? null : c.city)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <View style={{
+                      width: size, height: size, borderRadius: size / 2,
+                      backgroundColor: isActive ? Colors.primary : Colors.accent,
+                      borderWidth: 1.5, borderColor: 'white',
+                    }} />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           )}
-
-          {/* Legend */}
           <View style={styles.mapLegend}>
             <View style={styles.legendDot} />
             <Text style={styles.legendText}>방문한 도시</Text>
           </View>
         </View>
 
-        {/* Stats row */}
-        <View style={styles.statsRow}>
-          {STATS.map((s) => (
-            <View key={s.label} style={styles.statCard}>
-              <Text style={styles.statValue}>{s.value}</Text>
-              <Text style={styles.statLabel}>{s.label}</Text>
-            </View>
+        {/* Stats strip — inline, no individual boxes */}
+        <View style={styles.statsStrip}>
+          {STATS.map((s, i) => (
+            <React.Fragment key={s.label}>
+              {i > 0 && <View style={styles.statDivider} />}
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>{s.value}</Text>
+                <Text style={styles.statLabel}>{s.label}</Text>
+              </View>
+            </React.Fragment>
           ))}
         </View>
 
-        {/* City list */}
-        <Text style={styles.sectionLabel}>방문한 도시</Text>
-        {CITIES.map((c) => (
-          <TouchableOpacity
-            key={c.city}
-            style={[styles.cityCard, active === c.city && styles.cityCardActive]}
-            onPress={() => setActive(active === c.city ? null : c.city)}
-            activeOpacity={0.82}
-          >
-            <Text style={styles.cityFlag}>{c.flag}</Text>
-            <View style={styles.cityInfo}>
-              <View style={styles.cityRow}>
-                <Text style={styles.cityName}>{c.city}</Text>
-                <Text style={styles.citySub}>{c.country}</Text>
+        {/* Travel journal — grouped by year */}
+        <View style={styles.journalSection}>
+          <Text style={styles.sectionLabel}>여행 기록</Text>
+          {TRIP_YEARS.map((year) => (
+            <View key={year}>
+              <View style={styles.yearRow}>
+                <Text style={styles.yearLabel}>{year}</Text>
+                <View style={styles.yearLine} />
               </View>
-              <Text style={styles.cityMeta}>{c.startDate} – {c.endDate}</Text>
+              {TRIPS.filter((t) => t.year === year).map((t, idx, arr) => (
+                <View
+                  key={t.country + t.start}
+                  style={[styles.tripEntry, idx < arr.length - 1 && styles.tripEntryDivider]}
+                >
+                  <Text style={styles.tripFlag}>{t.flag}</Text>
+                  <View style={styles.tripBody}>
+                    <Text style={styles.tripCountry}>{t.country}</Text>
+                    <Text style={styles.tripCities}>{t.cities.join(' · ')}</Text>
+                  </View>
+                  <Text style={styles.tripDate}>{t.start.slice(5, 10)}</Text>
+                </View>
+              ))}
             </View>
-            <View style={[styles.countBadge, active === c.city && styles.countBadgeActive]}>
-              <Text style={[styles.countText, active === c.city && styles.countTextActive]}>
-                {c.count}회
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
+          ))}
+        </View>
       </ScrollView>
 
       {/* City popup — full overlay modal */}
@@ -242,22 +232,13 @@ const styles = StyleSheet.create({
   headerRight: { width: 36 },
 
   scroll: { flex: 1 },
-  content: { paddingTop: 20, paddingHorizontal: 20 },
 
-  mapCard: {
-    borderRadius: 20,
+  mapSection: {
     overflow: 'hidden',
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: 'rgba(42,33,24,0.07)',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 14,
-    elevation: 2,
     position: 'relative',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
-
   mapLegend: {
     position: 'absolute',
     bottom: 10,
@@ -273,52 +254,56 @@ const styles = StyleSheet.create({
   legendDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: Colors.accent },
   legendText: { fontSize: 10, color: Colors.textSecondary, fontWeight: '500' },
 
-  statsRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
-  statCard: {
-    flex: 1,
-    backgroundColor: Colors.card,
-    borderRadius: 14,
-    paddingVertical: 14,
+  statsStrip: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    backgroundColor: Colors.card,
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
-  statValue: { fontSize: 21, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.5 },
-  statLabel: { fontSize: 10, color: Colors.textMuted, fontWeight: '500' },
+  statItem: { flex: 1, alignItems: 'center', gap: 4 },
+  statValue: { fontSize: 22, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.5 },
+  statLabel: { fontSize: 11, color: Colors.textMuted },
+  statDivider: { width: 1, height: 28, backgroundColor: Colors.cardBorder },
 
   sectionLabel: {
     fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 12,
+    letterSpacing: 1.5, textTransform: 'uppercase',
   },
 
-  cityCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
+  journalSection: {
+    paddingHorizontal: 20,
+    paddingTop: 22,
+    paddingBottom: 12,
+    gap: 4,
+  },
+  yearRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
+    marginTop: 20,
+    marginBottom: 4,
+  },
+  yearLabel: {
+    fontSize: 12, fontWeight: '700', color: Colors.textMuted, letterSpacing: 0.5,
+  },
+  yearLine: { flex: 1, height: 1, backgroundColor: Colors.cardBorder },
+  tripEntry: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 13,
     gap: 14,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
   },
-  cityCardActive: { borderColor: Colors.accent, backgroundColor: Colors.accentLight },
-  cityFlag: { fontSize: 26 },
-  cityInfo: { flex: 1, gap: 3 },
-  cityRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cityName: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary },
-  citySub: { fontSize: 11, color: Colors.textMuted },
-  cityMeta: { fontSize: 11, color: Colors.textMuted },
-  countBadge: {
-    backgroundColor: Colors.bgDeep,
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+  tripEntryDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
-  countBadgeActive: { backgroundColor: Colors.accent },
-  countText: { fontSize: 11, fontWeight: '600', color: Colors.textSecondary },
-  countTextActive: { color: Colors.white },
+  tripFlag: { fontSize: 26, lineHeight: 32 },
+  tripBody: { flex: 1, gap: 3, paddingTop: 1 },
+  tripCountry: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
+  tripCities: { fontSize: 12, color: Colors.textMuted },
+  tripDate: { fontSize: 11, color: Colors.textMuted, paddingTop: 3, letterSpacing: 0.2 },
 
   // Popup modal
   popupOverlay: {

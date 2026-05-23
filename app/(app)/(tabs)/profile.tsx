@@ -172,29 +172,43 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <Text style={styles.sectionLabel}>여행 기록 · {MOCK_TRIPS.length}</Text>
-            {MOCK_TRIPS.map((trip) => (
-              <View key={trip.id} style={styles.tripCard}>
-                <View style={styles.tripLeft}>
+            <View style={styles.tripList}>
+              {MOCK_TRIPS.map((trip, idx) => (
+                <View
+                  key={trip.id}
+                  style={[
+                    styles.tripRow,
+                    idx < MOCK_TRIPS.length - 1 && styles.tripRowBorder,
+                  ]}
+                >
                   <View style={[
-                    styles.statusBadge,
-                    trip.status === 'upcoming' ? styles.statusUpcoming : styles.statusDone,
-                  ]}>
-                    <Text style={[
-                      styles.statusText,
-                      trip.status === 'upcoming' ? styles.statusTextUpcoming : styles.statusTextDone,
-                    ]}>
-                      {trip.status === 'upcoming' ? '예정' : '완료'}
-                    </Text>
+                    styles.tripStatusBar,
+                    { backgroundColor: trip.status === 'upcoming' ? Colors.primary : Colors.olive },
+                  ]} />
+                  <View style={styles.tripRowBody}>
+                    <Text style={styles.tripDest}>{trip.dest}</Text>
+                    <Text style={styles.tripDate}>{trip.date}</Text>
+                    <Text style={styles.tripCompanion}>함께한 분 · {trip.companion}</Text>
                   </View>
-                  <Text style={styles.tripDest}>{trip.dest}</Text>
-                  <Text style={styles.tripDate}>{trip.date}</Text>
-                  <Text style={styles.tripCompanion}>함께한 분 · {trip.companion}</Text>
+                  <View style={styles.tripRowRight}>
+                    {trip.rating > 0 && (
+                      <Text style={styles.rating}>{'★'.repeat(trip.rating)}</Text>
+                    )}
+                    <View style={[
+                      styles.statusPill,
+                      trip.status === 'upcoming' ? styles.statusPillUpcoming : styles.statusPillDone,
+                    ]}>
+                      <Text style={[
+                        styles.statusPillText,
+                        trip.status === 'upcoming' ? styles.statusPillTextUpcoming : styles.statusPillTextDone,
+                      ]}>
+                        {trip.status === 'upcoming' ? '예정' : '완료'}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-                {trip.rating > 0 && (
-                  <Text style={styles.rating}>{'★'.repeat(trip.rating)}</Text>
-                )}
-              </View>
-            ))}
+              ))}
+            </View>
           </>
         )}
 
@@ -205,6 +219,13 @@ export default function ProfileScreen() {
             </View>
             <Text style={styles.emptyTitle}>아직 후기가 없어요</Text>
             <Text style={styles.emptyDesc}>여행 후 동행 후기를 남겨보세요</Text>
+            <TouchableOpacity
+              style={styles.emptyBtn}
+              onPress={() => router.push('/(tabs)/community')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.emptyBtnText}>커뮤니티 둘러보기</Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -430,22 +451,48 @@ const styles = StyleSheet.create({
     fontSize: 11, fontWeight: '700', color: Colors.textMuted, marginBottom: 12,
     letterSpacing: 0.5, textTransform: 'uppercase',
   },
-  tripCard: {
-    backgroundColor: Colors.card, borderRadius: 16, padding: 18,
-    flexDirection: 'row', alignItems: 'flex-start',
-    borderWidth: 1, borderColor: Colors.cardBorder, marginBottom: 10,
+  tripList: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    overflow: 'hidden',
+    marginBottom: 10,
   },
-  tripLeft: { flex: 1, gap: 5 },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4, alignSelf: 'flex-start', marginBottom: 5 },
-  statusUpcoming: { backgroundColor: Colors.primaryLight },
-  statusDone: { backgroundColor: Colors.bgDeep },
-  statusText: { fontSize: 10, fontWeight: '600', letterSpacing: 0.3 },
-  statusTextUpcoming: { color: Colors.primary },
-  statusTextDone: { color: Colors.textSecondary },
+  tripRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
+    paddingRight: 16,
+    gap: 14,
+  },
+  tripRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
+  tripStatusBar: {
+    width: 3,
+    height: 40,
+    borderRadius: 2,
+    marginLeft: 16,
+    flexShrink: 0,
+  },
+  tripRowBody: { flex: 1, gap: 4 },
   tripDest: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
   tripDate: { fontSize: 12, color: Colors.textMuted },
   tripCompanion: { fontSize: 12, color: Colors.dustBlue, fontWeight: '500' },
-  rating: { fontSize: 12, color: '#C4A052', flexShrink: 0 },
+  tripRowRight: { alignItems: 'flex-end', gap: 6, flexShrink: 0 },
+  rating: { fontSize: 11, color: '#C4A052' },
+  statusPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  statusPillUpcoming: { backgroundColor: Colors.primaryLight },
+  statusPillDone: { backgroundColor: Colors.bgDeep },
+  statusPillText: { fontSize: 10, fontWeight: '600', letterSpacing: 0.2 },
+  statusPillTextUpcoming: { color: Colors.primary },
+  statusPillTextDone: { color: Colors.textSecondary },
 
   personalityCard: {
     backgroundColor: Colors.card,
@@ -533,4 +580,12 @@ const styles = StyleSheet.create({
   emptyIconBox: { width: 56, height: 56, borderRadius: 16, backgroundColor: Colors.bgDeep, alignItems: 'center', justifyContent: 'center' },
   emptyTitle: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, marginTop: 4 },
   emptyDesc: { fontSize: 13, color: Colors.textMuted },
+  emptyBtn: {
+    marginTop: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: Colors.primary,
+  },
+  emptyBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
 });

@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
   },
   profileLinkText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
   messages: { flex: 1 },
-  messagesContent: { padding: 16, paddingBottom: 8 },
+  messagesContent: { paddingHorizontal: 16, paddingTop: 24, paddingBottom: 20 },
 
   pendingBanner: {
     backgroundColor: Colors.accentLight,

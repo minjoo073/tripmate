@@ -54,7 +54,7 @@ export default function MateProfileScreen() {
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       {/* Nav */}
-      <View style={[styles.navBar, { paddingTop: insets.top + 12 }]}>
+      <View style={[styles.navBar, { paddingTop: insets.top + 16 }]}>
         <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)')} style={styles.navBtn}>
           <ArrowLeftIcon color={Colors.textPrimary} size={20} />
         </TouchableOpacity>
@@ -109,34 +109,26 @@ export default function MateProfileScreen() {
           </View>
         </View>
 
-        {/* Stats card */}
-        <View style={styles.trustCard}>
-          <View style={styles.trustHeader}>
-            <Text style={styles.trustTitle}>여행자 정보</Text>
-            <View style={styles.trustScore}>
-              <Text style={styles.trustScoreText}>안심 여행자</Text>
-            </View>
+        {/* Stats row — no card box, just metrics in a row */}
+        <View style={styles.statsStrip}>
+          <View style={styles.statsItem}>
+            <Text style={styles.statsValue}>{user.travelCount}회</Text>
+            <Text style={styles.statsLabel}>동행 여행</Text>
           </View>
-          <View style={styles.trustGrid}>
-            <View style={styles.trustItem}>
-              <Text style={styles.trustValue}>{user.travelCount}회</Text>
-              <Text style={styles.trustLabel}>동행 여행</Text>
-            </View>
-            <View style={styles.trustDivider} />
-            <View style={styles.trustItem}>
-              <Text style={styles.trustValue}>{recompanionRate}%</Text>
-              <Text style={styles.trustLabel}>재동행률</Text>
-            </View>
-            <View style={styles.trustDivider} />
-            <View style={styles.trustItem}>
-              <Text style={styles.trustValue}>{responseRate}%</Text>
-              <Text style={styles.trustLabel}>응답률</Text>
-            </View>
-            <View style={styles.trustDivider} />
-            <View style={styles.trustItem}>
-              <Text style={styles.trustValue}>{user.rating}</Text>
-              <Text style={styles.trustLabel}>평점</Text>
-            </View>
+          <View style={styles.statsDivider} />
+          <View style={styles.statsItem}>
+            <Text style={styles.statsValue}>{recompanionRate}%</Text>
+            <Text style={styles.statsLabel}>재동행률</Text>
+          </View>
+          <View style={styles.statsDivider} />
+          <View style={styles.statsItem}>
+            <Text style={styles.statsValue}>{responseRate}%</Text>
+            <Text style={styles.statsLabel}>응답률</Text>
+          </View>
+          <View style={styles.statsDivider} />
+          <View style={styles.statsItem}>
+            <Text style={styles.statsValue}>{user.rating}</Text>
+            <Text style={styles.statsLabel}>평점</Text>
           </View>
         </View>
 
@@ -206,13 +198,19 @@ export default function MateProfileScreen() {
               <Text style={styles.sectionLabel}>함께 여행한 후기</Text>
               <Text style={styles.reviewCount}>{user.reviews.length}개</Text>
             </View>
-            {user.reviews.map((review) => (
-              <View key={review.id} style={styles.reviewCard}>
+            {user.reviews.map((review, idx) => (
+              <View
+                key={review.id}
+                style={[
+                  styles.reviewRow,
+                  idx < user.reviews.length - 1 && styles.reviewRowBorder,
+                ]}
+              >
                 <View style={styles.reviewHeader}>
-                  <Avatar nickname={review.reviewer.nickname} size={28} />
+                  <Avatar nickname={review.reviewer.nickname} size={26} />
                   <View style={styles.reviewerInfo}>
                     <Text style={styles.reviewerName}>{review.reviewer.nickname}</Text>
-                    <Text style={styles.reviewDate}>{'★'.repeat(review.rating)}</Text>
+                    <Text style={styles.reviewStars}>{'★'.repeat(review.rating)}</Text>
                   </View>
                 </View>
                 <Text style={styles.reviewContent}>{review.content}</Text>
@@ -310,55 +308,28 @@ const styles = StyleSheet.create({
   },
   heroBadgeTextVet: { color: '#A08040' },
 
-  trustCard: {
-    margin: 20,
+  statsStrip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
     backgroundColor: Colors.card,
-    borderRadius: 18,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    gap: 16,
   },
-  trustHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  trustTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.textMuted,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
-  trustScore: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  trustScoreText: {
-    fontSize: 11,
-    color: Colors.textMuted,
-    fontWeight: '500',
-  },
-  trustGrid: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  trustItem: { flex: 1, alignItems: 'center', gap: 4 },
-  trustValue: {
+  statsItem: { flex: 1, alignItems: 'center', gap: 4 },
+  statsValue: {
     fontSize: 20,
     fontWeight: '500',
     color: Colors.textPrimary,
     letterSpacing: -0.5,
   },
-  trustLabel: {
+  statsLabel: {
     fontSize: 11,
     color: Colors.textMuted,
     textAlign: 'center',
-    fontWeight: '400',
   },
-  trustDivider: {
+  statsDivider: {
     width: 1,
     height: 28,
     backgroundColor: Colors.cardBorder,
@@ -435,20 +406,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
   },
   reviewCount: {
     fontSize: 12,
     color: Colors.textMuted,
   },
-  reviewCard: {
-    backgroundColor: Colors.card,
-    borderRadius: 14,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    marginBottom: 10,
+  reviewRow: {
+    paddingVertical: 16,
     gap: 10,
+  },
+  reviewRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
   },
   reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   reviewerInfo: { flex: 1 },
@@ -457,11 +427,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.textPrimary,
   },
-  reviewDate: { fontSize: 12, color: '#C4A052', marginTop: 1 },
+  reviewStars: { fontSize: 11, color: '#C4A052', marginTop: 2 },
   reviewContent: {
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 21,
   },
 
   personalityRow: { flexDirection: 'row', gap: 8 },

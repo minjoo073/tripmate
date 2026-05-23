@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Linking, Animated, TextInput, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Linking, Animated, TextInput, KeyboardAvoidingView, Platform, Pressable, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Rect, Line, Circle, Path } from 'react-native-svg';
 import { Colors, Font } from '../../../constants/colors';
 import { Post } from '../../../types';
 import { Avatar } from '../../../components/ui/Avatar';
@@ -10,62 +9,13 @@ import { getPost } from '../../../services/communityService';
 import { startChat } from '../../../services/chatService';
 import { MapPinIcon, HeartIcon, MessageIcon, ArrowRightIcon } from '../../../components/ui/Icon';
 
-function CityMapGraphic({ city }: { city: string }) {
-  const seed = city.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const r = (n: number) => ((seed * 1103515245 + n * 22695477) & 0x7fff) / 0x7fff;
-  const W = 400, H = 200;
 
-  // Lines span 0→W and 0→H so blocks fill the full card
-  const hLines = [0, 38, 70, 102, 134, 166, H];
-  const vLines = [0, 52, 106, 162, 220, 278, 336, W];
-  const mainHIdx = [2, 4];
-  const mainVIdx = [2, 5];
-
-  const blockColors = ['#E8E2D9', '#DDD8CF', '#E4DFDA', '#D9D4CB'];
-  const parkColor = '#D6E8C8';
-
-  const blocks: { x: number; y: number; w: number; h: number; fill: string }[] = [];
-  for (let i = 0; i < hLines.length - 1; i++) {
-    for (let j = 0; j < vLines.length - 1; j++) {
-      const cx = (vLines[j] + vLines[j + 1]) / 2;
-      const cy = (hLines[i] + hLines[i + 1]) / 2;
-      const distToCenter = Math.sqrt(Math.pow(cx - W / 2, 2) + Math.pow(cy - H / 2, 2));
-      if (distToCenter < 28) continue; // leave space for pin
-      const t = Math.floor(r(i * 11 + j) * 4);
-      const isParck = t === 3 && r(i * 7 + j) > 0.55;
-      const pad = 3;
-      blocks.push({
-        x: vLines[j] + pad, y: hLines[i] + pad,
-        w: vLines[j + 1] - vLines[j] - pad * 2,
-        h: hLines[i + 1] - hLines[i] - pad * 2,
-        fill: isParck ? parkColor : blockColors[t],
-      });
-    }
-  }
-
-  return (
-    <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice">
-      <Rect width={W} height={H} fill="#E8E3DB" />
-      {blocks.map((b, i) => (
-        <Rect key={i} x={b.x} y={b.y} width={b.w} height={b.h} fill={b.fill} rx={2} />
-      ))}
-      {hLines.map((y, i) => (
-        <Line key={`h${i}`} x1={0} y1={y} x2={W} y2={y}
-          stroke={mainHIdx.includes(i) ? '#B8B2A8' : '#CCC7BF'}
-          strokeWidth={mainHIdx.includes(i) ? 6 : 2} />
-      ))}
-      {vLines.map((x, i) => (
-        <Line key={`v${i}`} x1={x} y1={0} x2={x} y2={H}
-          stroke={mainVIdx.includes(i) ? '#B8B2A8' : '#CCC7BF'}
-          strokeWidth={mainVIdx.includes(i) ? 6 : 2} />
-      ))}
-      {/* Pin */}
-      <Circle cx={W / 2} cy={H / 2} r={22} fill="rgba(255,255,255,0.85)" />
-      <Circle cx={W / 2} cy={H / 2} r={10} fill={Colors.primary} />
-      <Circle cx={W / 2} cy={H / 2} r={5} fill="white" />
-      <Circle cx={W / 2} cy={H / 2} r={22} fill="none" stroke={Colors.primary} strokeWidth={1.5} strokeOpacity={0.25} />
-    </Svg>
-  );
+function latlngToTile(lat: number, lng: number, zoom: number) {
+  const n = Math.pow(2, zoom);
+  const x = Math.floor((lng + 180) / 360 * n);
+  const latRad = lat * Math.PI / 180;
+  const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+  return { x, y };
 }
 
 const CITY_COORDS: Record<string, string> = {
@@ -214,9 +164,7 @@ export default function PostDetailScreen() {
   const destination = post.trip?.destination ?? '';
   const coords = CITY_COORDS[destination] ?? null;
   const latlng = CITY_LATLNG[destination] ?? null;
-  const mapImageUrl = latlng
-    ? `https://maps.wikimedia.org/img/osm-intl,13,${latlng.lat},${latlng.lng},640x220.png@2x`
-    : null;
+  const osmTile = latlng ? latlngToTile(latlng.lat, latlng.lng, 13) : null;
   const mapsUrl = latlng
     ? `https://www.google.com/maps/search/${encodeURIComponent(destination)}`
     : null;
@@ -224,7 +172,7 @@ export default function PostDetailScreen() {
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.canGoBack() ? router.back() : router.replace('/(app)/(tabs)/community')} activeOpacity={0.7}>
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
@@ -289,7 +237,17 @@ export default function PostDetailScreen() {
               onPress={() => mapsUrl && Linking.openURL(mapsUrl)}
             >
               <View style={styles.mapImage}>
-                <CityMapGraphic city={destination} />
+                {osmTile && (
+                  <View style={styles.mapTileRow}>
+                    {[-1, 0, 1].map((offset) => (
+                      <Image
+                        key={offset}
+                        source={{ uri: `https://a.tile.openstreetmap.org/13/${osmTile.x + offset}/${osmTile.y}.png` }}
+                        style={styles.mapTile}
+                      />
+                    ))}
+                  </View>
+                )}
               </View>
               <View style={styles.mapOverlay}>
                 <View style={styles.mapPill}>
@@ -557,9 +515,16 @@ const styles = StyleSheet.create({
   },
   mapImage: {
     width: '100%',
-    height: 140,
+    height: 160,
     overflow: 'hidden',
+    backgroundColor: '#d4e0eb',
   },
+  mapTileRow: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    transform: [{ translateY: -48 }],
+  },
+  mapTile: { width: 256, height: 256 },
   mapOverlay: {
     flexDirection: 'row',
     alignItems: 'center',

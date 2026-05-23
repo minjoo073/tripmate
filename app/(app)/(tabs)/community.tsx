@@ -159,11 +159,13 @@ export default function CommunityScreen() {
         </View>
 
         {/* Route sharing banner */}
-        <TouchableOpacity style={styles.routeBanner} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.routeBanner} activeOpacity={0.85} onPress={() => router.push('/route-archive')}>
           <View style={styles.routeBannerLeft}>
-            <Text style={styles.routeBannerTitle}>여행 루트 공유</Text>
+            <Text style={styles.routeBannerLabel}>ROUTE ARCHIVE</Text>
+            <Text style={styles.routeBannerTitle}>내 여행 루트 공유하기</Text>
+            <Text style={styles.routeBannerDesc}>지도 위에 새겨진 나의 발자국</Text>
           </View>
-          <ArrowRightIcon color={Colors.textMuted} size={15} />
+          <ArrowRightIcon color={Colors.accent} size={15} />
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -355,7 +357,7 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 13, color: Colors.textMuted, fontWeight: '400' },
   tabTextActive: { color: Colors.textPrimary, fontWeight: '600' },
 
-  postList: { padding: 20, paddingTop: 16, gap: 2 },
+  postList: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 4 },
 
   empty: { paddingTop: 48, alignItems: 'center', gap: 8 },
   emptyTitle: { fontSize: 15, fontWeight: '500', color: Colors.textPrimary },
@@ -363,24 +365,25 @@ const styles = StyleSheet.create({
 
   routeBanner: {
     marginHorizontal: 20,
-    marginTop: 8,
+    marginTop: 12,
     marginBottom: 8,
-    backgroundColor: Colors.card,
+    backgroundColor: Colors.accentLight,
     borderRadius: 16,
     padding: 20,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderColor: 'rgba(196,135,90,0.2)',
     gap: 0,
   },
   routeBannerLeft: { flex: 1, gap: 4 },
   routeBannerLabel: {
     fontSize: 9,
     fontWeight: '700',
-    color: Colors.textMuted,
+    color: Colors.accent,
     letterSpacing: 2,
     marginBottom: 2,
+    opacity: 0.7,
   },
   routeBannerTitle: {
     fontSize: 15,
@@ -390,6 +393,6 @@ const styles = StyleSheet.create({
   },
   routeBannerDesc: {
     fontSize: 12,
-    color: Colors.textMuted,
+    color: Colors.textSecondary,
   },
 });
