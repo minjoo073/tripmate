@@ -265,7 +265,7 @@ export default function HomeScreen() {
       showsVerticalScrollIndicator={false}
     >
       {/* ── Band 1: ivory ── */}
-      <View style={[styles.band, styles.bandIvory, { paddingTop: insets.top + 16 }]}>
+      <View style={[styles.band, styles.bandIvory, { paddingTop: insets.top + 28 }]}>
         <View style={styles.topBar}>
           <View>
             <Text style={styles.appLabel}>TRIPMATE</Text>
