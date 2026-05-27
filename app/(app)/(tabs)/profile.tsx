@@ -57,13 +57,19 @@ export default function ProfileScreen() {
           </View>
           <View style={styles.profileInfo}>
             <Text style={styles.nickname}>{user?.nickname ?? '여행자'}</Text>
-            <View style={styles.verifiedRow}>
+            <TouchableOpacity style={styles.verifiedRow} onPress={() => router.push('/verification')} activeOpacity={0.7}>
               <View style={styles.verifiedDot} />
               <Text style={styles.verifiedText}>인증된 여행자</Text>
-            </View>
-            <TouchableOpacity style={styles.editBtn} onPress={() => router.push('/profile-setup')}>
-              <Text style={styles.editBtnText}>프로필 편집</Text>
+              <Text style={styles.verifiedArrow}>{'>'}</Text>
             </TouchableOpacity>
+            <View style={styles.editBtnRow}>
+              <TouchableOpacity style={styles.editBtn} onPress={() => router.push('/profile-setup')}>
+                <Text style={styles.editBtnText}>프로필 편집</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.trustBtn} onPress={() => router.push('/verification')}>
+                <Text style={styles.trustBtnText}>신뢰 인증</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -276,9 +282,20 @@ const styles = StyleSheet.create({
   },
   nameWrap: { gap: 5 },
   nickname: { fontSize: 20, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.3 },
-  verifiedRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  verifiedRow: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start' },
   verifiedDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.olive },
   verifiedText: { fontSize: 11, color: Colors.olive, fontWeight: '600', letterSpacing: 0.2 },
+  verifiedArrow: { fontSize: 10, color: Colors.olive, marginLeft: 2 },
+  editBtnRow: { flexDirection: 'row', gap: 8 },
+  trustBtn: {
+    backgroundColor: Colors.olive + '14',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: Colors.olive + '30',
+  },
+  trustBtnText: { fontSize: 12, color: Colors.olive, fontWeight: '600' },
 
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   metaText: { fontSize: 11, color: Colors.textMuted },

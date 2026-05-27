@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
+import { getProfileIcon } from '../../constants/profileIcons';
 
 type MonthKey = 'this' | 'next' | 'in2' | 'in3';
 
@@ -123,7 +124,7 @@ export default function ExploreDateScreen() {
             {/* User row */}
             <View style={styles.userRow}>
               <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{post.nickname[0]}</Text>
+                <Image source={getProfileIcon(post.nickname)} style={styles.avatarImage} resizeMode="contain" />
               </View>
               <View style={styles.userInfo}>
                 <View style={styles.userNameRow}>
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { fontSize: 18, fontWeight: '700', color: Colors.primary },
+  avatarImage: { width: 32, height: 32 },
   userInfo: { flex: 1, gap: 6 },
   userNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   userName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },

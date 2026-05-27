@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput, Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { TRAVEL_STYLES } from '../../mock/data';
+import { getProfileIcon } from '../../constants/profileIcons';
 
 const MBTI_LIST = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
 
@@ -71,7 +72,7 @@ export default function ProfileSetupScreen() {
         {/* 아바타 */}
         <View style={styles.avatarSection}>
           <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>{nickname[0] ?? '나'}</Text>
+            <Image source={getProfileIcon(nickname || '나')} style={styles.avatarImage} resizeMode="contain" />
           </View>
           <TouchableOpacity onPress={() => Alert.alert('준비 중', '사진 업로드 기능은 곧 출시돼요!')}>
             <Text style={styles.avatarChange}>사진 변경</Text>
@@ -178,16 +179,16 @@ export default function ProfileSetupScreen() {
           ))}
         </View>
 
-        {/* SNS 인증 */}
-        <SectionHeader title="SNS 인증" subtitle="인증 완료 시 신뢰도가 올라가요" />
+        {/* 신뢰 인증 */}
+        <SectionHeader title="신뢰 인증" subtitle="인증 완료 시 신뢰도가 올라가요" />
         <TouchableOpacity
           style={styles.snsBtn}
-          onPress={() => Alert.alert('준비 중', '곧 제공될 예정이에요!')}
+          onPress={() => router.push('/verification')}
         >
-          <Text style={styles.snsBtnIcon}>📷</Text>
+          <Text style={styles.snsBtnIcon}>🛡️</Text>
           <View style={styles.snsBtnInfo}>
-            <Text style={styles.snsBtnTitle}>인스타그램 연결</Text>
-            <Text style={styles.snsBtnDesc}>연결하면 인증 배지가 표시돼요</Text>
+            <Text style={styles.snsBtnTitle}>신뢰 인증 센터</Text>
+            <Text style={styles.snsBtnDesc}>신분증, SNS 등 인증을 완료하면 배지가 표시돼요</Text>
           </View>
           <Text style={styles.snsBtnArrow}>›</Text>
         </TouchableOpacity>
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { fontSize: 34, fontWeight: '700', color: Colors.white },
+  avatarImage: { width: 56, height: 56 },
   avatarChange: { fontSize: 14, color: Colors.primary, fontWeight: '600' },
 
   sectionHeader: { gap: 2, marginTop: 8 },

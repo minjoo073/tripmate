@@ -31,6 +31,7 @@ function AppStack() {
       <Stack.Screen name="explore-date" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-style" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="explore-gender" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="verification" options={{ animation: 'slide_from_right' }} />
     </Stack>
   );
 }

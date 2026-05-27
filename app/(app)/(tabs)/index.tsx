@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, Easing,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, Easing, Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
+import { getProfileIcon } from '../../../constants/profileIcons';
 import { MatchResult, Post } from '../../../types';
 import { getRecommended } from '../../../services/matchService';
 import { mockPosts } from '../../../mock/data';
@@ -89,7 +90,7 @@ function FeaturedMate({ matches }: { matches: MatchResult[] }) {
   return (
     <View style={feat.wrap}>
       <View style={[feat.avatarCircle, { backgroundColor: avatarBg + '33' }]}>
-        <Text style={[feat.avatarText, { color: avatarBg }]}>{item.user.nickname[0]}</Text>
+        <Image source={getProfileIcon(item.user.nickname)} style={feat.avatarImage} resizeMode="contain" />
       </View>
       <View style={feat.info}>
         <View style={feat.nameRow}>
@@ -147,7 +148,7 @@ const feat = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: 'rgba(255,255,255,0.15)',
   },
-  avatarText: { fontSize: 34, fontWeight: '700' },
+  avatarImage: { width: 58, height: 58 },
   info: { alignItems: 'center', gap: 6 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   name: { fontSize: 24, fontWeight: '700', color: Colors.white, letterSpacing: -0.4 },
@@ -394,9 +395,7 @@ export default function HomeScreen() {
           <Animated.View style={[styles.detailWrap, { opacity: detailOpacity }]}>
             <View style={styles.detailAuthorRow}>
               <View style={[styles.detailAvatar, { backgroundColor: accent.bg }]}>
-                <Text style={[styles.detailAvatarText, { color: accent.text }]}>
-                  {post.author.nickname[0]}
-                </Text>
+                <Image source={getProfileIcon(post.author.nickname)} style={styles.detailAvatarImage} resizeMode="contain" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={styles.detailAuthorName}>{post.author.nickname}</Text>
@@ -525,7 +524,7 @@ const styles = StyleSheet.create({
     width: 44, height: 44, borderRadius: 22,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  detailAvatarText: { fontSize: 17, fontWeight: '700' },
+  detailAvatarImage: { width: 30, height: 30 },
   detailAuthorName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   detailAuthorMeta: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
   detailVerified: { backgroundColor: Colors.olive, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4 },

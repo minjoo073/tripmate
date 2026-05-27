@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
+import { getProfileIcon } from '../../constants/profileIcons';
 
 type GenderFilter = 'all' | 'female' | 'male';
 type AgeRange = 'all' | '20s' | '30s' | '40s';
@@ -137,7 +138,7 @@ export default function ExploreGenderScreen() {
               {/* Avatar + basic info */}
               <View style={styles.cardTop}>
                 <View style={[styles.avatar, { backgroundColor: mate.gender === 'female' ? 'rgba(255,182,193,0.3)' : Colors.primaryBg }]}>
-                  <Text style={styles.avatarText}>{mate.nickname[0]}</Text>
+                  <Image source={getProfileIcon(mate.nickname)} style={styles.avatarImage} resizeMode="contain" />
                   <Text style={styles.avatarGender}>{mate.gender === 'female' ? '👩' : '👨'}</Text>
                 </View>
                 <View style={styles.basicInfo}>
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
-  avatarText: { fontSize: 22, fontWeight: '700', color: Colors.primary },
+  avatarImage: { width: 38, height: 38 },
   avatarGender: { position: 'absolute', bottom: -2, right: -2, fontSize: 16 },
   basicInfo: { flex: 1, gap: 5 },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },

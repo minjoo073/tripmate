@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { View, Image, StyleSheet, ImageSourcePropType } from 'react-native';
+import { getProfileIcon } from '../../constants/profileIcons';
 
 interface AvatarProps {
   uri?: string;
@@ -10,12 +10,7 @@ interface AvatarProps {
   variant?: 'default' | 'light';
 }
 
-export function Avatar({ uri, nickname, size = 48, emoji, variant = 'default' }: AvatarProps) {
-  const initial = nickname ? nickname[0] : '?';
-  const isLight = variant === 'light';
-  const bgColor = isLight ? 'rgba(255,255,255,0.20)' : Colors.bgDeep;
-  const textColor = isLight ? Colors.white : Colors.textSecondary;
-
+export function Avatar({ uri, nickname, size = 48 }: AvatarProps) {
   if (uri) {
     return (
       <Image
@@ -25,17 +20,21 @@ export function Avatar({ uri, nickname, size = 48, emoji, variant = 'default' }:
     );
   }
 
+  const icon: ImageSourcePropType = getProfileIcon(nickname ?? '?');
+
   return (
     <View
       style={[
         styles.base,
         styles.placeholder,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: bgColor },
+        { width: size, height: size, borderRadius: size / 2 },
       ]}
     >
-      <Text style={{ fontSize: size * 0.36, color: textColor, fontWeight: '600' }}>
-        {emoji ?? initial}
-      </Text>
+      <Image
+        source={icon}
+        style={{ width: size * 0.75, height: size * 0.75 }}
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -48,5 +47,6 @@ const styles = StyleSheet.create({
   placeholder: {
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#F0EDE8',
   },
 });

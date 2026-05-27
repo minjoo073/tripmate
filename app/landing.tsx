@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  useWindowDimensions, Alert,
+  useWindowDimensions, Alert, Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Colors } from '../constants/colors';
+import { getProfileIcon } from '../constants/profileIcons';
 
 const FEATURES = [
   {
@@ -173,7 +174,7 @@ export default function LandingPage() {
             ].map((m) => (
               <View key={m.name} style={styles.mockCard}>
                 <View style={styles.mockAvatar}>
-                  <Text style={styles.mockAvatarText}>{m.name[0]}</Text>
+                  <Image source={getProfileIcon(m.name)} style={styles.mockAvatarImage} resizeMode="contain" />
                 </View>
                 <View style={{ flex: 1, minWidth: 0 }}>
                   <Text style={styles.mockName}>{m.name}</Text>
@@ -270,7 +271,7 @@ export default function LandingPage() {
             <View key={r.name} style={styles.reviewCard}>
               <View style={styles.reviewTop}>
                 <View style={styles.reviewAvatar}>
-                  <Text style={styles.reviewAvatarText}>{r.avatar}</Text>
+                  <Image source={getProfileIcon(r.name)} style={styles.reviewAvatarImage} resizeMode="contain" />
                 </View>
                 <View style={{ flex: 1, minWidth: 0 }}>
                   <Text style={styles.reviewName}>{r.name} · {r.age}세 · {r.location}</Text>
@@ -428,7 +429,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryBg,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  mockAvatarText: { fontSize: 15, fontWeight: '700', color: Colors.primary },
+  mockAvatarImage: { width: 28, height: 28 },
   mockName: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
   mockDest: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
   mockBadge: {
@@ -515,7 +516,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryBg,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
-  reviewAvatarText: { fontSize: 16, fontWeight: '700', color: Colors.primary },
+  reviewAvatarImage: { width: 30, height: 30 },
   reviewName: { fontSize: 13, fontWeight: '700', color: Colors.textPrimary },
   reviewTrip: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
   reviewText: { fontSize: 14, color: Colors.textPrimary, lineHeight: 22, fontStyle: 'italic' },
