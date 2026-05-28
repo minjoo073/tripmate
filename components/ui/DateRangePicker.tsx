@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { ArrowLeftIcon, ArrowRightIcon } from './Icon';
@@ -146,10 +146,11 @@ export function DateRangePicker({
   const changeMonth = (delta: number) =>
     setMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
 
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
+    <View style={styles.overlay}>
+      <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
         <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
           <View style={styles.handle} />
           <View style={styles.tabs}>
@@ -186,7 +187,6 @@ export function DateRangePicker({
           </TouchableOpacity>
         </View>
       </View>
-    </Modal>
   );
 }
 
@@ -234,8 +234,10 @@ const calStyles = StyleSheet.create({
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    position: 'absolute',
+    top: 0, bottom: 0, left: 0, right: 0,
     justifyContent: 'flex-end',
+    zIndex: 20,
   },
   backdrop: {
     position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,

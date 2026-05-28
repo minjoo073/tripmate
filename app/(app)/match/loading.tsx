@@ -1,8 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
+import { PlaneThinIcon } from '../../../components/ui/Icon';
 import { findMates } from '../../../services/matchService';
 import { FindMateFilter } from '../../../types';
 
@@ -13,13 +15,65 @@ const STEPS = [
   { label: '비슷한 여행자 연결 중', sub: 'finding your companion' },
 ];
 
+// Prolate cycloid (b > a) → a single self-crossing "pigtail" loop along the
+// travel direction. Sampled into screen points + tangent angles so the plane
+// can be tweened along the exact same curve drawn as the dashed trail.
+function buildFlightPath(w: number, h: number) {
+  if (!w || !h) return null;
+  const N = 64;
+  const a = 1;
+  const b = 1.7;
+  const phi = (52 * Math.PI) / 180; // travel heading: up-right
+  const cos = Math.cos(phi);
+  const sin = Math.sin(phi);
+
+  const px: number[] = [], py: number[] = [], tpx: number[] = [], tpy: number[] = [];
+  for (let i = 0; i < N; i++) {
+    const th = (i / (N - 1)) * 2 * Math.PI;
+    const u = a * th - b * Math.sin(th);
+    const v = a - b * Math.cos(th);
+    px.push(u * cos - v * sin);
+    py.push(u * sin + v * cos);
+    const du = a - b * Math.cos(th);
+    const dv = b * Math.sin(th);
+    tpx.push(du * cos - dv * sin);
+    tpy.push(du * sin + dv * cos);
+  }
+
+  const pxmin = Math.min(...px), pxmax = Math.max(...px);
+  const pymin = Math.min(...py), pymax = Math.max(...py);
+  const marginX = w * 0.18, marginTop = h * 0.1, marginBot = h * 0.14;
+  const availW = w - 2 * marginX, availH = h - marginTop - marginBot;
+  const S = Math.min(availW / (pxmax - pxmin), availH / (pymax - pymin));
+  const offX = marginX + (availW - (pxmax - pxmin) * S) / 2;
+
+  const xs: number[] = [], ys: number[] = [], angles: number[] = [], input: number[] = [];
+  for (let i = 0; i < N; i++) {
+    xs.push(offX + (px[i] - pxmin) * S);
+    ys.push(h - marginBot - (py[i] - pymin) * S);
+    angles.push((Math.atan2(-tpy[i], tpx[i]) * 180) / Math.PI + 45);
+    input.push(i / (N - 1));
+  }
+  // Unwrap angles so rotation interpolation never spins the long way round.
+  for (let i = 1; i < N; i++) {
+    let d = angles[i] - angles[i - 1];
+    while (d > 180) { angles[i] -= 360; d = angles[i] - angles[i - 1]; }
+    while (d < -180) { angles[i] += 360; d = angles[i] - angles[i - 1]; }
+  }
+
+  const d = xs.map((x, i) => `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${ys[i].toFixed(1)}`).join(' ');
+  return { xs, ys, angles, input, d, start: { x: xs[0], y: ys[0] } };
+}
+
 export default function MatchLoadingScreen() {
   const insets = useSafeAreaInsets();
   const { filter: filterParam } = useLocalSearchParams<{ filter: string }>();
   const [completedSteps, setCompletedSteps] = useState(0);
 
+  const [bgSize, setBgSize] = useState({ w: 0, h: 0 });
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const floatAnim = useRef(new Animated.Value(0)).current;
+  const progress = useRef(new Animated.Value(0)).current;
   const stepAnims = useRef(STEPS.map(() => new Animated.Value(0))).current;
   const dotAnims = useRef([0, 1, 2].map(() => new Animated.Value(0))).current;
 
@@ -31,6 +85,10 @@ export default function MatchLoadingScreen() {
         Animated.timing(floatAnim, { toValue: 1, duration: 2200, useNativeDriver: true }),
         Animated.timing(floatAnim, { toValue: 0, duration: 2200, useNativeDriver: true }),
       ]),
+    ).start();
+
+    Animated.loop(
+      Animated.timing(progress, { toValue: 1, duration: 5200, easing: Easing.linear, useNativeDriver: true }),
     ).start();
 
     dotAnims.forEach((anim, i) => {
@@ -63,8 +121,57 @@ export default function MatchLoadingScreen() {
 
   const translateY = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -8] });
 
+  const PLANE = 30;
+  const pathData = useMemo(() => buildFlightPath(bgSize.w, bgSize.h), [bgSize.w, bgSize.h]);
+
+  const planeX = pathData
+    ? progress.interpolate({ inputRange: pathData.input, outputRange: pathData.xs.map((x) => x - PLANE / 2) })
+    : 0;
+  const planeY = pathData
+    ? progress.interpolate({ inputRange: pathData.input, outputRange: pathData.ys.map((y) => y - PLANE / 2) })
+    : 0;
+  const planeRotate = pathData
+    ? progress.interpolate({ inputRange: pathData.input, outputRange: pathData.angles.map((a) => `${a}deg`) })
+    : '0deg';
+
   return (
     <Animated.View style={[styles.container, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 40 }, { opacity: fadeAnim }]}>
+
+      {/* Background flight path: looping trail + plane moving along it */}
+      <View
+        pointerEvents="none"
+        style={styles.bg}
+        onLayout={(e) => {
+          const { width, height } = e.nativeEvent.layout;
+          setBgSize((s) => (s.w !== width || s.h !== height ? { w: width, h: height } : s));
+        }}
+      >
+        {pathData && (
+          <>
+            <Svg width={bgSize.w} height={bgSize.h} style={StyleSheet.absoluteFill}>
+              <Path
+                d={pathData.d}
+                stroke={Colors.accent}
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeDasharray="2 12"
+                fill="none"
+                opacity={0.45}
+              />
+              <Circle cx={pathData.start.x} cy={pathData.start.y} r={4.5} fill={Colors.accent} opacity={0.55} />
+              <Circle cx={pathData.start.x} cy={pathData.start.y} r={10} stroke={Colors.accent} strokeWidth={1} fill="none" opacity={0.3} />
+            </Svg>
+            <Animated.View
+              style={[
+                styles.plane,
+                { width: PLANE, height: PLANE, transform: [{ translateX: planeX }, { translateY: planeY }, { rotate: planeRotate }] },
+              ]}
+            >
+              <PlaneThinIcon color={Colors.accent} size={PLANE} />
+            </Animated.View>
+          </>
+        )}
+      </View>
 
       {/* Compass icon */}
       <Animated.View style={[styles.compassWrap, { transform: [{ translateY }] }]}>
@@ -128,6 +235,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 32,
     gap: 36,
+  },
+
+  bg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  plane: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   compassWrap: {

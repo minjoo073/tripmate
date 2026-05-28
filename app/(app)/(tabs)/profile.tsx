@@ -6,7 +6,7 @@ import { Avatar } from '../../../components/ui/Avatar';
 import { useAuth } from '../../../context/AuthContext';
 import { usePersonality } from '../../../context/PersonalityContext';
 import { router } from 'expo-router';
-import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon, WaveIcon, MoonIcon, UsersIcon, CalendarIcon, EditIcon, HeartIcon } from '../../../components/ui/Icon';
+import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon, WaveIcon, MoonIcon, UsersIcon, CalendarIcon, EditIcon, HeartIcon, PlaneTakeoffIcon } from '../../../components/ui/Icon';
 
 const TABS = ['여행 기록', '리뷰', '저장'];
 
@@ -30,6 +30,19 @@ const VISITED_CITIES = [
   { city: '파리', count: 1, flag: '🇫🇷' },
   { city: '뉴욕', count: 1, flag: '🇺🇸' },
 ];
+
+const AIRPORT_CODES: Record<string, string> = {
+  '오사카': 'KIX', '도쿄': 'NRT', '방콕': 'BKK', '파리': 'CDG',
+  '뉴욕': 'JFK', '발리': 'DPS', '싱가포르': 'SIN', '바르셀로나': 'BCN',
+};
+
+function cityName(dest: string) {
+  return dest.split(',')[0].trim();
+}
+
+function airportCode(dest: string) {
+  return AIRPORT_CODES[cityName(dest)] ?? 'INT';
+}
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -177,41 +190,63 @@ export default function ProfileScreen() {
               <ArrowRightIcon color={Colors.accent} size={16} />
             </TouchableOpacity>
 
-            <Text style={styles.sectionLabel}>여행 기록 · {MOCK_TRIPS.length}</Text>
-            <View style={styles.tripList}>
-              {MOCK_TRIPS.map((trip, idx) => (
-                <View
-                  key={trip.id}
-                  style={[
-                    styles.tripRow,
-                    idx < MOCK_TRIPS.length - 1 && styles.tripRowBorder,
-                  ]}
-                >
-                  <View style={[
-                    styles.tripStatusBar,
-                    { backgroundColor: trip.status === 'upcoming' ? Colors.primary : Colors.olive },
-                  ]} />
-                  <View style={styles.tripRowBody}>
-                    <Text style={styles.tripDest}>{trip.dest}</Text>
-                    <Text style={styles.tripDate}>{trip.date}</Text>
-                    <Text style={styles.tripCompanion}>함께한 분 · {trip.companion}</Text>
-                  </View>
-                  <View style={styles.tripRowRight}>
-                    {trip.rating > 0 && (
-                      <Text style={styles.rating}>{'★'.repeat(trip.rating)}</Text>
-                    )}
-                    <View style={[
-                      styles.statusPill,
-                      trip.status === 'upcoming' ? styles.statusPillUpcoming : styles.statusPillDone,
-                    ]}>
-                      <Text style={[
-                        styles.statusPillText,
-                        trip.status === 'upcoming' ? styles.statusPillTextUpcoming : styles.statusPillTextDone,
-                      ]}>
-                        {trip.status === 'upcoming' ? '예정' : '완료'}
-                      </Text>
+            <Text style={styles.sectionLabel}>BOARDING PASS · {MOCK_TRIPS.length}</Text>
+            <View style={styles.ticketList}>
+              {MOCK_TRIPS.map((trip) => {
+                const upcoming = trip.status === 'upcoming';
+                const accent = upcoming ? Colors.primary : Colors.olive;
+                return (
+                  <TouchableOpacity
+                    key={trip.id}
+                    style={styles.ticket}
+                    activeOpacity={0.9}
+                    onPress={() => router.push('/trip-detail')}
+                  >
+                    <View style={styles.ticketMain}>
+                      <View style={styles.ticketRouteRow}>
+                        <Text style={styles.ticketCode}>ICN</Text>
+                        <View style={styles.ticketPath}>
+                          <View style={styles.ticketPathLine} />
+                          <PlaneTakeoffIcon color={Colors.textMuted} size={13} />
+                          <View style={styles.ticketPathLine} />
+                        </View>
+                        <Text style={styles.ticketCode}>{airportCode(trip.dest)}</Text>
+                      </View>
+                      <Text style={styles.ticketDest}>{trip.dest}</Text>
+                      <Text style={styles.ticketDate}>{trip.date}</Text>
+                      <Text style={styles.ticketCompanion}>함께한 분 · {trip.companion}</Text>
                     </View>
-                  </View>
+
+                    <View style={styles.ticketPerf}>
+                      <View style={styles.notchTop} />
+                      <View style={styles.perfDash} />
+                      <View style={styles.notchBottom} />
+                    </View>
+
+                    <View style={styles.ticketStub}>
+                      <View style={[styles.stubStatus, { backgroundColor: accent + '18' }]}>
+                        <Text style={[styles.stubStatusText, { color: accent }]}>
+                          {upcoming ? '예정' : '완료'}
+                        </Text>
+                      </View>
+                      {trip.rating > 0 && (
+                        <Text style={styles.ticketRating}>{'★'.repeat(trip.rating)}</Text>
+                      )}
+                      <Text style={styles.stubLabel}>SEAT {trip.id}A</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            {/* Passport stamps */}
+            <Text style={[styles.sectionLabel, { marginTop: 24 }]}>PASSPORT · 방문한 도시</Text>
+            <View style={styles.stampGrid}>
+              {VISITED_CITIES.map((c, idx) => (
+                <View key={c.city} style={[styles.stamp, { transform: [{ rotate: `${(idx % 2 === 0 ? -1 : 1) * (4 + idx)}deg` }] }]}>
+                  <Text style={styles.stampFlag}>{c.flag}</Text>
+                  <Text style={styles.stampCity}>{c.city}</Text>
+                  <Text style={styles.stampCount}>×{c.count}</Text>
                 </View>
               ))}
             </View>
@@ -468,48 +503,67 @@ const styles = StyleSheet.create({
     fontSize: 11, fontWeight: '700', color: Colors.textMuted, marginBottom: 12,
     letterSpacing: 0.5, textTransform: 'uppercase',
   },
-  tripList: {
+  // Boarding-pass ticket cards
+  ticketList: { gap: 12 },
+  ticket: {
+    flexDirection: 'row',
     backgroundColor: Colors.card,
-    borderRadius: 16,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     overflow: 'hidden',
-    marginBottom: 10,
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 1,
   },
-  tripRow: {
-    flexDirection: 'row',
+  ticketMain: { flex: 1, padding: 16, gap: 5 },
+  ticketRouteRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 2 },
+  ticketCode: { fontSize: 20, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5 },
+  ticketPath: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 4 },
+  ticketPathLine: { flex: 1, height: 1, backgroundColor: Colors.cardBorder },
+  ticketDest: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
+  ticketDate: { fontSize: 12, color: Colors.textMuted },
+  ticketCompanion: { fontSize: 12, color: Colors.dustBlue, fontWeight: '500' },
+
+  ticketPerf: { width: 1, alignItems: 'center', justifyContent: 'center' },
+  perfDash: {
+    flex: 1, width: 1,
+    borderLeftWidth: 1, borderStyle: 'dashed', borderColor: Colors.cardBorder,
+  },
+  notchTop: {
+    width: 14, height: 14, borderRadius: 7,
+    backgroundColor: Colors.bg, marginTop: -7,
+  },
+  notchBottom: {
+    width: 14, height: 14, borderRadius: 7,
+    backgroundColor: Colors.bg, marginBottom: -7,
+  },
+
+  ticketStub: {
+    width: 92,
+    padding: 14,
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingRight: 16,
-    gap: 14,
+    justifyContent: 'center',
+    gap: 6,
   },
-  tripRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.cardBorder,
+  stubStatus: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
+  stubStatusText: { fontSize: 11, fontWeight: '700', letterSpacing: 0.3 },
+  ticketRating: { fontSize: 11, color: '#C4A052' },
+  stubLabel: { fontSize: 9, fontWeight: '600', color: Colors.textMuted, letterSpacing: 1 },
+
+  // Passport stamps
+  stampGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14, paddingVertical: 6 },
+  stamp: {
+    width: 78, height: 78, borderRadius: 39,
+    borderWidth: 1.5, borderStyle: 'dashed', borderColor: Colors.accent,
+    alignItems: 'center', justifyContent: 'center', gap: 1,
+    backgroundColor: Colors.accentLight + '80',
   },
-  tripStatusBar: {
-    width: 3,
-    height: 40,
-    borderRadius: 2,
-    marginLeft: 16,
-    flexShrink: 0,
-  },
-  tripRowBody: { flex: 1, gap: 4 },
-  tripDest: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
-  tripDate: { fontSize: 12, color: Colors.textMuted },
-  tripCompanion: { fontSize: 12, color: Colors.dustBlue, fontWeight: '500' },
-  tripRowRight: { alignItems: 'flex-end', gap: 6, flexShrink: 0 },
-  rating: { fontSize: 11, color: '#C4A052' },
-  statusPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  statusPillUpcoming: { backgroundColor: Colors.primaryLight },
-  statusPillDone: { backgroundColor: Colors.bgDeep },
-  statusPillText: { fontSize: 10, fontWeight: '600', letterSpacing: 0.2 },
-  statusPillTextUpcoming: { color: Colors.primary },
-  statusPillTextDone: { color: Colors.textSecondary },
+  stampFlag: { fontSize: 18 },
+  stampCity: { fontSize: 12, fontWeight: '700', color: Colors.textPrimary },
+  stampCount: { fontSize: 10, fontWeight: '600', color: Colors.accent, letterSpacing: 0.5 },
 
   personalityCard: {
     backgroundColor: Colors.card,

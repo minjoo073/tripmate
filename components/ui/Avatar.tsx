@@ -32,7 +32,7 @@ export function Avatar({ uri, nickname, size = 48 }: AvatarProps) {
     >
       <Image
         source={icon}
-        style={{ width: size * 0.75, height: size * 0.75 }}
+        style={{ width: size, height: size }}
         resizeMode="contain"
       />
     </View>
@@ -47,6 +47,6 @@ const styles = StyleSheet.create({
   placeholder: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F0EDE8',
+    backgroundColor: 'transparent',
   },
 });

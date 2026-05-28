@@ -11,6 +11,7 @@ import { MatchResult, Post } from '../../../types';
 import { getRecommended } from '../../../services/matchService';
 import { mockPosts } from '../../../mock/data';
 import { BellIcon, SearchIcon, ArrowRightIcon, ArrowLeftIcon } from '../../../components/ui/Icon';
+import Svg, { Path, G } from 'react-native-svg';
 
 const OPEN_TRIPS = mockPosts.filter((p) => p.category === 'mate').slice(0, 6);
 
@@ -25,6 +26,29 @@ const DEFAULT_DEST = { bg: '#E8E2DA', text: '#5C5248' };
 
 const AVATAR_BG = ['#D8E2EE', '#EDE3D8', '#D8EAE0', '#EAD8EA', '#D8EAE8'];
 const AVATAR_TEXT = ['#3A5878', '#7A5C3E', '#3A6B55', '#6B3A6B', '#2E6860'];
+
+// Random landmark backdrop for the matching hero (stable Wikimedia Commons URLs)
+const HERO_LANDMARKS = [
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Tour_Eiffel_Wikimedia_Commons.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Tokyo_Tower_and_around_Skyscrapers.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Colosseo_2020.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Sagrada_Familia_01.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Statue_of_Liberty_7.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Osaka_Castle_02bs3200.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Marina_Bay_Sands_in_the_evening_-_20101120.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Tanah_Lot_Bali_Indonesia.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Sydney_Opera_House_-_Dec_2008.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/All_Gizah_Pyramids.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Christ_the_Redeemer_-_Cristo_Redentor.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Schloss_Neuschwanstein_2013.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/The_Great_Wall_of_China_at_Jinshanling-edit.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Petronas_Panorama_II.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Taj_Mahal,_Agra,_India_edit3.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Leaning_Tower_of_Pisa_(April_2012).jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Brandenburger_Tor_abends.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Golden_Gate_Bridge_as_seen_from_Battery_East.jpg?width=600',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Angkor_Wat.jpg?width=600',
+];
 
 function tripDateLabel(start?: string, end?: string) {
   if (!start) return '';
@@ -45,8 +69,7 @@ function tripNights(start?: string, end?: string) {
 function NoTripPlan() {
   return (
     <View style={noplan.wrap}>
-      <Text style={noplan.emoji}>🗺</Text>
-      <Text style={noplan.title}>어디로 떠날 예정인가요?</Text>
+      <Text style={noplan.title}>어디로 떠날{'\n'}예정인가요?</Text>
       <Text style={noplan.desc}>
         여행 계획을 등록하면{'\n'}AI가 딱 맞는 동행을 찾아드려요
       </Text>
@@ -62,19 +85,59 @@ function NoTripPlan() {
 }
 
 const noplan = StyleSheet.create({
-  wrap: { alignItems: 'center', paddingVertical: 48, paddingHorizontal: 32, gap: 12 },
-  emoji: { fontSize: 36, marginBottom: 4 },
-  title: { fontSize: 20, fontWeight: '700', color: Colors.white, letterSpacing: -0.3 },
-  desc: { fontSize: 14, color: 'rgba(255,255,255,0.6)', textAlign: 'center', lineHeight: 22 },
-  btn: {
-    marginTop: 8,
-    backgroundColor: Colors.pointYellow,
-    borderRadius: 12,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
+  wrap: { alignItems: 'flex-start', paddingHorizontal: 28, paddingTop: 8, paddingBottom: 210, gap: 12 },
+  title: {
+    fontSize: 27, fontWeight: '800', color: Colors.white, letterSpacing: -0.6, lineHeight: 35,
+    textShadowColor: 'rgba(0,0,0,0.35)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 10,
   },
-  btnText: { fontSize: 14, fontWeight: '700', color: Colors.primary },
+  desc: {
+    fontSize: 14, color: 'rgba(255,255,255,0.82)', lineHeight: 22,
+    textShadowColor: 'rgba(0,0,0,0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 8,
+  },
+  btn: {
+    marginTop: 10,
+    backgroundColor: Colors.accent,
+    borderRadius: 12,
+    paddingHorizontal: 26,
+    paddingVertical: 15,
+    alignSelf: 'flex-start',
+    shadowColor: 'rgba(0,0,0,0.25)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  btnText: { fontSize: 15, fontWeight: '700', color: Colors.white, letterSpacing: -0.2 },
 });
+
+// Hero decorations: airplane + dashed trail (top-right), passport-style stamp (bottom-left)
+function HeroDecor() {
+  return (
+    <>
+      <View style={styles.heroPlane} pointerEvents="none">
+        <Svg width={132} height={84} viewBox="0 0 132 84">
+          <Path
+            d="M6 76 Q 54 80, 82 44 Q 98 22, 116 12"
+            stroke="rgba(255,255,255,0.55)"
+            strokeWidth={1.5}
+            strokeDasharray="2 6"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <G transform="translate(104 0) scale(1.05)">
+            <Path d="M22 2L11 13" stroke="rgba(255,255,255,0.92)" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            <Path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="rgba(255,255,255,0.92)" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" fill="rgba(255,255,255,0.22)" />
+          </G>
+        </Svg>
+      </View>
+      <View style={styles.heroStamp} pointerEvents="none">
+        <Text style={styles.heroStampText}>EXPLORE</Text>
+        <View style={styles.heroStampLine} />
+        <Text style={styles.heroStampText}>THE WORLD</Text>
+      </View>
+    </>
+  );
+}
 
 // ── Featured mate ─────────────────────────────────────────────────────────────
 function FeaturedMate({ matches }: { matches: MatchResult[] }) {
@@ -187,6 +250,8 @@ export default function HomeScreen() {
   const [isListExpanded, setIsListExpanded] = useState(false);
   const [navyHeight, setNavyHeight] = useState(400);
   const [hasTripPlan, setHasTripPlan] = useState(false);
+  const [heroImage] = useState(() => HERO_LANDMARKS[Math.floor(Math.random() * HERO_LANDMARKS.length)]);
+  const heroFade = useRef(new Animated.Value(0)).current;
   const expandAnim = useRef(new Animated.Value(-20)).current;
   const listOpacity = useRef(new Animated.Value(1)).current;
   const detailOpacity = useRef(new Animated.Value(0)).current;
@@ -300,15 +365,23 @@ export default function HomeScreen() {
         style={[styles.band, styles.bandNavy]}
         onLayout={(e) => setNavyHeight(e.nativeEvent.layout.height)}
       >
+        <Animated.Image
+          source={{ uri: heroImage }}
+          style={[styles.bandBgImage, { opacity: heroFade }]}
+          resizeMode="cover"
+          onLoad={() => Animated.timing(heroFade, { toValue: 1, duration: 500, useNativeDriver: true }).start()}
+        />
+        <View style={styles.bandBgOverlay} />
+        {!hasTripPlan && <HeroDecor />}
         <TouchableOpacity
           style={styles.bandHeader}
           onPress={isListExpanded ? closeList : openList}
           activeOpacity={0.85}
         >
           <Text style={styles.bandLabelLight}>AI 동행 매칭</Text>
-          <Text style={styles.bandTitleLight}>
-            {hasTripPlan ? '나와 잘 맞는 여행자' : '동행 찾기'}
-          </Text>
+          {hasTripPlan && (
+            <Text style={styles.bandTitleLight}>나와 잘 맞는 여행자</Text>
+          )}
         </TouchableOpacity>
         {hasTripPlan ? <FeaturedMate matches={matches} /> : <NoTripPlan />}
       </View>
@@ -354,9 +427,9 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* List — fades out when a post is selected */}
+        {/* List — only mounted when expanded (tap header to reveal); fades out when a post is selected */}
         <Animated.View style={{ opacity: listOpacity }}>
-          {!selectedPost && (
+          {isListExpanded && !selectedPost && (
             <View style={styles.recruitList}>
               {OPEN_TRIPS.map((p, idx) => {
                 const d = p.trip?.destination ?? '';
@@ -444,7 +517,20 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     marginTop: -20,
+    overflow: 'hidden',
   },
+  bandBgImage: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' },
+  bandBgOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(33,45,74,0.5)' },
+  heroPlane: { position: 'absolute', top: 22, right: 10, width: 132, height: 84 },
+  heroStamp: {
+    position: 'absolute', left: 22, bottom: 38,
+    width: 82, height: 82, borderRadius: 41,
+    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)',
+    alignItems: 'center', justifyContent: 'center', gap: 3,
+    transform: [{ rotate: '-8deg' }],
+  },
+  heroStampText: { fontSize: 9, fontWeight: '800', color: 'rgba(255,255,255,0.78)', letterSpacing: 1.5 },
+  heroStampLine: { width: 34, height: 1, backgroundColor: 'rgba(255,255,255,0.4)' },
   bandBeige: {
     backgroundColor: Colors.bgDeep,
     borderTopLeftRadius: 28,

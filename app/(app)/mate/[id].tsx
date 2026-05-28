@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   scroll: { paddingBottom: 48 },
 
   hero: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingBottom: 20,
     paddingTop: 4,
     backgroundColor: Colors.card,
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 20,
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
     backgroundColor: Colors.card,
@@ -337,13 +337,13 @@ const styles = StyleSheet.create({
 
   tripCard: {
     marginHorizontal: 20,
-    marginBottom: 4,
-    backgroundColor: Colors.primaryLight,
+    marginTop: 12,
+    backgroundColor: Colors.card,
     borderRadius: 16,
-    padding: 18,
+    padding: 16,
     gap: 10,
     borderWidth: 1,
-    borderColor: 'rgba(59,81,120,0.12)',
+    borderColor: Colors.cardBorder,
   },
   tripCardHead: {
     flexDirection: 'row',
@@ -374,7 +374,15 @@ const styles = StyleSheet.create({
   tripDest: { fontSize: 14, color: Colors.textPrimary, fontWeight: '500' },
   tripDate: { fontSize: 13, color: Colors.textSecondary },
 
-  section: { marginTop: 20, paddingHorizontal: 20 },
+  section: {
+    marginTop: 12,
+    marginHorizontal: 20,
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    padding: 16,
+  },
   sectionLabel: {
     fontSize: 11,
     fontWeight: '700',
@@ -457,7 +465,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
 
-  actions: { paddingHorizontal: 20, marginTop: 28, gap: 10 },
+  actions: { paddingHorizontal: 20, marginTop: 20, gap: 10 },
   secondaryAction: { alignItems: 'center', paddingVertical: 4 },
   secondaryActionText: {
     fontSize: 13,
