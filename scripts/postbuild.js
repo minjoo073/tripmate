@@ -52,4 +52,15 @@ fs.copyFileSync(
   path.join(DOCS, '404.html')
 );
 
+// 5. Restore hand-authored static pages that live outside docs/
+//    (expo export --clear wipes docs/, so these are kept in static-pages/)
+const STATIC_PAGES = path.join(__dirname, '..', 'static-pages');
+if (fs.existsSync(STATIC_PAGES)) {
+  for (const entry of fs.readdirSync(STATIC_PAGES, { withFileTypes: true })) {
+    if (entry.isFile()) {
+      fs.copyFileSync(path.join(STATIC_PAGES, entry.name), path.join(DOCS, entry.name));
+    }
+  }
+}
+
 console.log('postbuild done');
