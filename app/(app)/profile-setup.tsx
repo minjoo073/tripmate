@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput, Image,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput, Image, Modal,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { TRAVEL_STYLES } from '../../mock/data';
-import { getProfileIcon } from '../../constants/profileIcons';
+import { getProfileIcon, PROFILE_ICONS } from '../../constants/profileIcons';
 
 const MBTI_LIST = ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISTJ', 'ISFJ', 'ESTJ', 'ESFJ', 'ISTP', 'ISFP', 'ESTP', 'ESFP'];
 
@@ -31,6 +31,11 @@ export default function ProfileSetupScreen() {
   const [selectedMbti, setSelectedMbti] = useState('');
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [personalities, setPersonalities] = useState<Record<string, 'A' | 'B'>>({});
+  const [avatarIndex, setAvatarIndex] = useState<number | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const avatarSource =
+    avatarIndex !== null ? PROFILE_ICONS[avatarIndex] : getProfileIcon(nickname || '나');
 
   const toggleStyle = (s: string) =>
     setSelectedStyles((prev) =>
@@ -71,11 +76,14 @@ export default function ProfileSetupScreen() {
       >
         {/* 아바타 */}
         <View style={styles.avatarSection}>
-          <View style={styles.avatarCircle}>
-            <Image source={getProfileIcon(nickname || '나')} style={styles.avatarImage} resizeMode="contain" />
-          </View>
-          <TouchableOpacity onPress={() => Alert.alert('준비 중', '사진 업로드 기능은 곧 출시돼요!')}>
-            <Text style={styles.avatarChange}>사진 변경</Text>
+          <TouchableOpacity style={styles.avatarCircle} onPress={() => setPickerOpen(true)} activeOpacity={0.85}>
+            <Image source={avatarSource} style={styles.avatarImage} resizeMode="contain" />
+            <View style={styles.avatarEditBadge}>
+              <Text style={styles.avatarEditBadgeText}>✎</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setPickerOpen(true)}>
+            <Text style={styles.avatarChange}>아이콘 선택</Text>
           </TouchableOpacity>
         </View>
 
@@ -198,6 +206,46 @@ export default function ProfileSetupScreen() {
           <Text style={styles.submitBtnText}>프로필 저장하기</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <Modal
+        visible={pickerOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPickerOpen(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setPickerOpen(false)}
+        >
+          <View
+            style={[styles.modalSheet, { paddingBottom: insets.bottom + 24 }]}
+            onStartShouldSetResponder={() => true}
+          >
+            <View style={styles.modalHandle} />
+            <Text style={styles.modalTitle}>프로필 아이콘 선택</Text>
+            <Text style={styles.modalSubtitle}>마음에 드는 아이콘을 골라보세요</Text>
+            <View style={styles.iconGrid}>
+              {PROFILE_ICONS.map((icon, idx) => {
+                const selected = avatarIndex === idx;
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    style={[styles.iconOption, selected && styles.iconOptionActive]}
+                    onPress={() => {
+                      setAvatarIndex(idx);
+                      setPickerOpen(false);
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Image source={icon} style={styles.iconOptionImage} resizeMode="contain" />
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 }
@@ -248,7 +296,67 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarImage: { width: 56, height: 56 },
+  avatarEditBadge: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: Colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: Colors.bg,
+  },
+  avatarEditBadgeText: { fontSize: 12, color: Colors.white, fontWeight: '700' },
   avatarChange: { fontSize: 14, color: Colors.primary, fontWeight: '600' },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(28,43,58,0.45)',
+    justifyContent: 'flex-end',
+  },
+  modalSheet: {
+    backgroundColor: Colors.card,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    gap: 4,
+  },
+  modalHandle: {
+    alignSelf: 'center',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.cardBorder,
+    marginBottom: 10,
+  },
+  modalTitle: { fontSize: 17, fontWeight: '700', color: Colors.textPrimary, textAlign: 'center' },
+  modalSubtitle: { fontSize: 13, color: Colors.textSecondary, textAlign: 'center', marginBottom: 10 },
+  iconGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 14,
+    marginTop: 4,
+  },
+  iconOption: {
+    width: '22%',
+    aspectRatio: 1,
+    borderRadius: 999,
+    backgroundColor: Colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  iconOptionActive: {
+    borderColor: Colors.accent,
+    backgroundColor: Colors.accentLight,
+  },
+  iconOptionImage: { width: '64%', height: '64%' },
 
   sectionHeader: { gap: 2, marginTop: 8 },
   sectionTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },

@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { ArrowLeftIcon, MapPinIcon, CalendarIcon, UsersIcon } from '../../components/ui/Icon';
+import { DateRangePicker, formatMD, formatYMD } from '../../components/ui/DateRangePicker';
 
 const THEMES = [
   '맛집 탐방', '카페 투어', '자연·풍경', '역사·문화',
@@ -20,11 +21,18 @@ export default function TripPlanScreen() {
   const insets = useSafeAreaInsets();
 
   const [destination, setDestination] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [rangeStart, setRangeStart] = useState<Date | null>(null);
+  const [rangeEnd, setRangeEnd] = useState<Date | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerInitialMode, setPickerInitialMode] = useState<'start' | 'end'>('start');
   const [themes, setThemes] = useState<string[]>([]);
   const [companions, setCompanions] = useState('');
   const [memo, setMemo] = useState('');
+
+  const openPicker = (mode: 'start' | 'end') => {
+    setPickerInitialMode(mode);
+    setPickerOpen(true);
+  };
 
   function toggleTheme(t: string) {
     setThemes((prev) =>
@@ -35,8 +43,8 @@ export default function TripPlanScreen() {
   async function handleSave() {
     await AsyncStorage.setItem('trip_plan', JSON.stringify({
       destination,
-      startDate,
-      endDate,
+      startDate: rangeStart ? formatYMD(rangeStart) : '',
+      endDate: rangeEnd ? formatYMD(rangeEnd) : '',
       themes,
       companions,
       memo,
@@ -92,23 +100,27 @@ export default function TripPlanScreen() {
               <Text style={styles.sectionLabel}>언제 가나요?</Text>
             </View>
             <View style={styles.dateRow}>
-              <TextInput
-                style={[styles.input, styles.dateInput]}
-                placeholder="출발  2025.08.10"
-                placeholderTextColor={Colors.textMuted}
-                value={startDate}
-                onChangeText={setStartDate}
-                keyboardType="numbers-and-punctuation"
-              />
+              <TouchableOpacity
+                style={[styles.dateField, pickerOpen && pickerInitialMode === 'start' && styles.dateFieldActive]}
+                onPress={() => openPicker('start')}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.dateFieldLabel}>출발</Text>
+                <Text style={[styles.dateFieldValue, !rangeStart && styles.dateFieldPlaceholder]}>
+                  {rangeStart ? formatMD(rangeStart) : 'MM.DD'}
+                </Text>
+              </TouchableOpacity>
               <Text style={styles.dateDash}>–</Text>
-              <TextInput
-                style={[styles.input, styles.dateInput]}
-                placeholder="귀국  2025.08.17"
-                placeholderTextColor={Colors.textMuted}
-                value={endDate}
-                onChangeText={setEndDate}
-                keyboardType="numbers-and-punctuation"
-              />
+              <TouchableOpacity
+                style={[styles.dateField, pickerOpen && pickerInitialMode === 'end' && styles.dateFieldActive]}
+                onPress={() => openPicker('end')}
+                activeOpacity={0.75}
+              >
+                <Text style={styles.dateFieldLabel}>귀국</Text>
+                <Text style={[styles.dateFieldValue, !rangeEnd && styles.dateFieldPlaceholder]}>
+                  {rangeEnd ? formatMD(rangeEnd) : 'MM.DD'}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -187,14 +199,23 @@ export default function TripPlanScreen() {
         {/* 저장 버튼 */}
         <View style={[styles.footer, { paddingBottom: insets.bottom + 12 }]}>
           <TouchableOpacity
-            style={[styles.saveBtn, (!destination || !startDate || !endDate) && styles.saveBtnDisabled]}
+            style={[styles.saveBtn, (!destination || !rangeStart || !rangeEnd) && styles.saveBtnDisabled]}
             onPress={handleSave}
             activeOpacity={0.88}
-            disabled={!destination || !startDate || !endDate}
+            disabled={!destination || !rangeStart || !rangeEnd}
           >
             <Text style={styles.saveBtnText}>계획 저장</Text>
           </TouchableOpacity>
         </View>
+
+        <DateRangePicker
+          visible={pickerOpen}
+          start={rangeStart}
+          end={rangeEnd}
+          initialMode={pickerInitialMode}
+          onChange={(s, e) => { setRangeStart(s); setRangeEnd(e); }}
+          onClose={() => setPickerOpen(false)}
+        />
       </View>
     </KeyboardAvoidingView>
   );
@@ -248,7 +269,20 @@ const styles = StyleSheet.create({
   },
 
   dateRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  dateInput: { flex: 1 },
+  dateField: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.card,
+    borderRadius: 12,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+  },
+  dateFieldActive: { borderColor: Colors.accent, backgroundColor: Colors.accentLight },
+  dateFieldLabel: { fontSize: 10, fontWeight: '600', color: Colors.textMuted, letterSpacing: 0.5 },
+  dateFieldValue: { fontSize: 18, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.3 },
+  dateFieldPlaceholder: { color: Colors.textMuted },
   dateDash: { fontSize: 16, color: Colors.textMuted, flexShrink: 0 },
 
   tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
