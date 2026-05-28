@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TripMate — App Wireframes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;600&display=swap');
+
+  :root {
+    --navy:    #3B5178;
+    --accent:  #C4875A;
+    --accentL: #F5EDE4;
+    --bg:      #F5F8FC;
+    --bgDeep:  #EBF0F6;
+    --card:    #FFFFFF;
+    --border:  #DDE4EE;
+    --t1:      #1C2B3A;
+    --t2:      #5B6E82;
+    --t3:      #8EA0B5;
+    --white:   #FFFFFF;
+    --olive:   #6E7D62;
+    --gold:    #E8C882;
+    --green:   #5B9E6E;
+    --shadow:  rgba(28,43,58,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #F0F2F5;
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Page layout ── */
+  .page {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 64px 48px;
+  }
+
+  .page-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #8EA0B5;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .page-heading {
+    font-size: 36px;
+    font-weight: 300;
+    color: #1C2B3A;
+    letter-spacing: -0.8px;
+    margin-bottom: 8px;
+  }
+  .page-sub {
+    font-size: 14px;
+    color: #8EA0B5;
+    margin-bottom: 56px;
+    line-height: 1.6;
+  }
+
+  /* ── Grid ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px 36px;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 36px;
+    max-width: 760px;
+  }
+
+  /* ── Phone shell ── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .phone-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.8px;
+    color: var(--t3);
+    text-transform: uppercase;
+  }
+  .phone-shell {
+    width: 320px;
+    height: 640px;
+    background: var(--white);
+    border-radius: 44px;
+    border: 10px solid #1C2B3A;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.12),
+      0 24px 64px rgba(28,43,58,0.22),
+      0 4px 12px rgba(28,43,58,0.12);
+  }
+  /* notch */
+  .phone-shell::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 26px;
+    background: #1C2B3A;
+    border-radius: 0 0 18px 18px;
+    z-index: 100;
+  }
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    position: relative;
+  }
+
+  /* ── Bottom nav bar ── */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px 6px;
+    z-index: 50;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+    cursor: pointer;
+  }
+  .nav-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--bgDeep);
+  }
+  .nav-icon.active { background: var(--navy); }
+  .nav-text {
+    font-size: 9px;
+    color: var(--t3);
+    font-weight: 400;
+  }
+  .nav-text.active {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    height: 44px;
+    padding: 10px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: transparent;
+    position: relative;
+    z-index: 10;
+  }
+  .status-time {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--t1);
+  }
+  .status-icons {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .sig { width: 14px; height: 9px; background: var(--t1); border-radius: 1px; opacity: 0.7; }
+  .batt { width: 20px; height: 10px; border: 1.5px solid var(--t1); border-radius: 2px; opacity: 0.7; position: relative; }
+  .batt::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 2px; height: 5px; background: var(--t1); border-radius: 1px; }
+
+  /* status bar light version for dark bg */
+  .status-bar.light .status-time,
+  .status-bar.light .sig,
+  .status-bar.light .batt { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.6); }
+
+  /* ── Reusable UI atoms ── */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--bgDeep);
+    color: var(--t2);
+  }
+  .tag.accent { background: var(--accentL); color: var(--accent); }
+  .tag.navy { background: rgba(59,81,120,0.12); color: var(--navy); }
+  .tag.olive { background: rgba(110,125,98,0.15); color: var(--olive); }
+  .tag.gold { background: rgba(232,200,130,0.25); color: #8B6B30; }
+
+  .avatar {
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+
+  .card-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .divider { height: 8px; background: var(--bgDeep); }
+
+  /* ── Skeletons / placeholders ── */
+  .skel {
+    background: var(--bgDeep);
+    border-radius: 6px;
+    animation: shimmer 1.6s ease infinite;
+  }
+  @keyframes shimmer {
+    0%,100% { opacity: 0.7; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ══════════════════════════════════════
+     SCREEN 1 — HOME
+  ══════════════════════════════════════ */
+  .s-home .band-ivory {
+    background: var(--bg);
+    padding: 44px 20px 52px;
+  }
+  .s-home .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 12px;
+  }
+  .app-label {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: var(--t3);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .tagline {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--t1);
+    letter-spacing: -0.4px;
+  }
+  .bell-btn {
+    width: 34px; height: 34px;
+    border-radius: 17px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bell-icon { width: 14px; height: 14px; border-radius: 3px; background: var(--t3); }
+
+  .live-row {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 12px;
+  }
+  .live-dot { width: 7px; height: 7px; border-radius: 99px; background: #4CAF50; }
+  .live-text { font-size: 11px; color: var(--t2); }
+  .live-text strong { color: var(--t1); font-weight: 700; }
+
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 14px;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .search-icon { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--t3); flex-shrink: 0; }
+  .search-text { flex: 1; font-size: 12px; color: var(--t3); }
+  .search-cta {
+    background: var(--navy);
+    border-radius: 7px;
+    padding: 5px 10px;
+    font-size: 10px;
+    color: var(--white);
+    font-weight: 600;
+  }
+
+  .s-home .band-navy {
+    background: var(--navy);
+    border-radius: 24px 24px 0 0;
+    margin-top: -20px;
+    padding: 24px 20px 28px;
+  }
+  .band-label-light {
+    font-size: 8px; font-weight: 700; letter-spacing: 2.5px;
+    color: rgba(255,255,255,0.4); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .band-title-light {
+    font-size: 18px; font-weight: 700; color: var(--white);
+    letter-spacing: -0.3px; margin-bottom: 20px;
+  }
+
+  .featured-avatar-circle {
+    width: 68px; height: 68px; border-radius: 34px;
+    background: rgba(235,240,248,0.18);
+    border: 2px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .featured-avatar-text {
+    font-size: 26px; font-weight: 700; color: rgba(235,240,248,0.8);
+  }
+  .featured-name {
+    font-size: 18px; font-weight: 700; color: var(--white);
+    text-align: center; margin-bottom: 4px;
+  }
+  .featured-dest {
+    font-size: 12px; color: rgba(255,255,255,0.55);
+    text-align: center; margin-bottom: 10px;
+  }
+  .featured-tags { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; }
+  .feat-tag {
+    padding: 4px 10px; border-radius: 7px;
+    font-size: 10px; font-weight: 500;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+  }
+  .feat-tag.match {
+    background: rgba(232,200,130,0.22);
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .feat-nav { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 14px; }
+  .feat-nav-btn {
+    width: 28px; height: 28px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .feat-dots { display: flex; gap: 4px; align-items: center; }
+  .feat-dot { width: 4px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.25); }
+  .feat-dot.active { width: 14px; background: rgba(255,255,255,0.8); }
+  .feat-cta {
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    border-radius: 11px;
+    padding: 10px 0;
+    font-size: 12px; font-weight: 600; color: var(--white);
+  }
+
+  .band-beige {
+    background: #EDE8E0;
+    border-radius: 24px 24px 0 0;
+    margin-top: -18px;
+    padding: 10px 20px 20px;
+    position: relative;
+  }
+  .drag-handle-area { display: flex; justify-content: center; padding-bottom: 12px; }
+  .drag-handle { width: 32px; height: 4px; border-radius: 2px; background: rgba(92,82,72,0.25); }
+  .band-label { font-size: 8px; font-weight: 700; letter-spacing: 2.5px; color: var(--t3); text-transform: uppercase; margin-bottom: 3px; }
+  .band-title { font-size: 16px; font-weight: 600; color: var(--t1); letter-spacing: -0.3px; }
+  .band-header-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 14px; }
+  .more-btn { display: flex; align-items: center; gap: 3px; font-size: 10px; color: var(--t3); }
+
+  .recruit-list { background: var(--card); border: 1px solid var(--border); border-radius: 13px; overflow: hidden; }
+  .recruit-row { display: flex; align-items: center; padding: 13px 12px 13px 0; gap: 10px; border-bottom: 1px solid var(--border); }
+  .recruit-row:last-child { border-bottom: none; }
+  .accent-bar { width: 3px; height: 30px; border-radius: 2px; margin-left: 12px; flex-shrink: 0; }
+  .recruit-dest { font-size: 13px; font-weight: 700; color: var(--t1); }
+  .recruit-nights { font-size: 9px; color: var(--t3); margin-left: 6px; }
+  .recruit-meta { font-size: 10px; color: var(--t2); margin-top: 2px; }
+  .recruit-badge { border-radius: 7px; padding: 4px 8px; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+
+  /* ══════════════════════════════════════
+     SCREEN 2 — EXPLORE
+  ══════════════════════════════════════ */
+  .s-explore { background: var(--bg); }
+  .explore-header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 44px 18px 16px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .back-btn {
+    width: 32px; height: 32px; border-radius: 16px;
+    background: var(--bgDeep);
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 14px; flex-shrink: 0;
+  }
+  .back-arrow { width: 10px; height: 10px; border-left: 1.5px solid var(--t2); border-bottom: 1.5px solid var(--t2); transform: rotate(45deg); }
+
+  .section {
+    background: var(--card);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .section-title { font-size: 14px; font-weight: 500; color: var(--t1); letter-spacing: -0.2px; }
+
+  .input-wrap {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 11px; padding: 10px 12px;
+  }
+  .pin-icon { width: 12px; height: 14px; border-radius: 3px 3px 0 0; background: var(--t3); }
+  .input-text { font-size: 12px; color: var(--t3); flex: 1; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 11px; color: var(--t2);
+  }
+  .chip.active { background: var(--accentL); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+  .date-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 11px; padding: 14px 18px;
+  }
+  .date-side { flex: 1; text-align: center; }
+  .date-lbl { font-size: 9px; font-weight: 600; color: var(--t3); letter-spacing: 0.5px; margin-bottom: 4px; }
+  .date-val { font-size: 16px; font-weight: 300; color: var(--t1); letter-spacing: -0.4px; }
+  .date-arrow { color: var(--t3); font-size: 12px; }
+
+  .style-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .style-cell {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding: 9px 4px;
+    border: 1px solid var(--border); border-radius: 11px;
+    background: var(--bg);
+  }
+  .style-cell.active { background: var(--accentL); border-color: var(--accent); }
+  .style-icon { width: 16px; height: 16px; border-radius: 4px; background: var(--t3); }
+  .style-icon.active { background: var(--accent); }
+  .style-text { font-size: 9px; color: var(--t2); text-align: center; }
+  .style-text.active { color: var(--accent); font-weight: 600; }
+
+  .seg-row { display: flex; flex-direction: column; gap: 6px; }
+  .seg-label { font-size: 10px; font-weight: 600; color: var(--t2); }
+  .seg {
+    display: flex;
+    background: var(--bgDeep);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 2px;
+    gap: 2px;
+  }
+  .seg-btn { flex: 1; text-align: center; padding: 6px 0; font-size: 10px; color: var(--t2); border-radius: 8px; }
+  .seg-btn.active { background: var(--navy); color: var(--white); font-weight: 600; }
+
+  .toggle-chips { display: flex; gap: 6px; }
+  .toggle-chip {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px;
+    padding: 7px 4px;
+    border: 1px solid var(--border); border-radius: 9px;
+    background: var(--bg); font-size: 10px; color: var(--t2);
+  }
+  .toggle-chip.active { background: var(--accentL); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+  .bottom-bar {
+    position: absolute; bottom: 56px; left: 0; right: 0;
+    background: var(--card);
+    padding: 10px 18px 10px;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 8px var(--shadow);
+  }
+  .bottom-hint { font-size: 9px; color: var(--t3); text-align: center; margin-bottom: 6px; }
+  .search-btn {
+    background: var(--navy);
+    border-radius: 11px;
+    height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: var(--white);
+    letter-spacing: -0.2px;
+  }
+
+  /* ══════════════════════════════════════
+     SCREEN 3 — MATCH LOADING
+  ══════════════════════════════════════ */
+  .s-match-loading {
+    background: #1E222A;
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: 100%;
+  }
+  .match-spinner {
+    width: 80px; height: 80px; border-radius: 40px;
+    border: 2px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; margin-bottom: 24px;
+  }
+  .match-spinner::after {
+    content: '';
+    position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
+    border-radius: 40px;
+    border: 2px solid transparent;
+    border-top-color: var(--gold);
+    animation: spin 1.2s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .match-inner { width: 56px; height: 56px; border-radius: 28px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; }
+  .match-icon { font-size: 22px; }
+  .match-label { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .match-title { font-size: 20px; font-weight: 300; color: var(--white); letter-spacing: -0.3px; margin-bottom: 6px; }
+  .match-subtitle { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 36px; }
+  .match-steps { display: flex; flex-direction: column; gap: 10px; width: 80%; }
+  .match-step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 11px;
+  }
+  .match-step.done { border-color: rgba(198,165,106,0.3); }
+  .step-dot { width: 8px; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.15); flex-shrink: 0; }
+  .step-dot.done { background: var(--gold); }
+  .step-dot.active { background: var(--gold); animation: pulse 1s ease infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity: 0.4; } }
+  .step-text { font-size: 11px; color: rgba(255,255,255,0.45); flex: 1; }
+  .step-text.done { color: rgba(255,255,255,0.75); }
+  .step-check { font-size: 10px; color: var(--gold); font-weight: 700; }
+
+  /* ══════════════════════════════════════
+     SCREEN 4 — MATCH RESULT
+  ══════════════════════════════════════ */
+  .s-match-result {
+    background: var(--bg);
+    overflow-y: auto;
+  }
+  .result-header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 44px 18px 14px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .result-count {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 10px;
+  }
+  .count-badge {
+    background: var(--navy);
+    color: var(--white);
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+  }
+  .count-text { font-size: 11px; color: var(--t2); }
+
+  .match-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 0 16px 10px;
+  }
+  .match-card-header {
+    background: var(--navy);
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .match-card .avatar { width: 44px; height: 44px; font-size: 16px; background: rgba(255,255,255,0.15); }
+  .match-card-info { flex: 1; }
+  .match-name { font-size: 15px; font-weight: 700; color: var(--white); }
+  .match-dest { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 2px; }
+  .match-pct-badge {
+    background: rgba(232,200,130,0.22);
+    border: 1px solid rgba(232,200,130,0.4);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px; font-weight: 700; color: var(--gold);
+  }
+  .match-card-body { padding: 14px 16px; }
+  .match-style-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .match-desc { font-size: 11px; color: var(--t2); line-height: 1.6; margin-bottom: 12px; }
+  .match-actions { display: flex; gap: 8px; }
+  .btn-pass {
+    flex: 1; padding: 9px 0; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 12px; color: var(--t2); text-align: center;
+  }
+  .btn-apply {
+    flex: 2; padding: 9px 0; border-radius: 10px;
+    background: var(--navy);
+    font-size: 12px; font-weight: 600; color: var(--white); text-align: center;
+  }
+
+  /* ══════════════════════════════════════
+     SCREEN 5 — CHAT LIST
+  ══════════════════════════════════════ */
+  .s-chat { background: var(--bg); }
+  .chat-header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 44px 20px 0;
+  }
+  .chat-header-top { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 14px; }
+  .unread-badge {
+    background: var(--accent);
+    border-radius: 999px;
+    min-width: 18px; height: 18px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 5px;
+    font-size: 9px; font-weight: 700; color: var(--white);
+    margin-left: 6px;
+  }
+  .pending-bar {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--accentL);
+    border-radius: 7px;
+    padding: 7px 10px;
+    margin-bottom: 10px;
+  }
+  .pending-dot { width: 5px; height: 5px; border-radius: 3px; background: var(--accent); }
+  .pending-text { font-size: 11px; color: var(--t2); }
+  .pending-text strong { color: var(--accent); font-weight: 700; }
+
+  .tab-row { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+  .tab { padding: 10px 0; margin-right: 18px; border-bottom: 1.5px solid transparent; }
+  .tab.active { border-bottom-color: var(--t1); }
+  .tab-text { font-size: 11px; color: var(--t3); }
+  .tab-text.active { color: var(--t1); font-weight: 600; }
+
+  .chat-list { padding: 0; }
+  .chat-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+  }
+  .chat-item .avatar { width: 42px; height: 42px; font-size: 15px; }
+  .chat-item-info { flex: 1; min-width: 0; }
+  .chat-item-name { font-size: 13px; font-weight: 600; color: var(--t1); display: flex; align-items: center; gap: 5px; }
+  .chat-item-preview { font-size: 11px; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .chat-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .chat-time { font-size: 9px; color: var(--t3); }
+  .chat-unread { min-width: 16px; height: 16px; border-radius: 8px; background: var(--accent); font-size: 9px; font-weight: 700; color: var(--white); display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  .status-chip { font-size: 8px; font-weight: 600; padding: 2px 6px; border-radius: 4px; }
+  .status-chip.pending { background: rgba(196,135,90,0.15); color: var(--accent); }
+  .status-chip.accepted { background: rgba(91,158,110,0.15); color: var(--green); }
+
+  /* ══════════════════════════════════════
+     SCREEN 6 — COMMUNITY
+  ══════════════════════════════════════ */
+  .s-community { background: var(--bg); overflow: hidden; }
+  .community-header {
+    background: var(--bg);
+    padding: 44px 20px 14px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .write-btn {
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--card);
+    font-size: 11px; color: var(--t2); font-weight: 500;
+  }
+  .editor-label { font-size: 8px; font-weight: 700; color: var(--t3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; padding-left: 20px; }
+  .featured-scroll { display: flex; gap: 12px; padding: 0 20px 12px; overflow-x: hidden; }
+  .featured-card {
+    width: 200px; border-radius: 18px;
+    background: var(--navy);
+    padding: 16px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  .feat-city { font-size: 8px; color: rgba(255,255,255,0.4); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
+  .feat-title { font-size: 12px; font-weight: 500; color: var(--white); line-height: 1.4; }
+  .feat-footer { display: flex; justify-content: space-between; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .feat-author { font-size: 9px; color: rgba(255,255,255,0.45); }
+  .feat-likes { font-size: 9px; color: rgba(255,255,255,0.35); }
+
+  .city-filter { display: flex; gap: 6px; padding: 10px 20px; overflow-x: hidden; }
+  .city-tag { padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); font-size: 10px; color: var(--t2); white-space: nowrap; flex-shrink: 0; }
+  .city-tag.active { background: var(--accent); border-color: var(--accent); color: var(--white); font-weight: 600; }
+
+  .cat-tabs { display: flex; padding: 0 20px; border-bottom: 1px solid var(--border); background: var(--bg); }
+  .cat-tab { padding: 9px 0; margin-right: 18px; border-bottom: 1.5px solid transparent; font-size: 11px; color: var(--t3); }
+  .cat-tab.active { border-bottom-color: var(--t1); color: var(--t1); font-weight: 600; }
+
+  .post-list { padding: 10px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .post-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 14px;
+  }
+  .post-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .post-card .avatar { width: 32px; height: 32px; font-size: 12px; }
+  .post-author { font-size: 11px; font-weight: 600; color: var(--t1); }
+  .post-date { font-size: 10px; color: var(--t3); margin-top: 1px; }
+  .post-title { font-size: 13px; font-weight: 600; color: var(--t1); margin-bottom: 5px; letter-spacing: -0.2px; }
+  .post-preview { font-size: 11px; color: var(--t2); line-height: 1.55; margin-bottom: 10px; }
+  .post-footer { display: flex; align-items: center; justify-content: space-between; }
+  .post-tags { display: flex; gap: 5px; }
+  .post-like { font-size: 10px; color: var(--t3); }
+
+  .route-banner {
+    margin: 8px 16px 10px;
+    background: var(--accentL);
+    border: 1px solid rgba(196,135,90,0.2);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .route-banner-label { font-size: 8px; font-weight: 700; color: var(--accent); letter-spacing: 2px; margin-bottom: 3px; opacity: 0.7; }
+  .route-banner-title { font-size: 13px; font-weight: 600; color: var(--t1); }
+  .route-banner-desc { font-size: 10px; color: var(--t2); margin-top: 2px; }
+  .route-arrow { font-size: 12px; color: var(--accent); }
+
+  /* ══════════════════════════════════════
+     SCREEN 7 — PROFILE / MATE DETAIL
+  ══════════════════════════════════════ */
+  .s-mate {
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .mate-hero {
+    background: var(--navy);
+    padding: 44px 20px 24px;
+  }
+  .mate-hero-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .mate-hero .avatar { width: 72px; height: 72px; font-size: 26px; background: rgba(255,255,255,0.15); margin: 0 auto 12px; }
+  .mate-hero-center { text-align: center; }
+  .mate-nickname { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .mate-meta { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 12px; }
+  .mate-tags-row { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .mate-tag {
+    padding: 4px 10px; border-radius: 7px;
+    font-size: 10px; font-weight: 500;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+  }
+  .mate-stats { display: flex; gap: 0; background: rgba(255,255,255,0.06); border-radius: 12px; }
+  .mate-stat { flex: 1; text-align: center; padding: 11px 8px; border-right: 1px solid rgba(255,255,255,0.1); }
+  .mate-stat:last-child { border-right: none; }
+  .mate-stat-val { font-size: 14px; font-weight: 700; color: var(--white); }
+  .mate-stat-lbl { font-size: 9px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+  .mate-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    padding: 14px;
+  }
+  .info-card-label { font-size: 9px; font-weight: 700; color: var(--t3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .info-card-text { font-size: 12px; color: var(--t2); line-height: 1.6; }
+  .trip-row { display: flex; align-items: center; gap: 10px; }
+  .trip-icon { width: 36px; height: 36px; border-radius: 9px; background: var(--accentL); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .trip-info { flex: 1; }
+  .trip-dest { font-size: 13px; font-weight: 600; color: var(--t1); }
+  .trip-dates { font-size: 10px; color: var(--t3); margin-top: 2px; }
+  .trip-nights { font-size: 9px; font-weight: 700; padding: 3px 7px; border-radius: 5px; background: var(--bgDeep); color: var(--t2); }
+
+  .mate-cta-bar {
+    position: absolute; bottom: 56px; left: 0; right: 0;
+    background: var(--card);
+    padding: 10px 16px 10px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 8px;
+  }
+  .btn-like { width: 42px; height: 42px; border-radius: 11px; background: var(--bgDeep); display: flex; align-items: center; justify-content: center; }
+  .btn-like-icon { font-size: 16px; }
+  .btn-chat {
+    flex: 1; height: 42px; border-radius: 11px;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: var(--white);
+  }
+
+  /* section separator for screen headers */
+  .sec-sep {
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Decorative section label ── */
+  .section-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .section-badge-line { height: 1px; flex: 1; background: var(--border); }
+  .section-badge-text { font-size: 11px; font-weight: 600; color: var(--t3); letter-spacing: 1.5px; white-space: nowrap; }
+
+  .screen-caption {
+    font-size: 12px;
+    color: var(--t2);
+    text-align: center;
+    line-height: 1.6;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Page header ── -->
+  <p class="page-title">TripMate · UI Wireframes</p>
+  <h1 class="page-heading">앱 화면 구성</h1>
+  <p class="page-sub">여행 동행 매칭 앱 TripMate의 주요 화면 와이어프레임입니다.<br>네이비 / 웜 아이보리 / 웜 어센트 컬러 시스템 기반의 에디토리얼 디자인.</p>
+
+  <!-- ── Row 1: 3 screens ── -->
+  <div class="grid" style="margin-bottom:48px;">
+
+    <!-- SCREEN 1: HOME -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen s-home" style="overflow:hidden;">
+
+          <!-- Status bar -->
+          <div class="status-bar" style="background:var(--bg); position:absolute; top:0; width:100%; z-index:20;">
+            <span class="status-time">9:41</span>
+            <div class="status-icons">
+              <div class="sig" style="width:10px;height:7px;"></div>
+              <div class="batt"></div>
+            </div>
+          </div>
+
+          <!-- Band 1: Ivory -->
+          <div class="band-ivory" style="padding-top:50px; padding-bottom:48px;">
+            <div class="topbar">
+              <div>
+                <div class="app-label">TRIPMATE</div>
+                <div class="tagline">동행 매칭</div>
+              </div>
+              <div class="bell-btn">
+                <div class="bell-icon" style="width:12px;height:13px;border-radius:5px 5px 0 0;background:var(--t3);"></div>
+              </div>
+            </div>
+            <div class="live-row">
+              <div class="live-dot"></div>
+              <div class="live-text">지금 <strong>6개</strong> 동행 모집 중</div>
+            </div>
+            <div class="search-bar">
+              <div class="search-icon"></div>
+              <div class="search-text">도시, 날짜로 동행 찾기</div>
+              <div class="search-cta">검색</div>
+            </div>
+          </div>
+
+          <!-- Band 2: Navy -->
+          <div class="band-navy" style="padding-bottom:32px;">
+            <div class="band-label-light">AI 동행 매칭</div>
+            <div class="band-title-light" style="margin-bottom:16px;">나와 잘 맞는 여행자</div>
+            <div class="featured-avatar-circle">
+              <div class="featured-avatar-text">지</div>
+            </div>
+            <div class="featured-name">지아</div>
+            <div class="featured-dest">✈ 오사카</div>
+            <div class="featured-tags">
+              <div class="feat-tag">카페 탐방</div>
+              <div class="feat-tag match">87% 매칭</div>
+            </div>
+            <div class="feat-nav">
+              <div class="feat-nav-btn" style="opacity:0.3;">‹</div>
+              <div class="feat-dots">
+                <div class="feat-dot active"></div>
+                <div class="feat-dot"></div>
+                <div class="feat-dot"></div>
+                <div class="feat-dot"></div>
+              </div>
+              <div class="feat-nav-btn">›</div>
+            </div>
+            <div class="feat-cta">프로필 보기</div>
+          </div>
+
+          <!-- Band 3: Beige -->
+          <div class="band-beige" style="margin-top:-18px; padding-bottom:60px;">
+            <div class="drag-handle-area"><div class="drag-handle"></div></div>
+            <div class="band-header-row">
+              <div>
+                <div class="band-label">동행 모집</div>
+                <div class="band-title">지금 멤버 찾는 중</div>
+              </div>
+              <div class="more-btn">전체 보기 ›</div>
+            </div>
+            <div class="recruit-list">
+              <div class="recruit-row">
+                <div class="accent-bar" style="background:#7A5C3E;"></div>
+                <div style="flex:1;">
+                  <div style="display:flex;align-items:center;"><span class="recruit-dest">오사카</span><span class="recruit-nights">3박 4일</span></div>
+                  <div class="recruit-meta">박민준 · 26세 · 6월 15일 – 18일</div>
+                </div>
+                <div class="recruit-badge" style="background:#EDE3D8;color:#7A5C3E;">1명 모집</div>
+              </div>
+              <div class="recruit-row">
+                <div class="accent-bar" style="background:#3A5878;"></div>
+                <div style="flex:1;">
+                  <div style="display:flex;align-items:center;"><span class="recruit-dest">도쿄</span><span class="recruit-nights">5박 6일</span></div>
+                  <div class="recruit-meta">이수연 · 24세 · 7월 3일 – 8일</div>
+                </div>
+                <div class="recruit-badge" style="background:#D8E2EE;color:#3A5878;">2명 모집</div>
+              </div>
+              <div class="recruit-row">
+                <div class="accent-bar" style="background:#3A6B55;"></div>
+                <div style="flex:1;">
+                  <div style="display:flex;align-items:center;"><span class="recruit-dest">방콕</span><span class="recruit-nights">4박 5일</span></div>
+                  <div class="recruit-meta">최동원 · 29세 · 8월 11일 – 15일</div>
+                </div>
+                <div class="recruit-badge" style="background:#D8EAE0;color:#3A6B55;">1명 모집</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom nav -->
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon active"></div><div class="nav-text active">홈</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">탐색</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">채팅</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">커뮤니티</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">프로필</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">01 · 홈</div>
+      <div class="screen-caption">AI 동행 매칭 · 실시간 모집 현황</div>
+    </div>
+
+    <!-- SCREEN 2: EXPLORE -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen s-explore" style="overflow:hidden;">
+
+          <div class="status-bar" style="background:var(--card); position:absolute; top:0; width:100%; z-index:20;">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><div class="sig" style="width:10px;height:7px;"></div><div class="batt"></div></div>
+          </div>
+
+          <!-- Header -->
+          <div class="explore-header">
+            <div class="back-btn"><div class="back-arrow"></div></div>
+            <div>
+              <div class="app-label" style="margin-bottom:6px;">EXPLORE</div>
+              <div style="font-size:20px;font-weight:300;color:var(--t1);letter-spacing:-0.4px;">동행 찾기</div>
+            </div>
+          </div>
+
+          <!-- Scroll content -->
+          <div style="overflow:hidden; padding-bottom:56px;">
+            <!-- 목적지 -->
+            <div class="section" style="padding:16px 16px 14px;">
+              <div class="section-title">어디로 떠나요?</div>
+              <div class="input-wrap">
+                <div class="pin-icon"></div>
+                <div class="input-text">도시 또는 국가</div>
+              </div>
+              <div class="chip-row">
+                <div class="chip active">오사카</div>
+                <div class="chip">도쿄</div>
+                <div class="chip">방콕</div>
+                <div class="chip">파리</div>
+                <div class="chip">발리</div>
+                <div class="chip">뉴욕</div>
+              </div>
+            </div>
+            <div class="divider"></div>
+
+            <!-- 날짜 -->
+            <div class="section" style="padding:16px;">
+              <div class="section-title">언제 떠나요?</div>
+              <div class="date-row">
+                <div class="date-side">
+                  <div class="date-lbl">출발</div>
+                  <div class="date-val" style="color:var(--t1);">06.15</div>
+                </div>
+                <div class="date-arrow">—</div>
+                <div class="date-side">
+                  <div class="date-lbl">귀국</div>
+                  <div class="date-val">MM.DD</div>
+                </div>
+              </div>
+            </div>
+            <div class="divider"></div>
+
+            <!-- 여행 스타일 -->
+            <div class="section" style="padding:16px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                <div class="section-title">어떤 여행을 즐기나요?</div>
+                <div style="font-size:10px;color:var(--accent);font-weight:600;">2개 선택됨</div>
+              </div>
+              <div class="style-grid">
+                <div class="style-cell active">
+                  <div class="style-icon active"></div>
+                  <div class="style-text active">카페</div>
+                </div>
+                <div class="style-cell">
+                  <div class="style-icon"></div>
+                  <div class="style-text">사진</div>
+                </div>
+                <div class="style-cell active">
+                  <div class="style-icon active"></div>
+                  <div class="style-text active">맛집</div>
+                </div>
+                <div class="style-cell">
+                  <div class="style-icon"></div>
+                  <div class="style-text">힐링</div>
+                </div>
+                <div class="style-cell">
+                  <div class="style-icon"></div>
+                  <div class="style-text">관광</div>
+                </div>
+                <div class="style-cell">
+                  <div class="style-icon"></div>
+                  <div class="style-text">쇼핑</div>
+                </div>
+                <div class="style-cell">
+                  <div class="style-icon"></div>
+                  <div class="style-text">액티비티</div>
+                </div>
+                <div class="style-cell">
+                  <div class="style-icon"></div>
+                  <div class="style-text">역사/문화</div>
+                </div>
+              </div>
+            </div>
+            <div class="divider"></div>
+
+            <!-- 추가 조건 -->
+            <div class="section" style="padding:16px; gap:10px;">
+              <div class="section-title">추가 조건</div>
+              <div class="seg-row">
+                <div class="seg-label">성별</div>
+                <div class="seg">
+                  <div class="seg-btn active">무관</div>
+                  <div class="seg-btn">여성</div>
+                  <div class="seg-btn">남성</div>
+                </div>
+              </div>
+              <div class="seg-row">
+                <div class="seg-label">나이대</div>
+                <div class="seg">
+                  <div class="seg-btn">무관</div>
+                  <div class="seg-btn active">20대</div>
+                  <div class="seg-btn">30대</div>
+                  <div class="seg-btn">40대+</div>
+                </div>
+              </div>
+              <div style="font-size:10px;font-weight:600;color:var(--t2);">기타 옵션</div>
+              <div class="toggle-chips">
+                <div class="toggle-chip">📅 일정 겹침</div>
+                <div class="toggle-chip active">✓ 인증 완료</div>
+                <div class="toggle-chip">🌿 비흡연자</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom CTA -->
+          <div class="bottom-bar">
+            <div class="bottom-hint">오사카 · 06.15 · 카페 외 1</div>
+            <div class="search-btn">여행자 찾기</div>
+          </div>
+
+          <!-- Bottom nav -->
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">홈</div></div>
+            <div class="nav-item"><div class="nav-icon active"></div><div class="nav-text active">탐색</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">채팅</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">커뮤니티</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">프로필</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">02 · 동행 찾기</div>
+      <div class="screen-caption">목적지 · 날짜 · 스타일 · 조건 필터</div>
+    </div>
+
+    <!-- SCREEN 3: MATCH LOADING -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen" style="background:#1E222A; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 0 24px;">
+
+          <div class="status-bar light" style="position:absolute;top:0;width:100%;z-index:20;background:transparent;">
+            <span class="status-time" style="color:rgba(255,255,255,0.6);">9:41</span>
+            <div class="status-icons">
+              <div class="sig" style="background:rgba(255,255,255,0.5);"></div>
+              <div class="batt" style="border-color:rgba(255,255,255,0.5);"></div>
+            </div>
+          </div>
+
+          <div class="match-spinner">
+            <div class="match-inner"><div style="font-size:22px;">✈</div></div>
+          </div>
+
+          <div style="text-align:center; margin-bottom:32px;">
+            <div class="match-label">AI MATCHING</div>
+            <div class="match-title">동행 찾는 중</div>
+            <div class="match-subtitle">최적의 여행 메이트를 분석하고 있어요</div>
+          </div>
+
+          <div style="width:100%; display:flex; flex-direction:column; gap:8px;">
+            <div class="match-step done">
+              <div class="step-dot done"></div>
+              <div class="step-text done">여행 스타일 분석 완료</div>
+              <div class="step-check">✓</div>
+            </div>
+            <div class="match-step done">
+              <div class="step-dot done"></div>
+              <div class="step-text done">일정 매칭 완료</div>
+              <div class="step-check">✓</div>
+            </div>
+            <div class="match-step" style="border-color:rgba(198,165,106,0.3);">
+              <div class="step-dot active"></div>
+              <div class="step-text" style="color:rgba(255,255,255,0.7);">동행 후보 선별 중</div>
+              <div style="width:24px;height:3px;border-radius:2px;background:rgba(198,165,106,0.3); overflow:hidden;">
+                <div style="width:60%;height:100%;background:var(--gold);border-radius:2px;"></div>
+              </div>
+            </div>
+            <div class="match-step">
+              <div class="step-dot"></div>
+              <div class="step-text">매칭 점수 계산</div>
+            </div>
+          </div>
+
+          <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;">
+            <div style="font-size:10px;color:rgba(255,255,255,0.2);">오사카 · 6월 15일 · 카페, 맛집</div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">03 · AI 매칭</div>
+      <div class="screen-caption">실시간 동행 분석 · 4단계 매칭 프로세스</div>
+    </div>
+
+  </div><!-- /grid row 1 -->
+
+  <div class="section-badge">
+    <div class="section-badge-line"></div>
+    <div class="section-badge-text">SECONDARY FLOWS</div>
+    <div class="section-badge-line"></div>
+  </div>
+
+  <!-- ── Row 2: 3 screens ── -->
+  <div class="grid">
+
+    <!-- SCREEN 4: MATCH RESULTS -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen s-match-result" style="overflow:hidden;">
+
+          <div class="status-bar" style="background:var(--card);position:absolute;top:0;width:100%;z-index:20;">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><div class="sig" style="width:10px;height:7px;"></div><div class="batt"></div></div>
+          </div>
+
+          <!-- Header -->
+          <div class="result-header">
+            <div class="back-btn"><div class="back-arrow"></div></div>
+            <div>
+              <div class="app-label" style="margin-bottom:4px;">MATCH RESULT</div>
+              <div style="font-size:18px;font-weight:300;color:var(--t1);letter-spacing:-0.3px;">매칭 결과</div>
+              <div class="result-count">
+                <div class="count-badge">8</div>
+                <div class="count-text">명의 동행 후보</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cards -->
+          <div style="padding:12px 0 56px; overflow:hidden;">
+
+            <!-- Card 1 -->
+            <div class="match-card">
+              <div class="match-card-header">
+                <div class="avatar" style="width:44px;height:44px;font-size:16px;background:rgba(255,255,255,0.15);border-radius:22px;">지</div>
+                <div class="match-card-info">
+                  <div class="match-name">김지아</div>
+                  <div class="match-dest">✈ 오사카 · 6월 15–18일</div>
+                </div>
+                <div class="match-pct-badge">87%</div>
+              </div>
+              <div class="match-card-body">
+                <div class="match-style-row">
+                  <div class="tag">카페 탐방</div>
+                  <div class="tag accent">맛집 투어</div>
+                  <div class="tag olive">인증 완료</div>
+                </div>
+                <div class="match-desc">조용하고 여유로운 여행 선호. 사진 많이 찍고 현지 카페 순례가 목표입니다.</div>
+                <div class="match-actions">
+                  <div class="btn-pass">패스</div>
+                  <div class="btn-apply">동행 신청</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2 (partial) -->
+            <div class="match-card" style="opacity:0.6;">
+              <div class="match-card-header" style="background:var(--dustBlue,#6B8CAD);">
+                <div class="avatar" style="width:44px;height:44px;font-size:16px;background:rgba(255,255,255,0.15);border-radius:22px;">승</div>
+                <div class="match-card-info">
+                  <div class="match-name">박승현</div>
+                  <div class="match-dest">✈ 오사카 · 6월 14–18일</div>
+                </div>
+                <div class="match-pct-badge" style="color:var(--gold);">79%</div>
+              </div>
+              <div class="match-card-body" style="padding-bottom:10px;">
+                <div class="match-style-row">
+                  <div class="tag">힐링</div>
+                  <div class="tag">사진</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom nav -->
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">홈</div></div>
+            <div class="nav-item"><div class="nav-icon active"></div><div class="nav-text active">탐색</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">채팅</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">커뮤니티</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">프로필</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">04 · 매칭 결과</div>
+      <div class="screen-caption">AI 추천 후보 리스트 · 매칭 점수 표시</div>
+    </div>
+
+    <!-- SCREEN 5: CHAT LIST -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen s-chat" style="overflow:hidden;">
+
+          <div class="status-bar" style="background:var(--card);position:absolute;top:0;width:100%;z-index:20;">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><div class="sig" style="width:10px;height:7px;"></div><div class="batt"></div></div>
+          </div>
+
+          <!-- Header -->
+          <div class="chat-header">
+            <div class="chat-header-top">
+              <div>
+                <div class="app-label">TRAVEL TALK</div>
+                <div style="display:flex;align-items:center;">
+                  <div style="font-size:18px;font-weight:300;color:var(--t1);letter-spacing:-0.3px;">여행 대화</div>
+                  <div class="unread-badge">3</div>
+                </div>
+              </div>
+              <div style="width:34px;height:34px;border-radius:17px;background:var(--bgDeep);display:flex;align-items:center;justify-content:center;">
+                <div style="width:14px;height:14px;border-radius:3px;background:var(--t3);"></div>
+              </div>
+            </div>
+            <div class="pending-bar">
+              <div class="pending-dot"></div>
+              <div class="pending-text">동행 신청 <strong>2건</strong> 수락 대기 중</div>
+            </div>
+            <div class="tab-row" style="border-bottom:none;">
+              <div class="tab active"><div class="tab-text active">전체</div></div>
+              <div class="tab"><div class="tab-text">대화 중</div></div>
+              <div class="tab"><div class="tab-text">수락 대기</div></div>
+            </div>
+          </div>
+
+          <!-- Chat list -->
+          <div class="chat-list">
+            <div class="chat-item">
+              <div class="avatar" style="width:42px;height:42px;font-size:15px;border-radius:21px;background:#D8E2EE;color:#3A5878;">지</div>
+              <div class="chat-item-info">
+                <div class="chat-item-name">
+                  김지아
+                  <span class="status-chip accepted">대화 중</span>
+                </div>
+                <div class="chat-item-preview">오사카 도착하면 연락주세요!</div>
+              </div>
+              <div class="chat-item-right">
+                <div class="chat-time">오전 9:24</div>
+                <div class="chat-unread">2</div>
+              </div>
+            </div>
+            <div class="chat-item">
+              <div class="avatar" style="width:42px;height:42px;font-size:15px;border-radius:21px;background:#EDE3D8;color:#7A5C3E;">박</div>
+              <div class="chat-item-info">
+                <div class="chat-item-name">
+                  박승현
+                  <span class="status-chip pending">수락 대기</span>
+                </div>
+                <div class="chat-item-preview">동행 신청했습니다 :)</div>
+              </div>
+              <div class="chat-item-right">
+                <div class="chat-time">어제</div>
+                <div class="chat-unread">1</div>
+              </div>
+            </div>
+            <div class="chat-item" style="opacity:0.6;">
+              <div class="avatar" style="width:42px;height:42px;font-size:15px;border-radius:21px;background:#D8EAE0;color:#3A6B55;">최</div>
+              <div class="chat-item-info">
+                <div class="chat-item-name">최동원</div>
+                <div class="chat-item-preview">방콕 맛집 리스트 공유해드릴게요</div>
+              </div>
+              <div class="chat-item-right">
+                <div class="chat-time">5월 25일</div>
+              </div>
+            </div>
+            <div class="chat-item" style="opacity:0.4;">
+              <div class="avatar" style="width:42px;height:42px;font-size:15px;border-radius:21px;background:#EAD8EA;color:#6B3A6B;">이</div>
+              <div class="chat-item-info">
+                <div class="chat-item-name">이수연</div>
+                <div class="chat-item-preview">도쿄 일정 맞춰볼 수 있을까요?</div>
+              </div>
+              <div class="chat-item-right">
+                <div class="chat-time">5월 23일</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom nav -->
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">홈</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">탐색</div></div>
+            <div class="nav-item"><div class="nav-icon active"></div><div class="nav-text active">채팅</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">커뮤니티</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">프로필</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">05 · 채팅</div>
+      <div class="screen-caption">대화 목록 · 수락 대기 알림 · 상태 탭</div>
+    </div>
+
+    <!-- SCREEN 6: COMMUNITY -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen s-community" style="overflow:hidden;">
+
+          <div class="status-bar" style="background:var(--bg);position:absolute;top:0;width:100%;z-index:20;">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><div class="sig" style="width:10px;height:7px;"></div><div class="batt"></div></div>
+          </div>
+
+          <!-- Header -->
+          <div class="community-header" style="padding-top:50px;">
+            <div>
+              <div class="app-label">TRAVEL JOURNAL</div>
+              <div style="font-size:18px;font-weight:300;color:var(--t1);letter-spacing:-0.3px;">여행자들의 이야기</div>
+            </div>
+            <div class="write-btn">+ 기록하기</div>
+          </div>
+
+          <!-- Editor's Pick -->
+          <div style="margin-bottom:4px;">
+            <div class="editor-label">EDITOR'S PICK</div>
+            <div class="featured-scroll">
+              <div class="featured-card">
+                <div style="background:rgba(255,255,255,0.1);border-radius:4px;padding:2px 7px;align-self:flex-start;font-size:8px;color:rgba(255,255,255,0.7);font-weight:700;margin-bottom:2px;">여행 기록</div>
+                <div class="feat-city">오사카</div>
+                <div class="feat-title">도톤보리 뒷골목의<br>오래된 카페들</div>
+                <div class="feat-footer">
+                  <div class="feat-author">김지아</div>
+                  <div class="feat-likes">♡ 47</div>
+                </div>
+              </div>
+              <div class="featured-card" style="opacity:0.65;width:160px;">
+                <div style="background:rgba(255,255,255,0.1);border-radius:4px;padding:2px 7px;align-self:flex-start;font-size:8px;color:rgba(255,255,255,0.7);font-weight:700;margin-bottom:2px;">동행 찾기</div>
+                <div class="feat-city">도쿄</div>
+                <div class="feat-title">진보초 서점 골목<br>같이 걸을 분</div>
+                <div class="feat-footer">
+                  <div class="feat-author">박승현</div>
+                  <div class="feat-likes">♡ 23</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- City filter -->
+          <div class="city-filter">
+            <div class="city-tag active">전체</div>
+            <div class="city-tag">오사카</div>
+            <div class="city-tag">도쿄</div>
+            <div class="city-tag">방콕</div>
+            <div class="city-tag">파리</div>
+          </div>
+
+          <!-- Category tabs -->
+          <div class="cat-tabs">
+            <div class="cat-tab active">전체</div>
+            <div class="cat-tab">동행 찾기</div>
+            <div class="cat-tab">여행 기록</div>
+            <div class="cat-tab">로컬 추천</div>
+          </div>
+
+          <!-- Post list -->
+          <div class="post-list">
+            <div class="post-card">
+              <div class="post-card-top">
+                <div class="avatar" style="width:32px;height:32px;font-size:12px;border-radius:16px;background:#D8E2EE;color:#3A5878;">지</div>
+                <div>
+                  <div class="post-author">김지아</div>
+                  <div class="post-date">5월 8일 · 오사카</div>
+                </div>
+              </div>
+              <div class="post-title">도톤보리 뒷골목의 오래된 카페들</div>
+              <div class="post-preview">현지인만 아는 조용한 골목. 오래된 조명과 핸드드립 커피...</div>
+              <div class="post-footer">
+                <div class="post-tags">
+                  <div class="tag accent" style="font-size:9px;padding:2px 7px;">여행 기록</div>
+                  <div class="tag" style="font-size:9px;padding:2px 7px;">카페</div>
+                </div>
+                <div class="post-like">♡ 47</div>
+              </div>
+            </div>
+
+            <!-- Route banner -->
+            <div class="route-banner">
+              <div>
+                <div class="route-banner-label">ROUTE ARCHIVE</div>
+                <div class="route-banner-title">내 여행 루트 공유하기</div>
+                <div class="route-banner-desc">지도 위에 새겨진 나의 발자국</div>
+              </div>
+              <div class="route-arrow">›</div>
+            </div>
+          </div>
+
+          <!-- Bottom nav -->
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">홈</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">탐색</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">채팅</div></div>
+            <div class="nav-item"><div class="nav-icon active"></div><div class="nav-text active">커뮤니티</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">프로필</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">06 · 커뮤니티</div>
+      <div class="screen-caption">여행 기록 · 에디터 픽 · 루트 아카이브</div>
+    </div>
+
+  </div><!-- /grid row 2 -->
+
+  <div class="section-badge" style="margin-top:48px;">
+    <div class="section-badge-line"></div>
+    <div class="section-badge-text">DETAIL VIEW</div>
+    <div class="section-badge-line"></div>
+  </div>
+
+  <!-- ── Row 3: 2 screens centered ── -->
+  <div style="display:flex; gap:36px; margin-top:0;">
+
+    <!-- SCREEN 7: MATE PROFILE -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen s-mate" style="overflow:hidden; background:var(--bg);">
+
+          <div class="status-bar light" style="position:absolute;top:0;width:100%;z-index:20;background:transparent;">
+            <span class="status-time" style="color:rgba(255,255,255,0.7);">9:41</span>
+            <div class="status-icons">
+              <div class="sig" style="background:rgba(255,255,255,0.6);width:10px;height:7px;"></div>
+              <div class="batt" style="border-color:rgba(255,255,255,0.5);"></div>
+            </div>
+          </div>
+
+          <!-- Hero navy -->
+          <div class="mate-hero">
+            <div class="mate-hero-top">
+              <div style="width:28px;height:28px;border-radius:14px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;">
+                <div style="width:9px;height:9px;border-left:1.5px solid rgba(255,255,255,0.6);border-bottom:1.5px solid rgba(255,255,255,0.6);transform:rotate(45deg);"></div>
+              </div>
+              <div class="tag olive" style="font-size:9px;padding:3px 8px;">✓ 인증 완료</div>
+            </div>
+            <div class="mate-hero-center">
+              <div class="avatar" style="width:68px;height:68px;font-size:25px;border-radius:34px;background:rgba(255,255,255,0.15);margin:0 auto 10px;border:2px solid rgba(255,255,255,0.15);">지</div>
+              <div class="mate-nickname">김지아</div>
+              <div class="mate-meta">26세 · 서울 · 여성</div>
+              <div class="mate-tags-row">
+                <div class="mate-tag">카페 탐방</div>
+                <div class="mate-tag">사진 여행</div>
+                <div class="mate-tag">맛집</div>
+              </div>
+              <div class="mate-stats">
+                <div class="mate-stat"><div class="mate-stat-val">12</div><div class="mate-stat-lbl">여행 횟수</div></div>
+                <div class="mate-stat"><div class="mate-stat-val">4.9</div><div class="mate-stat-lbl">평점</div></div>
+                <div class="mate-stat"><div class="mate-stat-val">8</div><div class="mate-stat-lbl">동행 완료</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="mate-body" style="padding-bottom:90px;">
+            <!-- 소개 -->
+            <div class="info-card">
+              <div class="info-card-label">ABOUT</div>
+              <div class="info-card-text">조용한 카페와 현지 맛집을 좋아하는 여행자예요. 사진 찍는 걸 좋아하고 빠른 일정보다 여유롭게 즐기는 스타일입니다.</div>
+            </div>
+
+            <!-- 여행 계획 -->
+            <div class="info-card">
+              <div class="info-card-label">UPCOMING TRIP</div>
+              <div class="trip-row">
+                <div class="trip-icon">✈</div>
+                <div class="trip-info">
+                  <div class="trip-dest">오사카</div>
+                  <div class="trip-dates">6월 15일 – 18일</div>
+                </div>
+                <div class="trip-nights">3박 4일</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CTA bar -->
+          <div class="mate-cta-bar">
+            <div class="btn-like"><span class="btn-like-icon">♡</span></div>
+            <div class="btn-chat">채팅 시작하기</div>
+          </div>
+
+          <!-- Bottom nav -->
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">홈</div></div>
+            <div class="nav-item"><div class="nav-icon active"></div><div class="nav-text active">탐색</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">채팅</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">커뮤니티</div></div>
+            <div class="nav-item"><div class="nav-icon"></div><div class="nav-text">프로필</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">07 · 메이트 프로필</div>
+      <div class="screen-caption">여행자 상세 · 통계 · 채팅 연결</div>
+    </div>
+
+    <!-- SCREEN 8: ONBOARDING -->
+    <div class="phone-wrap">
+      <div class="phone-shell">
+        <div class="phone-screen" style="background:#1E222A; overflow:hidden;">
+
+          <div class="status-bar light" style="position:absolute;top:0;width:100%;z-index:20;background:transparent;">
+            <span class="status-time" style="color:rgba(255,255,255,0.5);">9:41</span>
+            <div class="status-icons">
+              <div class="sig" style="background:rgba(255,255,255,0.4);width:10px;height:7px;"></div>
+              <div class="batt" style="border-color:rgba(255,255,255,0.4);"></div>
+            </div>
+          </div>
+
+          <!-- Onboarding / Confirmed match screen -->
+          <div style="padding:60px 24px 24px; height:100%; display:flex; flex-direction:column;">
+            <!-- Top decoration -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:16px;">
+              <!-- Match circle -->
+              <div style="width:100px;height:100px;border-radius:50px;border:1.5px solid rgba(198,165,106,0.4);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:8px;">
+                <div style="position:absolute;top:-1px;left:-1px;right:-1px;bottom:-1px;border-radius:50px;border:1.5px solid transparent;border-top-color:var(--gold);border-right-color:var(--gold);"></div>
+                <div style="font-size:36px;">🎉</div>
+              </div>
+              <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:2.5px;text-transform:uppercase;">MATCH CONFIRMED</div>
+              <div style="font-size:22px;font-weight:300;color:var(--white);letter-spacing:-0.4px;">동행 매칭 완료!</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.45);line-height:1.6;">김지아님과 오사카 여행을<br>함께하게 되었어요</div>
+
+              <!-- Two avatars -->
+              <div style="display:flex;align-items:center;gap:-8px;margin:8px 0;">
+                <div style="width:52px;height:52px;border-radius:26px;background:rgba(235,240,248,0.15);border:2px solid rgba(198,165,106,0.4);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:rgba(235,240,248,0.7);">나</div>
+                <div style="margin:0 -8px;z-index:2;width:32px;height:32px;border-radius:16px;background:rgba(198,165,106,0.2);border:1.5px solid rgba(198,165,106,0.5);display:flex;align-items:center;justify-content:center;font-size:12px;">✈</div>
+                <div style="width:52px;height:52px;border-radius:26px;background:rgba(216,226,238,0.15);border:2px solid rgba(198,165,106,0.4);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;color:rgba(216,226,238,0.7);">지</div>
+              </div>
+
+              <!-- Trip info card -->
+              <div style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;text-align:left;">
+                <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">TRIP DETAILS</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;color:rgba(255,255,255,0.4);">목적지</span><span style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;">오사카, 일본</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;color:rgba(255,255,255,0.4);">일정</span><span style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;">6월 15–18일 · 3박 4일</span></div>
+                  <div style="display:flex;justify-content:space-between;"><span style="font-size:11px;color:rgba(255,255,255,0.4);">스타일</span><span style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;">카페, 맛집, 사진</span></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CTA buttons -->
+            <div style="display:flex;flex-direction:column;gap:10px;padding-bottom:16px;">
+              <div style="background:var(--gold);border-radius:13px;height:48px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#1C2B3A;">채팅 시작하기</div>
+              <div style="border:1px solid rgba(255,255,255,0.15);border-radius:13px;height:44px;display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(255,255,255,0.5);">나중에</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-label">08 · 매칭 확정</div>
+      <div class="screen-caption">동행 확정 · 여행 정보 요약 · 채팅 연결</div>
+    </div>
+
+  </div><!-- /grid row 3 -->
+
+  <!-- ── Footer ── -->
+  <div style="margin-top:80px;padding-top:32px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--t3);text-transform:uppercase;margin-bottom:4px;">TRIPMATE</div>
+      <div style="font-size:13px;color:var(--t2);">여행 동행 매칭 모바일 앱 · React Native / Expo</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:10px;color:var(--t3);">Color System</div>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <div style="width:28px;height:28px;border-radius:7px;background:#3B5178;" title="Navy"></div>
+        <div style="width:28px;height:28px;border-radius:7px;background:#C4875A;" title="Accent"></div>
+        <div style="width:28px;height:28px;border-radius:7px;background:#F5EDE4;" title="Accent Light"></div>
+        <div style="width:28px;height:28px;border-radius:7px;background:#F5F8FC;border:1px solid #DDE4EE;" title="BG"></div>
+        <div style="width:28px;height:28px;border-radius:7px;background:#1E222A;" title="Dark BG"></div>
+        <div style="width:28px;height:28px;border-radius:7px;background:#E8C882;" title="Gold"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+</body>
+</html>
