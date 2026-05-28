@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -6,7 +6,7 @@ import { ChatRoom } from '../../../types';
 import { ChatListItem } from '../../../components/chat/ChatListItem';
 import { getChatRooms } from '../../../services/chatService';
 import { MessageIcon, EditIcon } from '../../../components/ui/Icon';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 
 const STATUS_TABS = ['전체', '대화 중', '수락 대기'] as const;
 type StatusTab = typeof STATUS_TABS[number];
@@ -16,9 +16,11 @@ export default function ChatListScreen() {
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [activeTab, setActiveTab] = useState<StatusTab>('전체');
 
-  useEffect(() => {
-    getChatRooms().then(setRooms);
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getChatRooms().then(setRooms);
+    }, [])
+  );
 
   const unreadCount = rooms.reduce((n, r) => n + (r.unreadCount ?? 0), 0);
   const pendingCount = rooms.filter((r) => r.status === 'pending').length;

@@ -11,7 +11,7 @@ import { Message, ChatRoom } from '../../../types';
 import { ChatBubble } from '../../../components/chat/ChatBubble';
 import { TripCard } from '../../../components/chat/TripCard';
 import { Avatar } from '../../../components/ui/Avatar';
-import { getMessages, sendMessage, sendTripCard, acceptCompanion, rejectCompanion, getDynamicRoom } from '../../../services/chatService';
+import { getMessages, sendMessage, sendTripCard, acceptCompanion, rejectCompanion, getRoom, sendAutoReply, isRoomConfirmed } from '../../../services/chatService';
 import { mockChatRooms, mockMyTrip } from '../../../mock/data';
 
 export default function ChatRoomScreen() {
@@ -24,23 +24,57 @@ export default function ChatRoomScreen() {
   const [showCompanionModal, setShowCompanionModal] = useState(false);
   const [showConfirmedModal, setShowConfirmedModal] = useState(false);
   const [myTripShared, setMyTripShared] = useState(false);
+  const [replayDone, setReplayDone] = useState(false);
   const flatRef = useRef<FlatList>(null);
   const scaleAnim = useRef(new Animated.Value(0.9)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(320)).current;
 
   useEffect(() => {
-    const found = mockChatRooms.find((r) => r.id === id) ?? getDynamicRoom(id) ?? mockChatRooms[0];
-    setRoom(found);
-    setAccepted(found.status === 'accepted');
-    if (id) getMessages(id).then((msgs) => {
-      setMessages(msgs);
+    if (!id) return;
+    let active = true;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    (async () => {
+      const found = (await getRoom(id)) ?? mockChatRooms[0];
+      if (!active) return;
+      const confirmed = found.status === 'accepted' || (await isRoomConfirmed(id));
+      if (!active) return;
+      setRoom(found);
+      setAccepted(confirmed);
+      const msgs = await getMessages(id);
+      if (!active) return;
       setMyTripShared(msgs.some((m) => m.senderId === 'me' && m.type === 'trip_share'));
-      // Auto-open proposal sheet if pending
-      if (found.status === 'pending') {
-        setTimeout(() => openModal(setShowCompanionModal, true), 400);
+
+      // Replay only an undecided demo conversation; confirmed/other rooms show in full.
+      const scripted = found.status === 'pending' && !confirmed && msgs.length > 0;
+      if (scripted) {
+        // Replay the demo conversation one message at a time
+        setMessages([]);
+        setReplayDone(false);
+        let i = 0;
+        const step = () => {
+          if (!active) return;
+          i += 1;
+          setMessages(msgs.slice(0, i));
+          setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 60);
+          if (i < msgs.length) {
+            const delay = msgs[i]?.type === 'trip_share' ? 1100 : 850;
+            timers.push(setTimeout(step, delay));
+          } else {
+            setReplayDone(true);
+            // After the flow plays out, pop the "동행하기" decision sheet
+            if (found.status === 'pending') {
+              timers.push(setTimeout(() => openModal(setShowCompanionModal, true), 700));
+            }
+          }
+        };
+        timers.push(setTimeout(step, 500));
+      } else {
+        setMessages(msgs);
+        setReplayDone(true);
       }
-    });
+    })();
+    return () => { active = false; timers.forEach(clearTimeout); };
   }, [id]);
 
   const openModal = (setter: (v: boolean) => void, isSheet = false) => {
@@ -88,6 +122,16 @@ export default function ChatRoomScreen() {
     setMessages((prev) => [...prev, msg]);
     setText('');
     setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 100);
+
+    // Simulated partner reply
+    const partnerId = room?.partner?.id;
+    if (partnerId) {
+      setTimeout(async () => {
+        const reply = await sendAutoReply(id, partnerId);
+        setMessages((prev) => [...prev, reply]);
+        setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 100);
+      }, 1100);
+    }
   };
 
   const handleShareTrip = async () => {
@@ -143,7 +187,7 @@ export default function ChatRoomScreen() {
       {/* Header */}
       <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <TouchableOpacity
-          onPress={() => router.canGoBack() ? router.back() : router.replace('/mates')}
+          onPress={() => router.replace('/(tabs)/chat')}
           style={styles.headerBtn}
         >
           <Text style={styles.back}>←</Text>
@@ -187,7 +231,7 @@ export default function ChatRoomScreen() {
       />
 
       {/* Pending decision banner */}
-      {isPending && (
+      {isPending && replayDone && (
         <TouchableOpacity style={styles.pendingBanner} onPress={handleDecide} activeOpacity={0.88}>
           <Text style={styles.pendingBannerText}>🤝 {room?.partner.nickname}님과 동행할까요?</Text>
           <Text style={styles.pendingBannerCta}>결정하기 →</Text>
@@ -195,7 +239,7 @@ export default function ChatRoomScreen() {
       )}
 
       {/* Confirmed banner */}
-      {accepted && (
+      {accepted && replayDone && (
         <TouchableOpacity
           style={styles.confirmedBanner}
           onPress={() => router.push({ pathname: '/match/confirmed', params: { partnerId: room?.partner.id, tripId: room?.trip?.id } })}
