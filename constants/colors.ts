@@ -2,8 +2,8 @@ export const Colors = {
   // Core palette
   primary: '#3B5178',        // Muted Navy
   primaryLight: '#EBF0F8',   // Soft Blue-Gray
-  accent: '#C4875A',         // Sunset Warm (use sparingly)
-  accentLight: '#F5EDE4',    // Warm Ivory tint
+  accent: '#C98B96',         // Brand sub — Dusty Rose (pairs with navy)
+  accentLight: '#F4E6E9',    // Dusty Rose tint
   olive: '#6E7D62',          // Olive Gray (verified)
   dustBlue: '#6B8CAD',       // Dust Blue
 
@@ -49,7 +49,7 @@ export const Colors = {
   shadowCard: 'rgba(42, 33, 24, 0.04)',
   shadowButton: 'rgba(59, 81, 120, 0.18)',
   success: '#B4D9CC',
-  warm: '#C4875A',
+  warm: '#C98B96',
   green: '#5B9E6E',
   red: '#C05050',
 };

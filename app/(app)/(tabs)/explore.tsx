@@ -8,12 +8,147 @@ import { Colors } from '../../../constants/colors';
 import { FindMateFilter } from '../../../types';
 import { TRAVEL_STYLES } from '../../../mock/data';
 import {
-  ArrowLeftIcon, MapPinIcon, MapIcon, MoonIcon, CalendarIcon, VerifiedIcon, CompassIcon,
+  ArrowLeftIcon, ArrowRightIcon, MapPinIcon, MapIcon, MoonIcon, CalendarIcon, VerifiedIcon, CompassIcon,
   SmileIcon, ZapIcon, CameraIcon, CoffeeIcon, UtensilsIcon,
   BackpackIcon, ShoppingBagIcon, LandmarkIcon, StoreIcon, LeafIcon,
 } from '../../../components/ui/Icon';
 
 const POPULAR_CITIES = ['오사카', '도쿄', '방콕', '파리', '발리', '뉴욕'];
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+function formatMD(d: Date) {
+  return `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function isSameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+function startOfDay(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function RangeCalendar({
+  month, rangeStart, rangeEnd, onSelect, onMonthChange,
+}: {
+  month: Date;
+  rangeStart: Date | null;
+  rangeEnd: Date | null;
+  onSelect: (d: Date) => void;
+  onMonthChange: (delta: number) => void;
+}) {
+  const today = startOfDay(new Date());
+  const year = month.getFullYear();
+  const m = month.getMonth();
+  const firstWeekday = new Date(year, m, 1).getDay();
+  const daysInMonth = new Date(year, m + 1, 0).getDate();
+
+  const cells: (Date | null)[] = [];
+  for (let i = 0; i < firstWeekday; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(year, m, d));
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const inRange = (d: Date) =>
+    rangeStart && rangeEnd && d > rangeStart && d < rangeEnd;
+
+  return (
+    <View style={calStyles.wrap}>
+      <View style={calStyles.head}>
+        <TouchableOpacity style={calStyles.navBtn} onPress={() => onMonthChange(-1)} activeOpacity={0.7}>
+          <ArrowLeftIcon color={Colors.textSecondary} size={16} />
+        </TouchableOpacity>
+        <Text style={calStyles.headText}>{year}년 {m + 1}월</Text>
+        <TouchableOpacity style={calStyles.navBtn} onPress={() => onMonthChange(1)} activeOpacity={0.7}>
+          <ArrowRightIcon color={Colors.textSecondary} size={16} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={calStyles.weekRow}>
+        {WEEKDAYS.map((w, i) => (
+          <Text key={w} style={[calStyles.weekday, i === 0 && calStyles.sun, i === 6 && calStyles.sat]}>{w}</Text>
+        ))}
+      </View>
+
+      <View style={calStyles.grid}>
+        {cells.map((cell, idx) => {
+          if (!cell) return <View key={`e${idx}`} style={calStyles.cell} />;
+          const past = cell < today;
+          const isStart = rangeStart && isSameDay(cell, rangeStart);
+          const isEnd = rangeEnd && isSameDay(cell, rangeEnd);
+          const isEdge = isStart || isEnd;
+          const within = inRange(cell);
+          return (
+            <TouchableOpacity
+              key={cell.toISOString()}
+              style={calStyles.cell}
+              disabled={past}
+              onPress={() => onSelect(cell)}
+              activeOpacity={0.7}
+            >
+              {within && <View style={calStyles.rangeBg} />}
+              {isStart && rangeEnd && <View style={[calStyles.rangeBg, calStyles.rangeBgRight]} />}
+              {isEnd && rangeStart && <View style={[calStyles.rangeBg, calStyles.rangeBgLeft]} />}
+              <View style={[calStyles.dayInner, isEdge && calStyles.dayEdge]}>
+                <Text style={[
+                  calStyles.dayText,
+                  cell.getDay() === 0 && !isEdge && !past && calStyles.sun,
+                  cell.getDay() === 6 && !isEdge && !past && calStyles.sat,
+                  past && calStyles.dayPast,
+                  isEdge && calStyles.dayEdgeText,
+                ]}>
+                  {cell.getDate()}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const calStyles = StyleSheet.create({
+  wrap: {
+    backgroundColor: Colors.bg,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    gap: 8,
+  },
+  head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 4 },
+  navBtn: { padding: 6 },
+  headText: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
+  weekRow: { flexDirection: 'row' },
+  weekday: { flex: 1, textAlign: 'center', fontSize: 11, fontWeight: '600', color: Colors.textMuted },
+  sun: { color: '#C05050' },
+  sat: { color: Colors.dustBlue },
+  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+  cell: {
+    width: `${100 / 7}%`,
+    aspectRatio: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  rangeBg: {
+    position: 'absolute',
+    top: 4, bottom: 4, left: 0, right: 0,
+    backgroundColor: Colors.accentLight,
+  },
+  rangeBgLeft: { right: '50%' },
+  rangeBgRight: { left: '50%' },
+  dayInner: {
+    width: 34, height: 34, borderRadius: 17,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  dayEdge: { backgroundColor: Colors.accent },
+  dayText: { fontSize: 13, color: Colors.textPrimary, fontWeight: '400' },
+  dayPast: { color: Colors.cardBorder },
+  dayEdgeText: { color: Colors.white, fontWeight: '700' },
+});
 
 const STYLE_ICON: Record<string, (color: string) => React.ReactNode> = {
   '피식':      (c) => <SmileIcon color={c} size={17} />,
@@ -88,9 +223,44 @@ const segStyles = StyleSheet.create({
 export default function ExploreScreen() {
   const insets = useSafeAreaInsets();
   const [destination, setDestination] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [rangeStart, setRangeStart] = useState<Date | null>(null);
+  const [rangeEnd, setRangeEnd] = useState<Date | null>(null);
+  const [calMonth, setCalMonth] = useState(() => startOfDay(new Date()));
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerMode, setPickerMode] = useState<'start' | 'end'>('start');
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+
+  const startDate = rangeStart ? formatMD(rangeStart) : '';
+  const endDate = rangeEnd ? formatMD(rangeEnd) : '';
+
+  const openPicker = (mode: 'start' | 'end') => {
+    const resolved = mode === 'end' && !rangeStart ? 'start' : mode;
+    const ref = resolved === 'start' ? rangeStart : (rangeEnd ?? rangeStart);
+    setCalMonth(startOfDay(ref ?? new Date()));
+    setPickerMode(resolved);
+    setPickerOpen(true);
+  };
+
+  const handleCalendarSelect = (day: Date) => {
+    if (pickerMode === 'start') {
+      setRangeStart(day);
+      if (rangeEnd && day > rangeEnd) setRangeEnd(null);
+      setPickerMode('end');
+    } else {
+      if (!rangeStart || day < rangeStart) {
+        setRangeStart(day);
+        setRangeEnd(null);
+        setPickerMode('end');
+        return;
+      }
+      setRangeEnd(day);
+      setPickerOpen(false);
+    }
+  };
+
+  const changeMonth = (delta: number) => {
+    setCalMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + delta, 1));
+  };
 
   const [gender, setGender] = useState<GenderOption>('무관');
   const [ageGroup, setAgeGroup] = useState<AgeOption>('무관');
@@ -181,31 +351,27 @@ export default function ExploreScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>언제 떠나요?</Text>
           <View style={styles.dateRow}>
-            <View style={styles.dateSide}>
+            <TouchableOpacity
+              style={[styles.dateSide, pickerOpen && pickerMode === 'start' && styles.dateSideActive]}
+              onPress={() => openPicker('start')}
+              activeOpacity={0.7}
+            >
               <Text style={styles.dateLabel}>출발</Text>
-              <TextInput
-                style={styles.dateInput}
-                value={startDate}
-                onChangeText={setStartDate}
-                placeholder="MM.DD"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="numeric"
-                maxLength={5}
-              />
-            </View>
+              <Text style={[styles.dateValue, !startDate && styles.datePlaceholder]}>
+                {startDate || 'MM.DD'}
+              </Text>
+            </TouchableOpacity>
             <Text style={styles.dateArrow}>—</Text>
-            <View style={styles.dateSide}>
+            <TouchableOpacity
+              style={[styles.dateSide, pickerOpen && pickerMode === 'end' && styles.dateSideActive]}
+              onPress={() => openPicker('end')}
+              activeOpacity={0.7}
+            >
               <Text style={styles.dateLabel}>귀국</Text>
-              <TextInput
-                style={styles.dateInput}
-                value={endDate}
-                onChangeText={setEndDate}
-                placeholder="MM.DD"
-                placeholderTextColor={Colors.textMuted}
-                keyboardType="numeric"
-                maxLength={5}
-              />
-            </View>
+              <Text style={[styles.dateValue, !endDate && styles.datePlaceholder]}>
+                {endDate || 'MM.DD'}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -286,6 +452,52 @@ export default function ExploreScreen() {
           <Text style={styles.searchBtnText}>여행자 찾기</Text>
         </TouchableOpacity>
       </View>
+
+      {/* 날짜 선택 팝업 */}
+      {pickerOpen && (
+        <View style={styles.pickerOverlay}>
+          <TouchableOpacity
+            style={styles.pickerBackdrop}
+            activeOpacity={1}
+            onPress={() => setPickerOpen(false)}
+          />
+          <View style={[styles.pickerSheet, { paddingBottom: insets.bottom + 16 }]}>
+            <View style={styles.pickerHandle} />
+            <View style={styles.pickerTabs}>
+              <TouchableOpacity
+                style={[styles.pickerTab, pickerMode === 'start' && styles.pickerTabActive]}
+                onPress={() => setPickerMode('start')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.pickerTabLabel}>출발</Text>
+                <Text style={[styles.pickerTabValue, !startDate && styles.datePlaceholder]}>
+                  {startDate || '날짜 선택'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.pickerTab, pickerMode === 'end' && styles.pickerTabActive]}
+                onPress={() => setPickerMode(rangeStart ? 'end' : 'start')}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.pickerTabLabel}>귀국</Text>
+                <Text style={[styles.pickerTabValue, !endDate && styles.datePlaceholder]}>
+                  {endDate || '날짜 선택'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <RangeCalendar
+              month={calMonth}
+              rangeStart={rangeStart}
+              rangeEnd={rangeEnd}
+              onSelect={handleCalendarSelect}
+              onMonthChange={changeMonth}
+            />
+            <TouchableOpacity style={styles.pickerDone} onPress={() => setPickerOpen(false)} activeOpacity={0.88}>
+              <Text style={styles.pickerDoneText}>완료</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -373,12 +585,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
-  dateSide: { flex: 1, alignItems: 'center', gap: 6 },
+  dateSide: { flex: 1, alignItems: 'center', gap: 6, paddingVertical: 6, borderRadius: 10 },
+  dateSideActive: { backgroundColor: Colors.accentLight },
   dateLabel: { fontSize: 10, fontWeight: '600', color: Colors.textMuted, letterSpacing: 0.5 },
-  dateInput: {
+  dateValue: {
     fontSize: 20, fontWeight: '300', color: Colors.textPrimary,
     letterSpacing: -0.5, textAlign: 'center', minWidth: 70,
   },
+  datePlaceholder: { color: Colors.textMuted },
   dateArrow: { fontSize: 16, color: Colors.textMuted },
 
   styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
@@ -428,4 +642,40 @@ const styles = StyleSheet.create({
     height: 48, alignItems: 'center', justifyContent: 'center',
   },
   searchBtnText: { fontSize: 15, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
+
+  pickerOverlay: {
+    position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
+    justifyContent: 'flex-end',
+    zIndex: 20,
+  },
+  pickerBackdrop: {
+    position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
+    backgroundColor: 'rgba(28,43,58,0.45)',
+  },
+  pickerSheet: {
+    backgroundColor: Colors.card,
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    paddingHorizontal: 20, paddingTop: 10,
+    gap: 16,
+  },
+  pickerHandle: {
+    width: 36, height: 4, borderRadius: 2,
+    backgroundColor: Colors.cardBorder,
+    alignSelf: 'center',
+  },
+  pickerTabs: { flexDirection: 'row', gap: 10 },
+  pickerTab: {
+    flex: 1, gap: 4,
+    paddingHorizontal: 14, paddingVertical: 10,
+    borderRadius: 12, borderWidth: 1, borderColor: Colors.cardBorder,
+    backgroundColor: Colors.bg,
+  },
+  pickerTabActive: { borderColor: Colors.accent, backgroundColor: Colors.accentLight },
+  pickerTabLabel: { fontSize: 10, fontWeight: '600', color: Colors.textMuted, letterSpacing: 0.5 },
+  pickerTabValue: { fontSize: 16, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.3 },
+  pickerDone: {
+    backgroundColor: Colors.primary, borderRadius: 12,
+    height: 48, alignItems: 'center', justifyContent: 'center',
+  },
+  pickerDoneText: { fontSize: 15, fontWeight: '600', color: Colors.white },
 });
