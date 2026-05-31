@@ -1,0 +1,52 @@
+name: Build docs
+
+on:
+  push:
+    branches: [main]
+    # docs/ 만 바뀐 푸시(=이 워크플로가 직접 만든 커밋)는 다시 트리거하지 않음
+    paths-ignore:
+      - 'docs/**'
+      - '.github/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-docs
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Personal Access Token이 아닌 자동 발급 토큰 사용 — push 권한은 위 permissions로 부여
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Build web
+        run: npm run build:web
+
+      - name: Commit and push if docs changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -z "$(git status --porcelain docs)" ]]; then
+            echo "docs unchanged, skipping"
+            exit 0
+          fi
+          git add docs
+          git commit -m "build: 웹 export 재생성 (자동) [skip ci]"
+          git push origin HEAD:main
