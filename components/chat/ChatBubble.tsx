@@ -8,7 +8,7 @@ interface Props {
   time?: string;
 }
 
-export function ChatBubble({ content, isMe, time }: Props) {
+function ChatBubbleInner({ content, isMe, time }: Props) {
   return (
     <View style={[styles.wrap, isMe && styles.wrapMe]}>
       <View style={[styles.bubble, isMe ? styles.bubbleMe : styles.bubbleOther]}>
@@ -18,6 +18,8 @@ export function ChatBubble({ content, isMe, time }: Props) {
     </View>
   );
 }
+
+export const ChatBubble = React.memo(ChatBubbleInner);
 
 const styles = StyleSheet.create({
   wrap: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, marginBottom: 10 },

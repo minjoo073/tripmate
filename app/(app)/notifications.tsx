@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,13 +6,15 @@ import { Colors } from '../../constants/colors';
 import { ArrowLeftIcon, MessageIcon, UsersIcon, HeartIcon } from '../../components/ui/Icon';
 
 type NotiType = 'message' | 'companion' | 'like';
-
-const MOCK_NOTIFICATIONS: {
+type Noti = {
   id: string; type: NotiType; title: string; body: string; time: string; read: boolean;
-}[] = [
-  { id: '1', type: 'message',   title: '조승연 님이 메시지를 보냈어요',  body: '저도 6월 15일부터예요 ㅎㅎ',         time: '방금',    read: false },
-  { id: '2', type: 'companion', title: '한소희 님이 동행을 수락했어요!', body: '오사카 여행 동행이 확정되었어요',     time: '1시간 전', read: false },
-  { id: '3', type: 'like',      title: '누군가 회원님을 찜했어요',       body: '회원님의 프로필을 찜한 분이 있어요', time: '어제',    read: true  },
+  targetPath?: string;
+};
+
+const INITIAL_NOTIFICATIONS: Noti[] = [
+  { id: '1', type: 'message',   title: '조승연 님이 메시지를 보냈어요',  body: '저도 6월 15일부터예요 ㅎㅎ',         time: '방금',    read: false, targetPath: '/chat/c1' },
+  { id: '2', type: 'companion', title: '한소희 님이 동행을 수락했어요!', body: '오사카 여행 동행이 확정되었어요',     time: '1시간 전', read: false, targetPath: '/chat/c2' },
+  { id: '3', type: 'like',      title: '누군가 회원님을 찜했어요',       body: '회원님의 프로필을 찜한 분이 있어요', time: '어제',    read: true,  targetPath: '/liked-mates' },
 ];
 
 const TYPE_CONFIG: Record<NotiType, { icon: (c: string) => React.ReactNode; iconColor: string; bg: string; accent: string }> = {
@@ -36,10 +38,10 @@ const TYPE_CONFIG: Record<NotiType, { icon: (c: string) => React.ReactNode; icon
   },
 };
 
-function NotiItem({ item }: { item: typeof MOCK_NOTIFICATIONS[0] }) {
+function NotiItem({ item, onPress }: { item: Noti; onPress: (n: Noti) => void }) {
   const cfg = TYPE_CONFIG[item.type];
   return (
-    <TouchableOpacity activeOpacity={0.75} style={[styles.card, !item.read && styles.cardUnread]}>
+    <TouchableOpacity activeOpacity={0.75} style={[styles.card, !item.read && styles.cardUnread]} onPress={() => onPress(item)}>
       {!item.read && <View style={[styles.accentBar, { backgroundColor: cfg.accent }]} />}
       <View style={[styles.iconBox, { backgroundColor: cfg.bg }]}>
         {cfg.icon(cfg.iconColor)}
@@ -56,7 +58,19 @@ function NotiItem({ item }: { item: typeof MOCK_NOTIFICATIONS[0] }) {
 
 export default function NotificationsScreen() {
   const insets = useSafeAreaInsets();
-  const unreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
+  const [items, setItems] = useState<Noti[]>(INITIAL_NOTIFICATIONS);
+  const unreadCount = items.filter((n) => !n.read).length;
+
+  const markRead = (id: string) => {
+    setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  };
+  const markAllRead = () => {
+    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+  const handlePress = (n: Noti) => {
+    markRead(n.id);
+    if (n.targetPath) router.push(n.targetPath as never);
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -69,11 +83,11 @@ export default function NotificationsScreen() {
           <Text style={styles.headerLabel}>INBOX</Text>
           <Text style={styles.title}>알림</Text>
         </View>
-        {unreadCount > 0 && (
-          <View style={styles.unreadBadge}>
-            <Text style={styles.unreadBadgeText}>{unreadCount}개 읽지 않음</Text>
-          </View>
-        )}
+        {unreadCount > 0 ? (
+          <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.unreadBadge}>
+            <Text style={styles.unreadBadgeText}>{unreadCount}개 · 모두 읽음</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <ScrollView
@@ -81,23 +95,30 @@ export default function NotificationsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Unread section */}
-        {MOCK_NOTIFICATIONS.filter((n) => !n.read).length > 0 && (
+        {items.filter((n) => !n.read).length > 0 && (
           <>
             <Text style={styles.sectionLabel}>새 알림</Text>
-            {MOCK_NOTIFICATIONS.filter((n) => !n.read).map((item) => (
-              <NotiItem key={item.id} item={item} />
+            {items.filter((n) => !n.read).map((item) => (
+              <NotiItem key={item.id} item={item} onPress={handlePress} />
             ))}
           </>
         )}
 
         {/* Read section */}
-        {MOCK_NOTIFICATIONS.filter((n) => n.read).length > 0 && (
+        {items.filter((n) => n.read).length > 0 && (
           <>
             <Text style={[styles.sectionLabel, styles.sectionLabelRead]}>이전 알림</Text>
-            {MOCK_NOTIFICATIONS.filter((n) => n.read).map((item) => (
-              <NotiItem key={item.id} item={item} />
+            {items.filter((n) => n.read).map((item) => (
+              <NotiItem key={item.id} item={item} onPress={handlePress} />
             ))}
           </>
+        )}
+
+        {items.length === 0 && (
+          <View style={styles.emptyWrap}>
+            <Text style={styles.emptyTitle}>새 알림이 없어요</Text>
+            <Text style={styles.emptyDesc}>매칭이나 메시지가 오면 여기에 표시돼요</Text>
+          </View>
         )}
       </ScrollView>
     </View>
@@ -194,4 +215,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginTop: 5,
   },
+
+  emptyWrap: { alignItems: 'center', paddingTop: 60, gap: 6 },
+  emptyTitle: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
+  emptyDesc: { fontSize: 12, color: Colors.textMuted },
 });

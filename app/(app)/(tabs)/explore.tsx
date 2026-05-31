@@ -121,8 +121,12 @@ export default function ExploreScreen() {
       destination, startDate, endDate,
       travelStyles: selectedStyles,
       anyGender: gender === '무관',
+      gender,
+      ageGroup,
+      companionCount,
       scheduleOverlap,
       verifiedOnly,
+      noSmoking,
     };
     router.push({ pathname: '/match/loading', params: { filter: JSON.stringify(filter) } });
   };

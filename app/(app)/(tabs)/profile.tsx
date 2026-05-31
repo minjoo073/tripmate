@@ -1,35 +1,17 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
 import { Avatar } from '../../../components/ui/Avatar';
 import { useAuth } from '../../../context/AuthContext';
 import { usePersonality } from '../../../context/PersonalityContext';
-import { router } from 'expo-router';
-import { SettingsIcon, MessageIcon, BookmarkIcon, MapPinIcon, ArrowRightIcon, WaveIcon, MoonIcon, UsersIcon, CalendarIcon, EditIcon, HeartIcon, PlaneTakeoffIcon } from '../../../components/ui/Icon';
+import { useProfile } from '../../../context/ProfileContext';
+import { useTrips, SavedTrip } from '../../../context/TripsContext';
+import { mockPosts } from '../../../mock/data';
+import { router, useFocusEffect } from 'expo-router';
+import { SettingsIcon, MessageIcon, MapPinIcon, ArrowRightIcon, EditIcon, HeartIcon, PlaneTakeoffIcon } from '../../../components/ui/Icon';
 
 const TABS = ['여행 기록', '리뷰', '저장'];
-
-const MOCK_TRIPS = [
-  { id: '2', dest: '도쿄, 일본', date: '2025.07.05 – 07.10', companion: '예정', rating: 0, status: 'upcoming' },
-  { id: '1', dest: '오사카, 일본', date: '2025.06.15 – 06.19', companion: '조승연', rating: 5, status: 'done' },
-  { id: '3', dest: '방콕, 태국', date: '2024.12.20 – 12.25', companion: '한소희', rating: 5, status: 'done' },
-];
-
-const TRAVEL_MOODS = [
-  { label: '카페 투어',   bg: 'rgba(192,135,70,0.14)',  text: '#9A6830' },
-  { label: '로컬 골목',   bg: 'rgba(100,140,100,0.14)', text: '#3E7248' },
-  { label: '필름카메라',  bg: 'rgba(90,130,175,0.14)',  text: '#3A6A9A' },
-  { label: '느린 여행',   bg: 'rgba(155,140,115,0.16)', text: '#7A6848' },
-  { label: '맛집 탐방',   bg: 'rgba(192,75,75,0.12)',   text: '#A03A3A' },
-];
-
-const VISITED_CITIES = [
-  { city: '오사카', count: 3, flag: '🇯🇵' },
-  { city: '방콕', count: 2, flag: '🇹🇭' },
-  { city: '파리', count: 1, flag: '🇫🇷' },
-  { city: '뉴욕', count: 1, flag: '🇺🇸' },
-];
 
 const AIRPORT_CODES: Record<string, string> = {
   '오사카': 'KIX', '도쿄': 'NRT', '방콕': 'BKK', '파리': 'CDG',
@@ -44,11 +26,44 @@ function airportCode(dest: string) {
   return AIRPORT_CODES[cityName(dest)] ?? 'INT';
 }
 
+function formatDateRange(startISO: string, endISO: string) {
+  if (!startISO || !endISO) return '';
+  const fmt = (s: string) => s.replace(/-/g, '.');
+  const start = fmt(startISO);
+  const endTail = endISO.length >= 10 ? endISO.slice(5).replace('-', '.') : '';
+  return `${start} – ${endTail}`;
+}
+
+function tripToTicket(trip: SavedTrip, idx: number) {
+  const isDone = !!trip.completedAt;
+  return {
+    id: `${idx}-${trip.startDate}`,
+    dest: trip.destination,
+    date: formatDateRange(trip.startDate, trip.endDate),
+    companion: trip.companions || (isDone ? '동행 없음' : '예정'),
+    rating: isDone ? 5 : 0,
+    status: isDone ? ('done' as const) : ('upcoming' as const),
+  };
+}
+
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { personality } = usePersonality();
+  const { profile } = useProfile();
+  const { upcoming, recent, reload } = useTrips();
   const [activeTab, setActiveTab] = useState('여행 기록');
+
+  useFocusEffect(useCallback(() => { reload(); }, [reload]));
+
+  const tickets = recent.map((t, i) => tripToTicket(t, i));
+  const tripCount = tickets.length;
+  const moodLabels = profile.styles;
+
+  const CATEGORY_LABEL: Record<string, string> = { mate: '동행 찾기', tips: '여행 기록', review: '로컬 추천' };
+  const savedPosts = profile.savedPostIds
+    .map((pid) => mockPosts.find((p) => p.id === pid))
+    .filter(Boolean) as typeof mockPosts;
 
   return (
     <View style={styles.container}>
@@ -66,7 +81,7 @@ export default function ProfileScreen() {
         {/* Top row: avatar left, info right */}
         <View style={styles.profileRow}>
           <View style={styles.avatarRing}>
-            <Avatar nickname={user?.nickname ?? '나'} size={72} />
+            <Avatar nickname={user?.nickname ?? '나'} size={72} avatarIndex={profile.avatarIndex} />
           </View>
           <View style={styles.profileInfo}>
             <Text style={styles.nickname}>{user?.nickname ?? '여행자'}</Text>
@@ -86,10 +101,18 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Personality */}
+        {/* Personality — all 7 fields */}
         <TouchableOpacity style={styles.personalityMini} onPress={() => router.push('/travel-personality')} activeOpacity={0.7}>
-          <Text style={styles.personalityMiniText}>
-            {personality.pace} · {personality.time} · {personality.companion} · {personality.planning}
+          <Text style={styles.personalityMiniText} numberOfLines={2}>
+            {[
+              personality.pace,
+              personality.time,
+              personality.companion,
+              personality.planning,
+              personality.accommodation,
+              personality.dining,
+              personality.budget,
+            ].filter(Boolean).join(' · ')}
           </Text>
           <EditIcon color={Colors.textMuted} size={11} />
         </TouchableOpacity>
@@ -97,44 +120,61 @@ export default function ProfileScreen() {
         <View style={styles.statsCard}>
           <View style={styles.statsRow}>
             <View style={styles.stat}>
-              <Text style={styles.statValue}>3</Text>
+              <Text style={styles.statValue}>{tripCount}</Text>
               <Text style={styles.statLabel}>여행</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.stat}>
-              <Text style={styles.statValue}>4.9</Text>
+              <Text style={styles.statValue}>–</Text>
               <Text style={styles.statLabel}>평점</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.stat}>
-              <Text style={styles.statValue}>92%</Text>
+              <Text style={styles.statValue}>–</Text>
               <Text style={styles.statLabel}>재동행률</Text>
             </View>
             <View style={styles.statDivider} />
             <View style={styles.stat}>
-              <Text style={styles.statValue}>128</Text>
+              <Text style={styles.statValue}>–</Text>
               <Text style={styles.statLabel}>함께한 분</Text>
             </View>
           </View>
         </View>
 
         {/* Travel moods — hashtag style */}
-        <Text style={styles.moodText}>
-          {TRAVEL_MOODS.map((m) => `#${m.label.replace(' ', '')}`).join(' · ')}
-        </Text>
+        {moodLabels.length > 0 ? (
+          <Text style={styles.moodText}>
+            {moodLabels.map((label) => `#${label.replace(/\s+/g, '')}`).join(' · ')}
+          </Text>
+        ) : (
+          <TouchableOpacity onPress={() => router.push('/profile-setup')} activeOpacity={0.7}>
+            <Text style={styles.moodEmpty}>여행 스타일을 설정해보세요 →</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Journey section — unified card */}
       <View style={styles.journeySection}>
         <View style={styles.journeyCard}>
-          <TouchableOpacity style={styles.nextTripRow} activeOpacity={0.85} onPress={() => router.push('/trip-detail')}>
-            <View style={styles.nextTripLeft}>
-              <Text style={styles.nextTripEyebrow}>NEXT JOURNEY</Text>
-              <Text style={styles.nextTripDest}>도쿄, 일본</Text>
-              <Text style={styles.nextTripDate}>2025.07.05 – 07.10</Text>
-            </View>
-            <ArrowRightIcon color={Colors.primary} size={16} />
-          </TouchableOpacity>
+          {upcoming ? (
+            <TouchableOpacity style={styles.nextTripRow} activeOpacity={0.85} onPress={() => router.push('/trip-detail')}>
+              <View style={styles.nextTripLeft}>
+                <Text style={styles.nextTripEyebrow}>NEXT JOURNEY</Text>
+                <Text style={styles.nextTripDest}>{upcoming.destination}</Text>
+                <Text style={styles.nextTripDate}>{formatDateRange(upcoming.startDate, upcoming.endDate)}</Text>
+              </View>
+              <ArrowRightIcon color={Colors.primary} size={16} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.nextTripRow} activeOpacity={0.85} onPress={() => router.push('/trip-plan')}>
+              <View style={styles.nextTripLeft}>
+                <Text style={styles.nextTripEyebrow}>NEXT JOURNEY</Text>
+                <Text style={styles.nextTripDest}>아직 계획이 없어요</Text>
+                <Text style={styles.nextTripDate}>여행 계획을 등록해보세요</Text>
+              </View>
+              <ArrowRightIcon color={Colors.primary} size={16} />
+            </TouchableOpacity>
+          )}
 
           <View style={styles.journeyDivider} />
 
@@ -190,11 +230,20 @@ export default function ProfileScreen() {
               <ArrowRightIcon color={Colors.accent} size={16} />
             </TouchableOpacity>
 
-            <Text style={styles.sectionLabel}>BOARDING PASS · {MOCK_TRIPS.length}</Text>
+            <Text style={styles.sectionLabel}>BOARDING PASS · {tickets.length}</Text>
+            {tickets.length === 0 && (
+              <View style={styles.ticketEmpty}>
+                <Text style={styles.ticketEmptyTitle}>아직 보드패스가 없어요</Text>
+                <Text style={styles.ticketEmptyDesc}>여행 계획을 등록하면 여기에 카드가 쌓여요</Text>
+                <TouchableOpacity style={styles.ticketEmptyBtn} onPress={() => router.push('/trip-plan')} activeOpacity={0.8}>
+                  <Text style={styles.ticketEmptyBtnText}>+ 여행 계획 등록</Text>
+                </TouchableOpacity>
+              </View>
+            )}
             <View style={styles.ticketList}>
-              {MOCK_TRIPS.map((trip) => {
-                const upcoming = trip.status === 'upcoming';
-                const accent = upcoming ? Colors.primary : Colors.olive;
+              {tickets.map((trip) => {
+                const isUpcoming = trip.status === 'upcoming';
+                const accent = isUpcoming ? Colors.primary : Colors.olive;
                 return (
                   <TouchableOpacity
                     key={trip.id}
@@ -226,7 +275,7 @@ export default function ProfileScreen() {
                     <View style={styles.ticketStub}>
                       <View style={[styles.stubStatus, { backgroundColor: accent + '18' }]}>
                         <Text style={[styles.stubStatusText, { color: accent }]}>
-                          {upcoming ? '예정' : '완료'}
+                          {isUpcoming ? '예정' : '완료'}
                         </Text>
                       </View>
                       {trip.rating > 0 && (
@@ -237,18 +286,6 @@ export default function ProfileScreen() {
                   </TouchableOpacity>
                 );
               })}
-            </View>
-
-            {/* Passport stamps */}
-            <Text style={[styles.sectionLabel, { marginTop: 24 }]}>PASSPORT · 방문한 도시</Text>
-            <View style={styles.stampGrid}>
-              {VISITED_CITIES.map((c, idx) => (
-                <View key={c.city} style={[styles.stamp, { transform: [{ rotate: `${(idx % 2 === 0 ? -1 : 1) * (4 + idx)}deg` }] }]}>
-                  <Text style={styles.stampFlag}>{c.flag}</Text>
-                  <Text style={styles.stampCity}>{c.city}</Text>
-                  <Text style={styles.stampCount}>×{c.count}</Text>
-                </View>
-              ))}
             </View>
           </>
         )}
@@ -272,20 +309,32 @@ export default function ProfileScreen() {
 
         {activeTab === '저장' && (
           <>
-            <Text style={styles.sectionLabel}>저장한 글 · 4</Text>
-            {[
-              { id: 'p5', category: '동행 찾기', title: '오사카 6월 말 같이 걸을 분 구해요', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
-              { id: 'p6', category: '여행 기록', title: '도톤보리 뒷골목의 오래된 카페들', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
-              { id: 'p8', category: '여행 기록', title: '도쿄 야시장과 이자카야, 밤이 더 아름다운 도시', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
-              { id: 'p2', category: '동행 찾기', title: '방콕 5박 6일 + 동행 1명 모집', categoryColor: Colors.accent, categoryBg: Colors.accentLight },
-            ].map((item) => (
-              <TouchableOpacity key={item.id} style={styles.savedRow} activeOpacity={0.7} onPress={() => router.push(`/post/${item.id}`)}>
-                <View style={[styles.savedCatBadge, { backgroundColor: item.categoryBg }]}>
-                  <Text style={[styles.savedCatText, { color: item.categoryColor }]}>{item.category}</Text>
+            <Text style={styles.sectionLabel}>저장한 글 · {savedPosts.length}</Text>
+            {savedPosts.length === 0 ? (
+              <View style={styles.empty}>
+                <View style={styles.emptyIconBox}>
+                  <MessageIcon color={Colors.textMuted} size={26} />
                 </View>
-                <Text style={styles.savedTitle} numberOfLines={1}>{item.title}</Text>
-              </TouchableOpacity>
-            ))}
+                <Text style={styles.emptyTitle}>저장한 글이 없어요</Text>
+                <Text style={styles.emptyDesc}>커뮤니티에서 마음에 드는 글을 북마크 해보세요</Text>
+                <TouchableOpacity
+                  style={styles.emptyBtn}
+                  onPress={() => router.push('/(tabs)/community')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.emptyBtnText}>커뮤니티 둘러보기</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              savedPosts.map((item) => (
+                <TouchableOpacity key={item.id} style={styles.savedRow} activeOpacity={0.7} onPress={() => router.push(`/post/${item.id}`)}>
+                  <View style={[styles.savedCatBadge, { backgroundColor: Colors.accentLight }]}>
+                    <Text style={[styles.savedCatText, { color: Colors.accent }]}>{CATEGORY_LABEL[item.category] ?? item.category}</Text>
+                  </View>
+                  <Text style={styles.savedTitle} numberOfLines={1}>{item.title}</Text>
+                </TouchableOpacity>
+              ))
+            )}
           </>
         )}
       </View>
@@ -378,6 +427,32 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     letterSpacing: 0.1,
   },
+  moodEmpty: {
+    fontSize: 12,
+    color: Colors.accent,
+    fontWeight: '500',
+    letterSpacing: 0.1,
+  },
+
+  ticketEmpty: {
+    backgroundColor: Colors.card,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    paddingVertical: 28,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    gap: 6,
+  },
+  ticketEmptyTitle: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
+  ticketEmptyDesc: { fontSize: 12, color: Colors.textMuted, marginBottom: 6 },
+  ticketEmptyBtn: {
+    paddingHorizontal: 18,
+    paddingVertical: 9,
+    borderRadius: 999,
+    backgroundColor: Colors.primary,
+  },
+  ticketEmptyBtnText: { fontSize: 12, fontWeight: '600', color: Colors.white },
 
   journeySection: {
     marginHorizontal: 20,
@@ -554,16 +629,16 @@ const styles = StyleSheet.create({
   stubLabel: { fontSize: 9, fontWeight: '600', color: Colors.textMuted, letterSpacing: 1 },
 
   // Passport stamps
-  stampGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14, paddingVertical: 6 },
+  stampGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingVertical: 6 },
   stamp: {
-    width: 78, height: 78, borderRadius: 39,
+    width: '23%', aspectRatio: 1, borderRadius: 999,
     borderWidth: 1.5, borderStyle: 'dashed', borderColor: Colors.accent,
     alignItems: 'center', justifyContent: 'center', gap: 1,
     backgroundColor: Colors.accentLight + '80',
   },
-  stampFlag: { fontSize: 18 },
-  stampCity: { fontSize: 12, fontWeight: '700', color: Colors.textPrimary },
-  stampCount: { fontSize: 10, fontWeight: '600', color: Colors.accent, letterSpacing: 0.5 },
+  stampFlag: { fontSize: 16 },
+  stampCity: { fontSize: 11, fontWeight: '700', color: Colors.textPrimary },
+  stampCount: { fontSize: 9, fontWeight: '600', color: Colors.accent, letterSpacing: 0.5 },
 
   personalityCard: {
     backgroundColor: Colors.card,

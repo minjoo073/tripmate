@@ -7,7 +7,8 @@ import { Post } from '../../../types';
 import { Avatar } from '../../../components/ui/Avatar';
 import { getPost } from '../../../services/communityService';
 import { startChat } from '../../../services/chatService';
-import { MapPinIcon, HeartIcon, MessageIcon, ArrowRightIcon } from '../../../components/ui/Icon';
+import { useProfile } from '../../../context/ProfileContext';
+import { MapPinIcon, HeartIcon, MessageIcon, ArrowRightIcon, BookmarkIcon } from '../../../components/ui/Icon';
 
 
 function latlngToTile(lat: number, lng: number, zoom: number) {
@@ -102,7 +103,9 @@ export default function PostDetailScreen() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [post, setPost] = useState<Post | null>(null);
-  const [liked, setLiked] = useState(false);
+  const { profile, toggleSavedPost, toggleLikedPost } = useProfile();
+  const liked = id ? profile.likedPostIds.includes(id) : false;
+  const saved = id ? profile.savedPostIds.includes(id) : false;
   const [chatLoading, setChatLoading] = useState(false);
   const [showJoinSheet, setShowJoinSheet] = useState(false);
   const [joinMessage, setJoinMessage] = useState('');
@@ -201,11 +204,14 @@ export default function PostDetailScreen() {
             <Text style={styles.authorName}>{post.author.nickname}</Text>
             <Text style={styles.authorDate}>{date}</Text>
           </View>
-          <TouchableOpacity style={styles.likeBtn} onPress={() => setLiked(!liked)} activeOpacity={0.7}>
-            <HeartIcon color={liked ? Colors.accent : Colors.textMuted} size={14} />
+          <TouchableOpacity style={styles.likeBtn} onPress={() => id && toggleLikedPost(id)} activeOpacity={0.7}>
+            <HeartIcon color={liked ? Colors.accent : Colors.textMuted} size={14} filled={liked} />
             <Text style={[styles.likeCount, liked && { color: Colors.accent }]}>
               {post.likes + (liked ? 1 : 0)}
             </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.likeBtn} onPress={() => id && toggleSavedPost(id)} activeOpacity={0.7}>
+            <BookmarkIcon color={saved ? Colors.primary : Colors.textMuted} size={14} filled={saved} />
           </TouchableOpacity>
         </View>
 

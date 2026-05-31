@@ -55,7 +55,7 @@ export default function CommunityScreen() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
-    const category = activeTab === 'all' ? undefined : activeTab as 'tips' | 'review';
+    const category = activeTab === 'all' ? undefined : activeTab;
     const city = activeCity === '전체' ? undefined : activeCity;
     getPosts(category, city).then(setPosts);
   }, [activeTab, activeCity]);

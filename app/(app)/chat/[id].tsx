@@ -45,10 +45,11 @@ export default function ChatRoomScreen() {
       if (!active) return;
       setMyTripShared(msgs.some((m) => m.senderId === 'me' && m.type === 'trip_share'));
 
-      // Replay only an undecided demo conversation; confirmed/other rooms show in full.
-      const scripted = found.status === 'pending' && !confirmed && msgs.length > 0;
+      // Replay scripted demo conversations one message at a time so the flow is visible.
+      // c2 (pending) ends with the decision sheet; c1 (accepted) ends with the confirmed banner.
+      const isScriptedDemo = id === 'c1' || id === 'c2';
+      const scripted = isScriptedDemo && msgs.length > 0;
       if (scripted) {
-        // Replay the demo conversation one message at a time
         setMessages([]);
         setReplayDone(false);
         let i = 0;
@@ -62,8 +63,8 @@ export default function ChatRoomScreen() {
             timers.push(setTimeout(step, delay));
           } else {
             setReplayDone(true);
-            // After the flow plays out, pop the "동행하기" decision sheet
-            if (found.status === 'pending') {
+            // After the flow plays out for an undecided room, pop the decision sheet
+            if (found.status === 'pending' && !confirmed) {
               timers.push(setTimeout(() => openModal(setShowCompanionModal, true), 700));
             }
           }
@@ -214,6 +215,10 @@ export default function ChatRoomScreen() {
         style={styles.messages}
         contentContainerStyle={styles.messagesContent}
         onContentSizeChange={() => flatRef.current?.scrollToEnd({ animated: false })}
+        initialNumToRender={20}
+        maxToRenderPerBatch={10}
+        windowSize={11}
+        removeClippedSubviews
         renderItem={({ item }) => {
           const isMe = item.senderId === 'me';
           if (item.type === 'trip_share' && item.tripData) {
@@ -283,7 +288,7 @@ export default function ChatRoomScreen() {
       {showCompanionModal && (
         <Animated.View style={[styles.sheetOverlay, { opacity: opacityAnim }]}>
           <Pressable style={styles.sheetDismiss} onPress={() => closeModal(setShowCompanionModal, undefined, true)} />
-          <Animated.View style={[styles.sheet, { transform: [{ translateY: slideAnim }] }]}>
+          <Animated.View style={[styles.sheet, { paddingBottom: insets.bottom + 24, transform: [{ translateY: slideAnim }] }]}>
             <View style={styles.sheetHandle} />
 
             <View style={styles.sheetHeader}>
@@ -456,7 +461,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     paddingHorizontal: 24,
-    paddingBottom: 36,
     paddingTop: 12,
     gap: 16,
     shadowColor: '#000',

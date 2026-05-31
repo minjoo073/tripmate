@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, Easing, Image,
 } from 'react-native';
-import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
 import { getProfileIcon } from '../../../constants/profileIcons';
 import { MatchResult, Post } from '../../../types';
 import { getRecommended } from '../../../services/matchService';
 import { mockPosts } from '../../../mock/data';
+import { useTrips } from '../../../context/TripsContext';
 import { BellIcon, SearchIcon, ArrowRightIcon, ArrowLeftIcon } from '../../../components/ui/Icon';
 import Svg, { Path, G } from 'react-native-svg';
 
@@ -27,28 +27,35 @@ const DEFAULT_DEST = { bg: '#E8E2DA', text: '#5C5248' };
 const AVATAR_BG = ['#D8E2EE', '#EDE3D8', '#D8EAE0', '#EAD8EA', '#D8EAE8'];
 const AVATAR_TEXT = ['#3A5878', '#7A5C3E', '#3A6B55', '#6B3A6B', '#2E6860'];
 
-// Random landmark backdrop for the matching hero (stable Wikimedia Commons URLs)
-const HERO_LANDMARKS = [
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Tour_Eiffel_Wikimedia_Commons.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Tokyo_Tower_and_around_Skyscrapers.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Colosseo_2020.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Sagrada_Familia_01.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Statue_of_Liberty_7.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Osaka_Castle_02bs3200.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Marina_Bay_Sands_in_the_evening_-_20101120.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Tanah_Lot_Bali_Indonesia.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Sydney_Opera_House_-_Dec_2008.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/All_Gizah_Pyramids.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Christ_the_Redeemer_-_Cristo_Redentor.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Schloss_Neuschwanstein_2013.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/The_Great_Wall_of_China_at_Jinshanling-edit.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Petronas_Panorama_II.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Taj_Mahal,_Agra,_India_edit3.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Leaning_Tower_of_Pisa_(April_2012).jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Brandenburger_Tor_abends.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Golden_Gate_Bridge_as_seen_from_Battery_East.jpg?width=600',
-  'https://commons.wikimedia.org/wiki/Special:FilePath/Angkor_Wat.jpg?width=600',
+// Random landmark backdrop for the matching hero.
+// Served through images.weserv.nl — a globally cached image proxy that avoids
+// Wikimedia's Special:FilePath 302 redirect and serves resized webp on the fly.
+const LANDMARK_FILES = [
+  'Tour_Eiffel_Wikimedia_Commons.jpg',
+  'Tokyo_Tower_and_around_Skyscrapers.jpg',
+  'Colosseo_2020.jpg',
+  'Sagrada_Familia_01.jpg',
+  'Statue_of_Liberty_7.jpg',
+  'Osaka_Castle_02bs3200.jpg',
+  'Marina_Bay_Sands_in_the_evening_-_20101120.jpg',
+  'Tanah_Lot_Bali_Indonesia.jpg',
+  'Sydney_Opera_House_-_Dec_2008.jpg',
+  'All_Gizah_Pyramids.jpg',
+  'Christ_the_Redeemer_-_Cristo_Redentor.jpg',
+  'Schloss_Neuschwanstein_2013.jpg',
+  'The_Great_Wall_of_China_at_Jinshanling-edit.jpg',
+  'Petronas_Panorama_II.jpg',
+  'Taj_Mahal,_Agra,_India_edit3.jpg',
+  'Leaning_Tower_of_Pisa_(April_2012).jpg',
+  'Brandenburger_Tor_abends.jpg',
+  'Golden_Gate_Bridge_as_seen_from_Battery_East.jpg',
+  'Angkor_Wat.jpg',
 ];
+const HERO_LANDMARKS = LANDMARK_FILES.map((name) =>
+  `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(name)}?width=900`
+);
+
+const HERO_ROTATE_MS = 6000;
 
 function tripDateLabel(start?: string, end?: string) {
   if (!start) return '';
@@ -249,18 +256,70 @@ export default function HomeScreen() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isListExpanded, setIsListExpanded] = useState(false);
   const [navyHeight, setNavyHeight] = useState(400);
-  const [hasTripPlan, setHasTripPlan] = useState(false);
-  const [heroImage] = useState(() => HERO_LANDMARKS[Math.floor(Math.random() * HERO_LANDMARKS.length)]);
-  const heroFade = useRef(new Animated.Value(0)).current;
+  const { upcoming, reload: reloadTrips } = useTrips();
+  const hasTripPlan = upcoming !== null;
+  // Shuffled rotation: start at a random index, then cycle through.
+  const heroOrder = useRef<number[]>(
+    [...Array(HERO_LANDMARKS.length).keys()].sort(() => Math.random() - 0.5),
+  ).current;
+  const heroStep = useRef(0);
+  const [heroLayers, setHeroLayers] = useState<{ a: string; b: string | null; show: 'a' | 'b' }>({
+    a: HERO_LANDMARKS[heroOrder[0]],
+    b: null,
+    show: 'a',
+  });
+  const heroFadeA = useRef(new Animated.Value(0)).current;
+  const heroFadeB = useRef(new Animated.Value(0)).current;
   const expandAnim = useRef(new Animated.Value(-20)).current;
   const listOpacity = useRef(new Animated.Value(1)).current;
   const detailOpacity = useRef(new Animated.Value(0)).current;
 
+  useFocusEffect(useCallback(() => { reloadTrips(); }, [reloadTrips]));
+
   useEffect(() => {
-    getRecommended().then(setMatches);
-    AsyncStorage.getItem('trip_plan').then((stored) => {
-      if (stored) setHasTripPlan(true);
-    }).catch(() => {});
+    if (hasTripPlan) {
+      getRecommended().then(setMatches);
+    } else {
+      setMatches([]);
+    }
+  }, [hasTripPlan]);
+
+  useEffect(() => {
+    // Warm the first hero immediately, then prefetch the rest so each
+    // rotation lands in cache when it's time to crossfade in.
+    Image.prefetch(heroLayers.a).catch(() => {});
+    const idle = setTimeout(() => {
+      HERO_LANDMARKS.forEach((url) => {
+        if (url !== heroLayers.a) Image.prefetch(url).catch(() => {});
+      });
+    }, 1200);
+    return () => clearTimeout(idle);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-rotate the hero with a crossfade.
+  useEffect(() => {
+    const tick = setInterval(() => {
+      heroStep.current = (heroStep.current + 1) % heroOrder.length;
+      const nextUrl = HERO_LANDMARKS[heroOrder[heroStep.current]];
+      // Prefetch then swap into the hidden layer and crossfade.
+      Image.prefetch(nextUrl).catch(() => {}).finally(() => {
+        setHeroLayers((prev) => {
+          const incoming = prev.show === 'a' ? 'b' : 'a';
+          const swapped = prev.show === 'a' ? { a: prev.a, b: nextUrl, show: 'b' as const }
+                                            : { a: nextUrl, b: prev.b, show: 'a' as const };
+          // Drive opacity: incoming → 1, outgoing → 0
+          const incomingAnim = incoming === 'a' ? heroFadeA : heroFadeB;
+          const outgoingAnim = incoming === 'a' ? heroFadeB : heroFadeA;
+          Animated.parallel([
+            Animated.timing(incomingAnim, { toValue: 1, duration: 700, useNativeDriver: true }),
+            Animated.timing(outgoingAnim, { toValue: 0, duration: 700, useNativeDriver: true }),
+          ]).start();
+          return swapped;
+        });
+      });
+    }, HERO_ROTATE_MS);
+    return () => clearInterval(tick);
   }, []);
 
   // Trigger detail/list fade AFTER React commits re-render
@@ -366,11 +425,27 @@ export default function HomeScreen() {
         onLayout={(e) => setNavyHeight(e.nativeEvent.layout.height)}
       >
         <Animated.Image
-          source={{ uri: heroImage }}
-          style={[styles.bandBgImage, { opacity: heroFade }]}
+          source={{ uri: heroLayers.a }}
+          style={[styles.bandBgImage, { opacity: heroFadeA }]}
           resizeMode="cover"
-          onLoad={() => Animated.timing(heroFade, { toValue: 1, duration: 500, useNativeDriver: true }).start()}
+          onLoad={() => {
+            if (heroLayers.show === 'a') {
+              Animated.timing(heroFadeA, { toValue: 1, duration: 350, useNativeDriver: true }).start();
+            }
+          }}
         />
+        {heroLayers.b && (
+          <Animated.Image
+            source={{ uri: heroLayers.b }}
+            style={[styles.bandBgImage, { opacity: heroFadeB }]}
+            resizeMode="cover"
+            onLoad={() => {
+              if (heroLayers.show === 'b') {
+                Animated.timing(heroFadeB, { toValue: 1, duration: 350, useNativeDriver: true }).start();
+              }
+            }}
+          />
+        )}
         <View style={styles.bandBgOverlay} />
         {!hasTripPlan && <HeroDecor />}
         <TouchableOpacity

@@ -41,6 +41,20 @@ export default function TripPlanScreen() {
   }
 
   async function handleSave() {
+    // Roll the previous plan into history before overwriting.
+    try {
+      const prev = await AsyncStorage.getItem('trip_plan');
+      if (prev) {
+        const histRaw = await AsyncStorage.getItem('trip_history');
+        const hist = histRaw ? JSON.parse(histRaw) : [];
+        const prevTrip = JSON.parse(prev);
+        await AsyncStorage.setItem(
+          'trip_history',
+          JSON.stringify([{ ...prevTrip, completedAt: prevTrip.endDate || new Date().toISOString().slice(0, 10) }, ...hist]),
+        );
+      }
+    } catch {}
+
     await AsyncStorage.setItem('trip_plan', JSON.stringify({
       destination,
       startDate: rangeStart ? formatYMD(rangeStart) : '',
@@ -49,7 +63,8 @@ export default function TripPlanScreen() {
       companions,
       memo,
     }));
-    router.replace('/(tabs)/');
+    if (router.canGoBack()) router.back();
+    else router.replace('/(tabs)/');
   }
 
   return (
@@ -60,7 +75,7 @@ export default function TripPlanScreen() {
       <View style={[styles.root, { paddingTop: insets.top + 12 }]}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.replace('/(tabs)/')}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/'))}>
             <ArrowLeftIcon color={Colors.textPrimary} size={20} />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
@@ -90,6 +105,8 @@ export default function TripPlanScreen() {
               placeholderTextColor={Colors.textMuted}
               value={destination}
               onChangeText={setDestination}
+              returnKeyType="done"
+              blurOnSubmit
             />
           </View>
 
@@ -184,6 +201,8 @@ export default function TripPlanScreen() {
               onChangeText={setMemo}
               maxLength={40}
               multiline={false}
+              returnKeyType="done"
+              blurOnSubmit
             />
             <Text style={styles.charCount}>{memo.length} / 40</Text>
           </View>

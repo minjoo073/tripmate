@@ -5,6 +5,10 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
+import { useProfile } from '../../context/ProfileContext';
+import { usePersonality } from '../../context/PersonalityContext';
+import { useTrips } from '../../context/TripsContext';
+import { useVerification } from '../../context/VerificationContext';
 
 type SettingRowProps = {
   label: string;
@@ -47,6 +51,10 @@ function Section({ title, children }: SectionProps) {
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const { signOut } = useAuth();
+  const { reset: resetProfile } = useProfile();
+  const { reset: resetPersonality } = usePersonality();
+  const { clear: clearTrips } = useTrips();
+  const { reset: resetVerification } = useVerification();
   const [notiMatch, setNotiMatch] = useState(true);
   const [notiChat, setNotiChat] = useState(true);
   const [notiMarketing, setNotiMarketing] = useState(false);
@@ -58,7 +66,13 @@ export default function SettingsScreen() {
         text: '로그아웃',
         style: 'destructive',
         onPress: async () => {
-          await signOut();
+          await Promise.all([
+            signOut(),
+            resetProfile(),
+            resetPersonality(),
+            clearTrips(),
+            resetVerification(),
+          ]);
           router.replace('/(auth)/login');
         },
       },

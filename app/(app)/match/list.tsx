@@ -32,7 +32,15 @@ export default function MatchListScreen() {
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
       >
-        {results.map((item, index) => (
+        {results.length === 0 ? (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>조건에 맞는 여행자가 없어요</Text>
+            <Text style={styles.emptyDesc}>필터를 조금 풀어보면 더 많이 보일 거예요</Text>
+            <TouchableOpacity style={styles.emptyBtn} onPress={() => router.back()} activeOpacity={0.85}>
+              <Text style={styles.emptyBtnText}>조건 다시 설정</Text>
+            </TouchableOpacity>
+          </View>
+        ) : results.map((item, index) => (
           <MatchCard
             key={item.user.id}
             item={item}
@@ -87,4 +95,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   list: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 32 },
+  empty: { alignItems: 'center', paddingTop: 80, gap: 8 },
+  emptyTitle: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary },
+  emptyDesc: { fontSize: 12, color: Colors.textMuted, marginBottom: 10 },
+  emptyBtn: { paddingHorizontal: 20, paddingVertical: 11, borderRadius: 999, backgroundColor: Colors.primary },
+  emptyBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
 });

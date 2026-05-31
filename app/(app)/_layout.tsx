@@ -2,6 +2,9 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { AuthProvider } from '../../context/AuthContext';
 import { PersonalityProvider } from '../../context/PersonalityContext';
+import { ProfileProvider } from '../../context/ProfileContext';
+import { TripsProvider } from '../../context/TripsContext';
+import { VerificationProvider } from '../../context/VerificationContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Platform, View, StyleSheet } from 'react-native';
 
@@ -51,10 +54,16 @@ export default function AppLayout() {
             style={styles.phoneInner}
           >
             <AuthProvider>
-              <PersonalityProvider>
-                <StatusBar style="auto" />
-                <AppStack />
-              </PersonalityProvider>
+              <ProfileProvider>
+                <PersonalityProvider>
+                  <TripsProvider>
+                    <VerificationProvider>
+                      <StatusBar style="auto" />
+                      <AppStack />
+                    </VerificationProvider>
+                  </TripsProvider>
+                </PersonalityProvider>
+              </ProfileProvider>
             </AuthProvider>
           </SafeAreaProvider>
         </View>
@@ -65,10 +74,16 @@ export default function AppLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <PersonalityProvider>
-          <StatusBar style="auto" />
-          <AppStack />
-        </PersonalityProvider>
+        <ProfileProvider>
+          <PersonalityProvider>
+            <TripsProvider>
+              <VerificationProvider>
+                <StatusBar style="auto" />
+                <AppStack />
+              </VerificationProvider>
+            </TripsProvider>
+          </PersonalityProvider>
+        </ProfileProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

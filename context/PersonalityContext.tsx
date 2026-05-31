@@ -24,11 +24,13 @@ const DEFAULT: Personality = {
 interface PersonalityContextType {
   personality: Personality;
   save: (p: Personality) => Promise<void>;
+  reset: () => Promise<void>;
 }
 
 const PersonalityContext = createContext<PersonalityContextType>({
   personality: DEFAULT,
   save: async () => {},
+  reset: async () => {},
 });
 
 export function PersonalityProvider({ children }: { children: React.ReactNode }) {
@@ -45,8 +47,13 @@ export function PersonalityProvider({ children }: { children: React.ReactNode })
     await AsyncStorage.setItem('personality', JSON.stringify(p)).catch(() => {});
   }
 
+  async function reset() {
+    setPersonality(DEFAULT);
+    await AsyncStorage.removeItem('personality').catch(() => {});
+  }
+
   return (
-    <PersonalityContext.Provider value={{ personality, save }}>
+    <PersonalityContext.Provider value={{ personality, save, reset }}>
       {children}
     </PersonalityContext.Provider>
   );

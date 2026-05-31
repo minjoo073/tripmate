@@ -90,6 +90,10 @@ export interface FindMateFilter {
   endDate: string;
   travelStyles: string[];
   anyGender: boolean;
+  gender?: '무관' | '여성' | '남성';
+  ageGroup?: '무관' | '20대' | '30대' | '40대+';
+  companionCount?: '무관' | '1명' | '2명' | '3명+';
   scheduleOverlap: boolean;
   verifiedOnly: boolean;
+  noSmoking?: boolean;
 }

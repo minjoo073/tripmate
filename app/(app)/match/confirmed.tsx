@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Line } from 'react-native-svg';
 import { Colors } from '../../../constants/colors';
 import { Avatar } from '../../../components/ui/Avatar';
+import { useAuth } from '../../../context/AuthContext';
+import { useProfile } from '../../../context/ProfileContext';
 import { mockUsers, mockTrips, mockChatRooms } from '../../../mock/data';
 
 const RADIUS = 54;
@@ -88,6 +90,8 @@ function TravelRing({ rate }: { rate: number }) {
 }
 
 export default function ConfirmedScreen() {
+  const { user } = useAuth();
+  const { profile } = useProfile();
   const insets = useSafeAreaInsets();
   const { partnerId, tripId } = useLocalSearchParams<{ partnerId: string; tripId: string }>();
 
@@ -126,7 +130,7 @@ export default function ConfirmedScreen() {
       {/* Ring + Avatars */}
       <Animated.View style={[styles.profileWrap, { transform: [{ translateY: slideAnim }] }]}>
         <View style={styles.avatarSide}>
-          <Avatar nickname="나" size={58} />
+          <Avatar nickname={user?.nickname ?? '나'} size={58} avatarIndex={profile.avatarIndex} />
           <Text style={styles.avatarLabel}>나</Text>
         </View>
         <View style={styles.ringWrap}>

@@ -7,6 +7,7 @@ interface AuthContextType {
   isLoading: boolean;
   signIn: (user: AuthUser) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (patch: Partial<AuthUser>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -14,6 +15,7 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   signIn: async () => {},
   signOut: async () => {},
+  updateUser: async () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -38,8 +40,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
+  const updateUser = async (patch: Partial<AuthUser>) => {
+    if (!user) return;
+    const next = { ...user, ...patch };
+    setUser(next);
+    await AsyncStorage.setItem('auth_user', JSON.stringify(next)).catch(() => {});
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, isLoading, signIn, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

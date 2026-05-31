@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image, StyleSheet, ImageSourcePropType } from 'react-native';
-import { getProfileIcon } from '../../constants/profileIcons';
+import { getProfileIcon, PROFILE_ICONS } from '../../constants/profileIcons';
 
 interface AvatarProps {
   uri?: string;
@@ -8,9 +8,10 @@ interface AvatarProps {
   size?: number;
   emoji?: string;
   variant?: 'default' | 'light';
+  avatarIndex?: number | null;
 }
 
-export function Avatar({ uri, nickname, size = 48 }: AvatarProps) {
+export function Avatar({ uri, nickname, size = 48, avatarIndex }: AvatarProps) {
   if (uri) {
     return (
       <Image
@@ -20,7 +21,10 @@ export function Avatar({ uri, nickname, size = 48 }: AvatarProps) {
     );
   }
 
-  const icon: ImageSourcePropType = getProfileIcon(nickname ?? '?');
+  const icon: ImageSourcePropType =
+    avatarIndex !== null && avatarIndex !== undefined
+      ? PROFILE_ICONS[avatarIndex]
+      : getProfileIcon(nickname ?? '?');
 
   return (
     <View

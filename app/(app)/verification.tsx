@@ -5,6 +5,7 @@ import {
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
+import { useVerification } from '../../context/VerificationContext';
 import {
   ArrowLeftIcon, PhoneIcon, MailIcon, IdCardIcon, LinkIcon, StarIcon,
   ShieldCheckIcon, AwardIcon, TrendingUpIcon, MessageIcon, LockIcon,
@@ -18,18 +19,17 @@ interface VerifyItem {
   title: string;
   desc: string;
   trust: number;
-  status: VerifyStatus;
 }
 
 const ICON_COLOR = Colors.primary;
 const ICON_SIZE = 24;
 
-const INITIAL_ITEMS: VerifyItem[] = [
-  { key: 'phone', icon: <PhoneIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '휴대폰 인증', desc: '본인 명의 휴대폰으로 인증합니다.', trust: 20, status: 'done' },
-  { key: 'email', icon: <MailIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '이메일 인증', desc: '이메일 주소를 인증합니다.', trust: 10, status: 'done' },
-  { key: 'id', icon: <IdCardIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '신분증 인증', desc: '주민등록증 또는 여권으로 본인 확인을 합니다.', trust: 30, status: 'none' },
-  { key: 'instagram', icon: <LinkIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '인스타그램 연결', desc: 'SNS 활동으로 실존 인물임을 확인합니다.', trust: 15, status: 'none' },
-  { key: 'review', icon: <StarIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '동행 후기 3건 이상', desc: '다른 메이트의 실제 후기로 신뢰도를 높입니다.', trust: 25, status: 'none' },
+const VERIFY_ITEMS: VerifyItem[] = [
+  { key: 'phone', icon: <PhoneIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '휴대폰 인증', desc: '본인 명의 휴대폰으로 인증합니다.', trust: 20 },
+  { key: 'email', icon: <MailIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '이메일 인증', desc: '이메일 주소를 인증합니다.', trust: 10 },
+  { key: 'id', icon: <IdCardIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '신분증 인증', desc: '주민등록증 또는 여권으로 본인 확인을 합니다.', trust: 30 },
+  { key: 'instagram', icon: <LinkIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '인스타그램 연결', desc: 'SNS 활동으로 실존 인물임을 확인합니다.', trust: 15 },
+  { key: 'review', icon: <StarIcon color={ICON_COLOR} size={ICON_SIZE} />, title: '동행 후기 3건 이상', desc: '다른 메이트의 실제 후기로 신뢰도를 높입니다.', trust: 25 },
 ];
 
 function trustColor(score: number) {
@@ -46,16 +46,28 @@ function trustLabel(score: number) {
 
 export default function VerificationScreen() {
   const insets = useSafeAreaInsets();
-  const [items, setItems] = useState(INITIAL_ITEMS);
+  const { isVerified, setVerified } = useVerification();
+  const [pendingKey, setPendingKey] = useState<string | null>(null);
 
-  const totalTrust = items.reduce((sum, item) => sum + (item.status === 'done' ? item.trust : 0), 0);
-  const maxTrust = items.reduce((sum, item) => sum + item.trust, 0);
+  const statusOf = (key: string): VerifyStatus =>
+    isVerified(key) ? 'done' : pendingKey === key ? 'pending' : 'none';
+
+  const totalTrust = VERIFY_ITEMS.reduce((sum, item) => sum + (isVerified(item.key) ? item.trust : 0), 0);
+  const maxTrust = VERIFY_ITEMS.reduce((sum, item) => sum + item.trust, 0);
   const trustPct = Math.round((totalTrust / maxTrust) * 100);
-  const doneCount = items.filter((i) => i.status === 'done').length;
+  const doneCount = VERIFY_ITEMS.filter((i) => isVerified(i.key)).length;
+
+  const runFakeFlow = (key: string, successTitle: string, successMsg: string) => {
+    setPendingKey(key);
+    setTimeout(async () => {
+      await setVerified(key, true);
+      setPendingKey(null);
+      Alert.alert(successTitle, successMsg);
+    }, 1500);
+  };
 
   const handleVerify = (key: string) => {
-    const item = items.find((i) => i.key === key);
-    if (!item || item.status === 'done') return;
+    if (isVerified(key) || pendingKey) return;
 
     if (key === 'id') {
       Alert.alert(
@@ -63,16 +75,7 @@ export default function VerificationScreen() {
         '주민등록증 또는 여권 사진을 업로드합니다.\n개인정보는 암호화되어 안전하게 처리됩니다.',
         [
           { text: '취소', style: 'cancel' },
-          {
-            text: '인증하기',
-            onPress: () => {
-              setItems((prev) => prev.map((i) => i.key === key ? { ...i, status: 'pending' } : i));
-              setTimeout(() => {
-                setItems((prev) => prev.map((i) => i.key === key ? { ...i, status: 'done' } : i));
-                Alert.alert('인증 완료', '신분증 인증이 완료되었습니다.');
-              }, 1500);
-            },
-          },
+          { text: '인증하기', onPress: () => runFakeFlow(key, '인증 완료', '신분증 인증이 완료되었습니다.') },
         ],
       );
     } else if (key === 'instagram') {
@@ -81,22 +84,13 @@ export default function VerificationScreen() {
         '인스타그램 계정을 연결하면 프로필에 인증 배지가 표시됩니다.',
         [
           { text: '취소', style: 'cancel' },
-          {
-            text: '연결하기',
-            onPress: () => {
-              setItems((prev) => prev.map((i) => i.key === key ? { ...i, status: 'pending' } : i));
-              setTimeout(() => {
-                setItems((prev) => prev.map((i) => i.key === key ? { ...i, status: 'done' } : i));
-                Alert.alert('연결 완료', '인스타그램이 연결되었습니다.');
-              }, 1500);
-            },
-          },
+          { text: '연결하기', onPress: () => runFakeFlow(key, '연결 완료', '인스타그램이 연결되었습니다.') },
         ],
       );
     } else if (key === 'review') {
       Alert.alert('안내', '동행 후기는 여행 완료 후 자동으로 반영됩니다.');
     } else {
-      setItems((prev) => prev.map((i) => i.key === key ? { ...i, status: 'done' } : i));
+      runFakeFlow(key, '인증 완료', '인증이 완료되었습니다.');
     }
   };
 
@@ -165,45 +159,48 @@ export default function VerificationScreen() {
 
         {/* Verification items */}
         <Text style={styles.sectionTitle}>인증 항목</Text>
-        {items.map((item) => (
-          <View key={item.key} style={styles.itemCard}>
-            <View style={styles.itemTop}>
-              <View style={styles.itemIconWrap}>{item.icon}</View>
-              <View style={styles.itemInfo}>
-                <View style={styles.itemNameRow}>
-                  <Text style={styles.itemTitle}>{item.title}</Text>
-                  <View style={[
-                    styles.trustPointBadge,
-                    item.status === 'done' && styles.trustPointBadgeDone,
-                  ]}>
-                    <Text style={[
-                      styles.trustPointText,
-                      item.status === 'done' && styles.trustPointTextDone,
-                    ]}>+{item.trust}점</Text>
+        {VERIFY_ITEMS.map((item) => {
+          const s = statusOf(item.key);
+          return (
+            <View key={item.key} style={styles.itemCard}>
+              <View style={styles.itemTop}>
+                <View style={styles.itemIconWrap}>{item.icon}</View>
+                <View style={styles.itemInfo}>
+                  <View style={styles.itemNameRow}>
+                    <Text style={styles.itemTitle}>{item.title}</Text>
+                    <View style={[
+                      styles.trustPointBadge,
+                      s === 'done' && styles.trustPointBadgeDone,
+                    ]}>
+                      <Text style={[
+                        styles.trustPointText,
+                        s === 'done' && styles.trustPointTextDone,
+                      ]}>+{item.trust}점</Text>
+                    </View>
                   </View>
+                  <Text style={styles.itemDesc}>{item.desc}</Text>
                 </View>
-                <Text style={styles.itemDesc}>{item.desc}</Text>
               </View>
+              {s === 'done' ? (
+                <View style={styles.doneBadge}>
+                  <Text style={styles.doneText}>인증 완료</Text>
+                </View>
+              ) : s === 'pending' ? (
+                <View style={styles.pendingBadge}>
+                  <Text style={styles.pendingText}>확인 중...</Text>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.verifyBtn}
+                  onPress={() => handleVerify(item.key)}
+                  activeOpacity={0.85}
+                >
+                  <Text style={styles.verifyBtnText}>인증하기</Text>
+                </TouchableOpacity>
+              )}
             </View>
-            {item.status === 'done' ? (
-              <View style={styles.doneBadge}>
-                <Text style={styles.doneText}>인증 완료</Text>
-              </View>
-            ) : item.status === 'pending' ? (
-              <View style={styles.pendingBadge}>
-                <Text style={styles.pendingText}>확인 중...</Text>
-              </View>
-            ) : (
-              <TouchableOpacity
-                style={styles.verifyBtn}
-                onPress={() => handleVerify(item.key)}
-                activeOpacity={0.85}
-              >
-                <Text style={styles.verifyBtnText}>인증하기</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        ))}
+          );
+        })}
 
         {/* Safety notice */}
         <View style={styles.noticeCard}>
