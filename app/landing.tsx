@@ -6,6 +6,22 @@ import {
 import { router } from 'expo-router';
 import { Colors } from '../constants/colors';
 import { getProfileIcon } from '../constants/profileIcons';
+import { useAuth } from '../context/AuthContext';
+import { login as loginRequest } from '../services/authService';
+
+// Demo guest = alice@tripmate.app (seeded). Lets visitors poke the app
+// without filling the login form. Real auth still works as normal.
+async function enterAsGuest(signIn: (u: any) => Promise<void>, target: string) {
+  try {
+    const authUser = await loginRequest('alice@tripmate.app', 'password');
+    await signIn(authUser);
+  } catch (e) {
+    // If backend is down or seed is missing, fall through with no auth so
+    // the user at least sees the screen (mock mode will kick in).
+    console.warn('[guest] login failed, continuing without auth', e);
+  }
+  router.push(target as any);
+}
 
 const FEATURES = [
   {
@@ -115,6 +131,7 @@ export default function LandingPage() {
   const scrollRef = useRef<ScrollView>(null);
   const [featuresY, setFeaturesY] = useState(0);
   const [reviewsY, setReviewsY] = useState(0);
+  const { signIn } = useAuth();
 
   return (
     <ScrollView ref={scrollRef} style={styles.root} showsVerticalScrollIndicator={false}>
@@ -130,7 +147,7 @@ export default function LandingPage() {
             <TouchableOpacity onPress={() => scrollRef.current?.scrollTo({ y: reviewsY, animated: true })}>
               <Text style={styles.navLink}>이용 후기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.navCta} onPress={() => router.push('/(tabs)/')}>
+            <TouchableOpacity style={styles.navCta} onPress={() => enterAsGuest(signIn, '/(tabs)/')}>
               <Text style={styles.navCtaText}>앱 체험하기</Text>
             </TouchableOpacity>
           </View>
@@ -152,10 +169,10 @@ export default function LandingPage() {
           AI가 23,000명 중 딱 맞는 메이트를 찾아드려요.
         </Text>
         <View style={styles.heroBtns}>
-          <TouchableOpacity style={styles.heroBtn} onPress={() => router.push('/(tabs)/')}>
+          <TouchableOpacity style={styles.heroBtn} onPress={() => enterAsGuest(signIn, '/(tabs)/')}>
             <Text style={styles.heroBtnText}>🚀 지금 무료로 시작하기</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.heroBtnOutline} onPress={() => router.push('/(tabs)/explore')}>
+          <TouchableOpacity style={styles.heroBtnOutline} onPress={() => enterAsGuest(signIn, '/(tabs)/explore')}>
             <Text style={styles.heroBtnOutlineText}>🔍 메이트 둘러보기</Text>
           </TouchableOpacity>
         </View>
@@ -252,7 +269,7 @@ export default function LandingPage() {
             <TouchableOpacity
               key={d.name}
               style={styles.destCard}
-              onPress={() => router.push('/(tabs)/explore')}
+              onPress={() => enterAsGuest(signIn, '/(tabs)/explore')}
             >
               <Text style={styles.destFlag}>{d.flag}</Text>
               <Text style={styles.destName}>{d.name}</Text>

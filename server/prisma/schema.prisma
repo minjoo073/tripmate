@@ -1,0 +1,227 @@
+// TripMate database schema
+// Matches the domain types defined in tripmate/types/index.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =========================================================
+// USERS & AUTH
+// =========================================================
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  nickname      String
+  age           Int      @default(25)
+  gender        Gender   @default(other)
+  location      String   @default("")
+  mbti          String?
+  bio           String?
+  avatar        String?
+  travelStyles  String[] @default([])
+  travelCount   Int      @default(0)
+  rating        Float    @default(0)
+  followers     Int      @default(0)
+  isVerified    Boolean  @default(false)
+  trustScore    Int      @default(0)
+
+  personality   TravelPersonality?
+  trips         Trip[]
+  sentLikes     Like[]            @relation("LikeFrom")
+  receivedLikes Like[]            @relation("LikeTo")
+  memberships   ChatMember[]
+  messages      Message[]
+  posts         Post[]
+  postLikes     PostLike[]
+  reviewsGiven  Review[]          @relation("ReviewFrom")
+  reviewsRcvd   Review[]          @relation("ReviewTo")
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+// 7-dimension travel personality survey response
+model TravelPersonality {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pace          Int     @default(50) // 0 여유 ↔ 100 빡빡
+  time          Int     @default(50) // 0 아침형 ↔ 100 저녁형
+  companion     Int     @default(50) // 0 같이 ↔ 100 따로또같이
+  stay          Int     @default(50) // 0 호텔 ↔ 100 게하
+  dining        Int     @default(50) // 0 맛집 ↔ 100 로컬
+  plan          Int     @default(50) // 0 꼼꼼 ↔ 100 즉흥
+  budget        Int     @default(50) // 0 가성비 ↔ 100 경험
+  updatedAt     DateTime @updatedAt
+}
+
+// =========================================================
+// TRIPS
+// =========================================================
+model Trip {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination   String
+  country       String   @default("")
+  startDate     DateTime
+  endDate       DateTime
+  travelStyles  String[] @default([])
+  schedule      Json?
+  isActive      Boolean  @default(true)
+
+  chatRooms     ChatRoom[]
+  postsLinked   Post[]
+
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([destination])
+  @@index([isActive, startDate])
+}
+
+// =========================================================
+// LIKES (one-way save/bookmark on a user)
+// =========================================================
+model Like {
+  id        String @id @default(cuid())
+  fromId    String
+  from      User   @relation("LikeFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  toId      String
+  to        User   @relation("LikeTo",   fields: [toId],   references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([fromId, toId])
+  @@index([fromId])
+  @@index([toId])
+}
+
+// =========================================================
+// CHAT
+// =========================================================
+model ChatRoom {
+  id            String       @id @default(cuid())
+  tripId        String?
+  trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  lastMessage   String       @default("")
+  lastMessageAt DateTime     @default(now())
+  status        ChatStatus   @default(tips)
+
+  members       ChatMember[]
+  messages      Message[]
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([lastMessageAt])
+}
+
+enum ChatStatus {
+  pending
+  accepted
+  rejected
+  tips
+}
+
+model ChatMember {
+  id          String   @id @default(cuid())
+  roomId      String
+  room        ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  unreadCount Int      @default(0)
+  joinedAt    DateTime @default(now())
+
+  @@unique([roomId, userId])
+  @@index([userId])
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  roomId    String
+  room      ChatRoom    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  type      MessageType @default(text)
+  content   String      @default("")
+  tripId    String?     // when type=trip_share
+  createdAt DateTime    @default(now())
+
+  @@index([roomId, createdAt])
+}
+
+enum MessageType {
+  text
+  trip_share
+}
+
+// =========================================================
+// COMMUNITY
+// =========================================================
+model Post {
+  id            String       @id @default(cuid())
+  authorId      String
+  author        User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  title         String
+  content       String
+  category      PostCategory
+  travelStyles  String[]     @default([])
+  tripId        String?
+  trip          Trip?        @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  likesCount    Int          @default(0)
+  commentsCount Int          @default(0)
+
+  likes         PostLike[]
+
+  createdAt     DateTime     @default(now())
+
+  @@index([category, createdAt])
+  @@index([authorId])
+}
+
+enum PostCategory {
+  mate
+  tips
+  review
+}
+
+model PostLike {
+  id      String @id @default(cuid())
+  postId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+}
+
+// =========================================================
+// REVIEWS
+// =========================================================
+model Review {
+  id          String   @id @default(cuid())
+  reviewerId  String
+  reviewer    User     @relation("ReviewFrom", fields: [reviewerId], references: [id], onDelete: Cascade)
+  targetId    String
+  target      User     @relation("ReviewTo",   fields: [targetId],   references: [id], onDelete: Cascade)
+  rating      Int
+  content     String
+  createdAt   DateTime @default(now())
+
+  @@index([targetId])
+}
