@@ -7,7 +7,21 @@ import type {
   ChatRoom as DbChatRoom,
   Message as DbMessage,
   Post as DbPost,
+  TravelPersonality as DbTravelPersonality,
 } from '@prisma/client';
+
+/** 7개 성향 필드만 반환 — id/userId/updatedAt 제외 */
+export function personalityDto(p: DbTravelPersonality) {
+  return {
+    pace:      p.pace,
+    time:      p.time,
+    companion: p.companion,
+    stay:      p.stay,
+    dining:    p.dining,
+    plan:      p.plan,
+    budget:    p.budget,
+  };
+}
 
 export function userDto(u: DbUser) {
   return {

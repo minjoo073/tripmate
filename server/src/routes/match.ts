@@ -37,6 +37,11 @@ router.post('/find', requireAuth, async (req, res, next) => {
       orderBy: { startDate: 'desc' },
     });
 
+    // My personality for similarity scoring.
+    const myPersonality = await prisma.travelPersonality.findUnique({
+      where: { userId: myUserId },
+    });
+
     // Candidate trips: active, not mine, optionally filtered.
     const candidates = await prisma.trip.findMany({
       where: {
@@ -54,7 +59,7 @@ router.post('/find', requireAuth, async (req, res, next) => {
           ? { travelStyles: { hasSome: filter.travelStyles } }
           : {}),
       },
-      include: { user: true },
+      include: { user: { include: { personality: true } } },
       take: 200,
     });
 
@@ -75,7 +80,9 @@ router.post('/find', requireAuth, async (req, res, next) => {
       .map((t) => ({
         user: userDto(t.user),
         trip: tripDto(t),
-        matchRate: myTrip ? matchRate(myTrip, myStyles, t, t.user) : 50,
+        matchRate: myTrip
+          ? matchRate(myTrip, myStyles, t, t.user, myPersonality, t.user.personality ?? null)
+          : 50,
       }))
       .sort((a, b) => b.matchRate - a.matchRate)
       .slice(0, 10);
@@ -94,9 +101,14 @@ router.get('/recommended', requireAuth, async (req, res, next) => {
       orderBy: { startDate: 'desc' },
     });
 
+    // My personality for similarity scoring.
+    const myPersonality = await prisma.travelPersonality.findUnique({
+      where: { userId: myUserId },
+    });
+
     const candidates = await prisma.trip.findMany({
       where: { isActive: true, userId: { not: myUserId } },
-      include: { user: true },
+      include: { user: { include: { personality: true } } },
       take: 50,
     });
 
@@ -106,7 +118,9 @@ router.get('/recommended', requireAuth, async (req, res, next) => {
       .map((t) => ({
         user: userDto(t.user),
         trip: tripDto(t),
-        matchRate: myTrip ? matchRate(myTrip, myStyles, t, t.user) : 70,
+        matchRate: myTrip
+          ? matchRate(myTrip, myStyles, t, t.user, myPersonality, t.user.personality ?? null)
+          : 70,
       }))
       .sort((a, b) => b.matchRate - a.matchRate)
       .slice(0, 3);

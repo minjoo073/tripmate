@@ -1,7 +1,7 @@
 // Matching score model — documented in the portfolio as design intent.
-// 매칭률 = 일정(0.4) + 스타일(0.4) + 신뢰도(0.2), each normalized to 0..100.
+// 매칭률 = 일정(0.35) + 스타일(0.30) + 성향(0.20) + 신뢰도(0.15), each normalized to 0..100.
 
-import type { Trip, User } from '@prisma/client';
+import type { Trip, User, TravelPersonality } from '@prisma/client';
 
 /** Day-overlap between two ranges, expressed as fraction of mine (0..1). */
 function scheduleOverlap(mine: Trip, other: Trip): number {
@@ -35,6 +35,18 @@ function styleSimilarity(a: string[], b: string[]): number {
   return dot / Math.sqrt(magA * magB);
 }
 
+/** Personality similarity: 1 - avg(|a_i - b_i|) / 100 over 7 dimensions (0..1).
+ *  Returns 0.5 (neutral) when either side has no personality record. */
+function personalitySimilarity(
+  a: TravelPersonality | null,
+  b: TravelPersonality | null,
+): number {
+  if (!a || !b) return 0.5;
+  const fields = ['pace', 'time', 'companion', 'stay', 'dining', 'plan', 'budget'] as const;
+  const avgDiff = fields.reduce((sum, f) => sum + Math.abs(a[f] - b[f]), 0) / fields.length;
+  return 1 - avgDiff / 100;
+}
+
 /** Trust score normalized to 0..1. Verified gets a small floor. */
 function trustNormalized(u: Pick<User, 'trustScore' | 'isVerified' | 'rating'>): number {
   const base = Math.min(100, Math.max(0, u.trustScore)) / 100;
@@ -48,10 +60,14 @@ export function matchRate(
   myStyles: string[],
   other: Trip,
   otherUser: Pick<User, 'travelStyles' | 'trustScore' | 'isVerified' | 'rating'>,
+  myPersonality: TravelPersonality | null,
+  otherPersonality: TravelPersonality | null,
 ): number {
   const schedule = scheduleOverlap(mine, other);
   const style = styleSimilarity(myStyles, otherUser.travelStyles);
+  const personality = personalitySimilarity(myPersonality, otherPersonality);
   const trust = trustNormalized(otherUser);
-  const score = schedule * 40 + style * 40 + trust * 20;
+  // 매칭률 = 일정(0.35) + 스타일(0.30) + 성향(0.20) + 신뢰도(0.15)
+  const score = schedule * 35 + style * 30 + personality * 20 + trust * 15;
   return Math.round(score);
 }
