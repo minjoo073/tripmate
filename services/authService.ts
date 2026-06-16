@@ -36,3 +36,11 @@ export async function socialLogin(provider: 'google' | 'apple' | 'kakao', token:
   const { data } = await api.post('/auth/social', { provider, token });
   return data;
 }
+
+/**
+ * 데모 게스트 입장 — alice@tripmate.app 으로 실제 로그인.
+ * Render 무료 서버 콜드스타트 시 최대 ~50초 소요될 수 있음.
+ */
+export async function guestLogin(): Promise<AuthUser> {
+  return login('alice@tripmate.app', 'password');
+}

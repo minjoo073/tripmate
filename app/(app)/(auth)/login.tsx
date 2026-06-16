@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -7,7 +7,7 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { CompassIcon } from '../../../components/ui/Icon';
 import { useAuth } from '../../../context/AuthContext';
-import { login } from '../../../services/authService';
+import { login, guestLogin } from '../../../services/authService';
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
@@ -17,6 +17,23 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [demoLoading, setDemoLoading] = useState(false);
+  const [demoError, setDemoError] = useState('');
+
+  const handleGuestLogin = async () => {
+    if (demoLoading) return;
+    setDemoLoading(true);
+    setDemoError('');
+    try {
+      const user = await guestLogin();
+      await signIn(user);
+      router.replace('/(tabs)/');
+    } catch {
+      setDemoError('입장에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setDemoLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     let valid = true;
@@ -105,6 +122,26 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* 데모 입장 — 로그인 없이 앱 체험 */}
+        <TouchableOpacity
+          style={[styles.demoBtn, demoLoading && styles.demoBtnDisabled]}
+          onPress={handleGuestLogin}
+          disabled={demoLoading}
+          activeOpacity={0.85}
+        >
+          {demoLoading ? (
+            <>
+              <ActivityIndicator size="small" color={Colors.primary} style={{ marginRight: 8 }} />
+              <Text style={styles.demoBtnText}>입장 중...</Text>
+            </>
+          ) : (
+            <Text style={styles.demoBtnText}>🧭  데모 버전으로 입장하기</Text>
+          )}
+        </TouchableOpacity>
+        {demoError !== '' && (
+          <Text style={styles.demoError}>{demoError}</Text>
+        )}
+
         <TouchableOpacity onPress={() => router.push('/(auth)/signup')} style={styles.signupLink}>
           <Text style={styles.signupText}>
             계정이 없으신가요?{'  '}
@@ -192,6 +229,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   kakaoText: { color: '#3C1E1E' },
+
+  // 데모 버튼: 기존 소셜 버튼과 회원가입 링크 사이 — primary 라이트 톤
+  demoBtn: {
+    height: 50,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginTop: 4,
+  },
+  demoBtnDisabled: { opacity: 0.6 },
+  demoBtnText: { fontSize: 14, color: Colors.primary, fontWeight: '600' },
+  demoError: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 2,
+    lineHeight: 18,
+  },
 
   signupLink: { marginTop: 32, alignItems: 'center' },
   signupText: { fontSize: 13, color: Colors.textMuted },

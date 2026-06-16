@@ -1,14 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ScrollView, Dimensions, Animated,
+  ScrollView, Animated, ActivityIndicator,
+  useWindowDimensions, LayoutChangeEvent,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../../constants/colors';
-
-const { width: W, height: H } = Dimensions.get('window');
+import { useAuth } from '../../context/AuthContext';
+import { guestLogin } from '../../services/authService';
 
 const SLIDES = [
   {
@@ -76,20 +77,40 @@ const SLIDES = [
 
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
+  const { width: windowW } = useWindowDimensions();
+  // containerW: 슬라이더 실제 렌더 폭. onLayout 으로 정확히 측정하고,
+  // 측정 전에는 windowW 를 폴백으로 사용해 빈 화면 방지.
+  const [containerW, setContainerW] = useState(windowW);
   const scrollRef = useRef<ScrollView>(null);
   const [current, setCurrent] = useState(0);
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const [demoLoading, setDemoLoading] = useState(false);
+  const [demoError, setDemoError] = useState('');
+  const { signIn } = useAuth();
+
+  const onSliderLayout = (e: LayoutChangeEvent) => {
+    const { width } = e.nativeEvent.layout;
+    if (width > 0) setContainerW(width);
+  };
+
+  // containerW 가 변경되면(리사이즈 or 초기 프레임 측정) 현재 슬라이드 위치 재동기화
+  useEffect(() => {
+    if (containerW > 0) {
+      scrollRef.current?.scrollTo({ x: current * containerW, animated: false });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerW]);
 
   const goToSlide = (index: number) => {
     Animated.timing(fadeAnim, { toValue: 0, duration: 150, useNativeDriver: true }).start(() => {
-      scrollRef.current?.scrollTo({ x: index * W, animated: false });
+      scrollRef.current?.scrollTo({ x: index * containerW, animated: false });
       setCurrent(index);
       Animated.timing(fadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
     });
   };
 
   const handleScroll = (e: any) => {
-    const page = Math.round(e.nativeEvent.contentOffset.x / W);
+    const page = Math.round(e.nativeEvent.contentOffset.x / containerW);
     if (page !== current) setCurrent(page);
   };
 
@@ -107,6 +128,22 @@ export default function OnboardingScreen() {
     router.replace('/(auth)/login');
   };
 
+  const handleGuestLogin = async () => {
+    if (demoLoading) return;
+    setDemoLoading(true);
+    setDemoError('');
+    try {
+      await AsyncStorage.setItem('onboarding_done', 'true');
+      const user = await guestLogin();
+      await signIn(user);
+      router.replace('/(tabs)/');
+    } catch {
+      setDemoError('입장에 실패했어요. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setDemoLoading(false);
+    }
+  };
+
   const slide = SLIDES[current];
 
   return (
@@ -121,7 +158,7 @@ export default function OnboardingScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Slides */}
+      {/* Slides — onLayout 으로 실제 컨테이너 폭을 측정 */}
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -130,9 +167,16 @@ export default function OnboardingScreen() {
         onMomentumScrollEnd={handleScroll}
         scrollEventThrottle={16}
         style={styles.slider}
+        onLayout={onSliderLayout}
       >
         {SLIDES.map((s) => (
-          <View key={s.id} style={[styles.slide, { width: W, backgroundColor: s.bg, paddingTop: insets.top + 56 }]}>
+          <View
+            key={s.id}
+            style={[
+              styles.slide,
+              { width: containerW, backgroundColor: s.bg, paddingTop: insets.top + 56 },
+            ]}
+          >
             <Animated.View style={[styles.slideInner, { opacity: s.id === slide.id ? fadeAnim : 1 }]}>
               {/* Tag */}
               <View style={[styles.tag, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
@@ -204,6 +248,22 @@ export default function OnboardingScreen() {
             >
               <Text style={styles.loginBtnText}>이미 계정이 있어요  →</Text>
             </TouchableOpacity>
+            {/* 데모 입장 — 로그인 없이 앱 체험 */}
+            <TouchableOpacity
+              style={[styles.demoBtn, demoLoading && styles.demoBtnDisabled]}
+              onPress={handleGuestLogin}
+              disabled={demoLoading}
+              activeOpacity={0.85}
+            >
+              {demoLoading ? (
+                <ActivityIndicator size="small" color="rgba(255,255,255,0.7)" />
+              ) : (
+                <Text style={styles.demoBtnText}>🧭  데모 버전으로 입장하기</Text>
+              )}
+            </TouchableOpacity>
+            {demoError !== '' && (
+              <Text style={styles.demoError}>{demoError}</Text>
+            )}
           </View>
         )}
       </View>
@@ -323,4 +383,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loginBtnText: { fontSize: 15, fontWeight: '600', color: 'rgba(255,255,255,0.85)' },
+
+  // 데모 버튼: 기존 버튼들보다 한 단계 낮은 시각적 무게
+  demoBtn: {
+    width: '100%',
+    height: 44,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  demoBtnDisabled: { opacity: 0.55 },
+  demoBtnText: { fontSize: 14, color: 'rgba(255,255,255,0.65)', fontWeight: '500' },
+  demoError: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.55)',
+    textAlign: 'center',
+    lineHeight: 18,
+  },
 });
