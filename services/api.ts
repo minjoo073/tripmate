@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { authEvents } from './authEvents';
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.tripmate.app/v1';
 
@@ -22,7 +23,7 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      AsyncStorage.removeItem('auth_user');
+      authEvents.emit('logout');
     }
     return Promise.reject(err);
   },

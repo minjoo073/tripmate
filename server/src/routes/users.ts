@@ -6,7 +6,7 @@ import { userDto } from '../lib/dto.js';
 
 const router = Router();
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', requireAuth, async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({ where: { id: req.params.id! } });
     if (!user) throw new HttpError(404, 'not_found');

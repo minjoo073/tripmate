@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -19,6 +19,9 @@ export default function SignupScreen() {
   const [password, setPassword] = useState('');
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [nicknameError, setNicknameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const toggleStyle = (style: string) => {
     setSelectedStyles((prev) =>
@@ -27,17 +30,19 @@ export default function SignupScreen() {
   };
 
   const handleSignup = async () => {
-    if (!nickname || !email || !password) {
-      Alert.alert('알림', '모든 항목을 입력해주세요.');
-      return;
-    }
+    let valid = true;
+    if (!nickname) { setNicknameError('닉네임을 입력해주세요.'); valid = false; }
+    if (!email) { setEmailError('이메일을 입력해주세요.'); valid = false; }
+    if (!password) { setPasswordError('비밀번호를 입력해주세요.'); valid = false; }
+    if (!valid) return;
+
     setLoading(true);
     try {
       const user = await signup(email, password, nickname);
       await signIn(user);
       router.replace('/(tabs)/');
     } catch {
-      Alert.alert('가입 실패', '이미 사용 중인 이메일이에요.');
+      setEmailError('이미 사용 중인 이메일이에요.');
     } finally {
       setLoading(false);
     }
@@ -47,9 +52,33 @@ export default function SignupScreen() {
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       <RoundHeader title="TripMate 시작하기 🌍" subtitle="여행 동행을 찾아드릴게요" />
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-        <Input label="닉네임" value={nickname} onChangeText={setNickname} placeholder="닉네임 입력" containerStyle={styles.field} />
-        <Input label="이메일" value={email} onChangeText={setEmail} placeholder="이메일 주소 입력" keyboardType="email-address" autoCapitalize="none" containerStyle={styles.field} />
-        <Input label="비밀번호" value={password} onChangeText={setPassword} placeholder="비밀번호 (8자 이상)" isPassword containerStyle={styles.field} />
+        <Input
+          label="닉네임"
+          value={nickname}
+          onChangeText={(v) => { setNickname(v); setNicknameError(''); }}
+          placeholder="닉네임 입력"
+          containerStyle={styles.field}
+          error={nicknameError}
+        />
+        <Input
+          label="이메일"
+          value={email}
+          onChangeText={(v) => { setEmail(v); setEmailError(''); }}
+          placeholder="이메일 주소 입력"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          containerStyle={styles.field}
+          error={emailError}
+        />
+        <Input
+          label="비밀번호"
+          value={password}
+          onChangeText={(v) => { setPassword(v); setPasswordError(''); }}
+          placeholder="비밀번호 (8자 이상)"
+          isPassword
+          containerStyle={styles.field}
+          error={passwordError}
+        />
 
         <Text style={styles.sectionLabel}>여행 스타일 선택</Text>
         <Text style={styles.sectionCaption}>나와 맞는 스타일을 골라주세요 (복수 선택 가능)</Text>

@@ -7,16 +7,21 @@ interface InputProps extends TextInputProps {
   label?: string;
   isPassword?: boolean;
   containerStyle?: ViewStyle;
+  error?: string;
 }
 
-export function Input({ label, isPassword, containerStyle, ...props }: InputProps) {
+export function Input({ label, isPassword, containerStyle, error, ...props }: InputProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [focused, setFocused] = useState(false);
 
   return (
     <View style={containerStyle}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View style={[styles.inputWrap, focused && styles.focused]}>
+      <View style={[
+        styles.inputWrap,
+        focused && styles.focused,
+        !!error && styles.inputError,
+      ]}>
         <TextInput
           style={styles.input}
           placeholderTextColor={Colors.textPlaceholder}
@@ -31,6 +36,7 @@ export function Input({ label, isPassword, containerStyle, ...props }: InputProp
           </TouchableOpacity>
         )}
       </View>
+      {!!error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
@@ -53,10 +59,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   focused: { borderColor: Colors.primary },
+  inputError: { borderColor: Colors.red },
   input: {
     flex: 1,
     fontSize: 13,
     color: Colors.textPrimary,
   },
   eyeBtn: { marginLeft: 8, padding: 2 },
+  errorText: {
+    fontSize: 12,
+    color: Colors.red,
+    marginTop: 6,
+    marginLeft: 4,
+  },
 });

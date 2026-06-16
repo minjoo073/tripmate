@@ -25,7 +25,7 @@ const DEFAULT: Profile = {
 
 interface ProfileContextType {
   profile: Profile;
-  save: (p: Profile) => Promise<boolean>;
+  save: (p: Omit<Profile, 'savedPostIds' | 'likedPostIds'>) => Promise<boolean>;
   reset: () => Promise<void>;
   toggleSavedPost: (postId: string) => Promise<void>;
   toggleLikedPost: (postId: string) => Promise<void>;
@@ -48,10 +48,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     }).catch(() => {});
   }, []);
 
-  async function save(p: Profile): Promise<boolean> {
-    setProfile(p);
+  async function save(p: Omit<Profile, 'savedPostIds' | 'likedPostIds'>): Promise<boolean> {
+    const next: Profile = { ...profile, ...p };
+    setProfile(next);
     try {
-      await AsyncStorage.setItem('profile', JSON.stringify(p));
+      await AsyncStorage.setItem('profile', JSON.stringify(next));
       return true;
     } catch {
       return false;

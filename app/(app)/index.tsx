@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../context/AuthContext';
 import { Colors } from '../../constants/colors';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
@@ -25,28 +26,47 @@ function CompassIcon() {
 
 export default function SplashScreen() {
   const { user, isLoading } = useAuth();
+  const [animDone, setAnimDone] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const iconAnim = useRef(new Animated.Value(0)).current;
   const textAnim = useRef(new Animated.Value(0)).current;
   const subAnim  = useRef(new Animated.Value(0)).current;
 
+  // 온보딩 완료 플래그 읽기 (AsyncStorage key: 'onboarding_done')
+  useEffect(() => {
+    AsyncStorage.getItem('onboarding_done')
+      .then((val) => setOnboardingDone(val === 'true'))
+      .catch(() => setOnboardingDone(false));
+  }, []);
+
+  // 스플래시 애니메이션 실행 — 완료 시 animDone 마킹
   useEffect(() => {
     Animated.parallel([
       Animated.timing(iconAnim, { toValue: 1, duration: 900, delay: 0,    useNativeDriver: true }),
       Animated.timing(textAnim, { toValue: 1, duration: 700, delay: 700,  useNativeDriver: true }),
       Animated.timing(subAnim,  { toValue: 1, duration: 600, delay: 1200, useNativeDriver: true }),
       Animated.timing(fadeAnim, { toValue: 1, duration: 500, delay: 1600, useNativeDriver: true }),
-    ]).start();
+    ]).start(() => setAnimDone(true));
   }, []);
 
+  // 라우팅: auth 로딩 완료 + 애니메이션 완료 + 온보딩 플래그 확인 후 전환
+  // 분기 순서:
+  //   1) 로그인 상태 → /(tabs)/
+  //   2) 비로그인 + 온보딩 완료 → /(auth)/login
+  //   3) 비로그인 + 온보딩 미완료 → /(app)/onboarding
   useEffect(() => {
-    if (isLoading) return;
-    const timer = setTimeout(() => {
-      router.replace(user ? '/(tabs)/' : '/(auth)/login');
-    }, 2600);
-    return () => clearTimeout(timer);
-  }, [isLoading, user]);
+    if (isLoading || !animDone || onboardingDone === null) return;
+
+    if (user) {
+      router.replace('/(tabs)/');
+    } else if (onboardingDone) {
+      router.replace('/(auth)/login');
+    } else {
+      router.replace('/(app)/onboarding');
+    }
+  }, [isLoading, animDone, onboardingDone, user]);
 
   return (
     <View style={styles.container}>

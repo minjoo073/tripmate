@@ -31,9 +31,6 @@ export async function findMates(filter: FindMateFilter): Promise<MatchResult[]> 
     if (filter.gender && filter.gender !== '무관') {
       const wanted = filter.gender === '여성' ? 'female' : 'male';
       result = result.filter((m) => m.user.gender === wanted);
-    } else if (!filter.anyGender && filter.gender) {
-      const wanted = filter.gender === '여성' ? 'female' : 'male';
-      result = result.filter((m) => m.user.gender === wanted);
     }
     if (filter.ageGroup && filter.ageGroup !== '무관') {
       result = result.filter((m) => ageBucket(m.user.age) === filter.ageGroup);

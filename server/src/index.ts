@@ -11,7 +11,10 @@ import { errorHandler } from './middleware/error.js';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? ['http://localhost:8081'],
+  credentials: true,
+}));
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/', (_req, res) => res.json({ name: 'tripmate-server', status: 'ok' }));

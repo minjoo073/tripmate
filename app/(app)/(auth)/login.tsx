@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../../constants/colors';
@@ -15,32 +15,28 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('알림', '이메일과 비밀번호를 입력해주세요.');
-      return;
+    let valid = true;
+    if (!email) {
+      setEmailError('이메일을 입력해주세요.');
+      valid = false;
     }
+    if (!password) {
+      setPasswordError('비밀번호를 입력해주세요.');
+      valid = false;
+    }
+    if (!valid) return;
+
     setLoading(true);
     try {
       const user = await login(email, password);
       await signIn(user);
       router.replace('/(tabs)/');
     } catch {
-      Alert.alert('로그인 실패', '이메일 또는 비밀번호를 확인해주세요.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSocialLogin = async (provider: string) => {
-    setLoading(true);
-    try {
-      const user = await login('social@tripmate.app', 'social');
-      await signIn(user);
-      router.replace('/(tabs)/');
-    } catch {
-      Alert.alert('오류', '소셜 로그인에 실패했어요.');
+      setPasswordError('이메일 또는 비밀번호를 확인해주세요.');
     } finally {
       setLoading(false);
     }
@@ -67,19 +63,21 @@ export default function LoginScreen() {
           <Input
             label="이메일"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(v) => { setEmail(v); setEmailError(''); }}
             placeholder="이메일 주소 입력"
             keyboardType="email-address"
             autoCapitalize="none"
             containerStyle={styles.field}
+            error={emailError}
           />
           <Input
             label="비밀번호"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(v) => { setPassword(v); setPasswordError(''); }}
             placeholder="비밀번호 입력"
             isPassword
             containerStyle={styles.field}
+            error={passwordError}
           />
           <Button label="로그인" onPress={handleLogin} loading={loading} style={styles.loginBtn} />
         </View>
@@ -91,19 +89,19 @@ export default function LoginScreen() {
           <View style={styles.dividerLine} />
         </View>
 
-        {/* Social */}
+        {/* Social — OAuth SDK 미연동으로 준비 중 상태 */}
         <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialBtn} onPress={() => handleSocialLogin('google')} activeOpacity={0.82}>
+          <TouchableOpacity style={[styles.socialBtn, styles.disabledBtn]} disabled activeOpacity={1}>
             <Text style={styles.socialBtnIcon}>G</Text>
-            <Text style={styles.socialBtnText}>Google로 계속하기</Text>
+            <Text style={styles.socialBtnText}>Google로 계속하기 (준비 중)</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialBtn} onPress={() => handleSocialLogin('apple')} activeOpacity={0.82}>
+          <TouchableOpacity style={[styles.socialBtn, styles.disabledBtn]} disabled activeOpacity={1}>
             <Text style={styles.socialBtnIcon}>⌘</Text>
-            <Text style={styles.socialBtnText}>Apple로 계속하기</Text>
+            <Text style={styles.socialBtnText}>Apple로 계속하기 (준비 중)</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.socialBtn, styles.kakaoBtn]} onPress={() => handleSocialLogin('kakao')} activeOpacity={0.82}>
+          <TouchableOpacity style={[styles.socialBtn, styles.kakaoBtn, styles.disabledBtn]} disabled activeOpacity={1}>
             <Text style={styles.kakaoIcon}>K</Text>
-            <Text style={[styles.socialBtnText, styles.kakaoText]}>카카오로 계속하기</Text>
+            <Text style={[styles.socialBtnText, styles.kakaoText]}>카카오로 계속하기 (준비 중)</Text>
           </TouchableOpacity>
         </View>
 
@@ -176,6 +174,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 1,
   },
+  disabledBtn: { opacity: 0.45 },
   socialBtnIcon: {
     fontSize: 14,
     fontWeight: '700',

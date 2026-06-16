@@ -124,7 +124,7 @@ export default function VerificationScreen() {
                 <Text style={[styles.trustBadgeText, { color: trustColor(trustPct) }]}>{trustLabel(trustPct)}</Text>
               </View>
               <Text style={styles.scoreDesc}>
-                {doneCount}/{items.length}개 항목 인증 완료
+                {doneCount}/{VERIFY_ITEMS.length}개 항목 인증 완료
               </Text>
             </View>
           </View>

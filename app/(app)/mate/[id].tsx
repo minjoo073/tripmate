@@ -203,7 +203,7 @@ export default function MateProfileScreen() {
                 key={review.id}
                 style={[
                   styles.reviewRow,
-                  idx < user.reviews.length - 1 && styles.reviewRowBorder,
+                  idx < user.reviews!.length - 1 && styles.reviewRowBorder,
                 ]}
               >
                 <View style={styles.reviewHeader}>

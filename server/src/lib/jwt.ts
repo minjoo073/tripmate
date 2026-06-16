@@ -1,6 +1,12 @@
 import jwt from 'jsonwebtoken';
 
-const SECRET = process.env.JWT_SECRET ?? 'dev-secret-change-me';
+const secret = process.env.JWT_SECRET;
+if (!secret) {
+  throw new Error(
+    '[tripmate] JWT_SECRET 환경변수가 설정되지 않았습니다. 서버를 시작하기 전에 .env 에 JWT_SECRET 을 설정해주세요.',
+  );
+}
+const SECRET = secret;
 const EXPIRES_IN = '30d';
 
 export interface TokenPayload {
