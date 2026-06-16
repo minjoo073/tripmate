@@ -1,0 +1,28 @@
+# Render Blueprint — deploys the TripMate backend (Express + Prisma + Postgres).
+# One-click: Render Dashboard → New → Blueprint → pick this repo.
+# Full runbook: docs/DEPLOY.md
+databases:
+  - name: tripmate-db
+    plan: free
+
+services:
+  - type: web
+    name: tripmate-api
+    runtime: node
+    plan: free
+    rootDir: server
+    # --include=dev keeps typescript/prisma/tsx available even with NODE_ENV=production
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npx prisma migrate deploy && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tripmate-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true   # Render generates a strong random secret
+      - key: ALLOWED_ORIGINS
+        sync: false           # set manually to your Vercel domain after deploy
+      - key: NODE_ENV
+        value: production
