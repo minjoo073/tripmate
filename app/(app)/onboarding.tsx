@@ -261,6 +261,9 @@ export default function OnboardingScreen() {
                 <Text style={styles.demoBtnText}>🧭  데모 버전으로 입장하기</Text>
               )}
             </TouchableOpacity>
+            {demoLoading && (
+              <Text style={styles.demoHint}>서버를 깨우는 중이에요. 처음엔 1분까지 걸릴 수 있어요.</Text>
+            )}
             {demoError !== '' && (
               <Text style={styles.demoError}>{demoError}</Text>
             )}
@@ -397,6 +400,12 @@ const styles = StyleSheet.create({
   },
   demoBtnDisabled: { opacity: 0.55 },
   demoBtnText: { fontSize: 14, color: 'rgba(255,255,255,0.65)', fontWeight: '500' },
+  demoHint: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.5)',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
   demoError: {
     fontSize: 12,
     color: 'rgba(255,255,255,0.55)',

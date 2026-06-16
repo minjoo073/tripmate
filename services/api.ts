@@ -6,7 +6,8 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.tripmate.app/v1
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 10000,
+  // 60s: 무료 호스팅(Render)은 비활성 시 서버가 잠들어 첫 요청이 최대 ~50초 걸린다.
+  timeout: 60000,
   headers: { 'Content-Type': 'application/json' },
 });
 
