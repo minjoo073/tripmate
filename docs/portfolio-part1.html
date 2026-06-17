@@ -4,16 +4,17 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TripMate — Portfolio Part 1</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
   --navy:     #3B5178;
   --navy2:    #2A3B5C;
-  --accent:   #C4875A;
-  --accentL:  #F5EDE4;
-  --gold:     #E8C882;
+  --accent:   #C98B96;
+  --accentL:  #F4E6E9;
+  --gold:     #C6A56A;
+  --dustBlue: #6B8CAD;
   --bg:       #F5F8FC;
   --bgDeep:   #EBF0F6;
   --card:     #FFFFFF;
@@ -39,7 +40,7 @@ body {
 /* ── LAYOUT ── */
 .page { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
 section { padding: 96px 0; }
-section + section { border-top: 1px solid var(--border); }
+section + section { border-top: none; }
 
 /* ── NAV ── */
 nav {
@@ -146,49 +147,112 @@ nav {
 /* ── 01 기획 배경 ── */
 #background { background: var(--card); }
 
+#background .sec-title { font-size: 32px; letter-spacing: -0.6px; }
+
 .problem-grid {
   display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 20px; margin-top: 48px;
+  gap: 22px; margin-top: 48px;
 }
 .problem-card {
-  background: var(--bg);
+  position: relative;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 28px 24px;
+  padding: 30px 26px 26px;
   display: flex; flex-direction: column; gap: 14px;
-  transition: box-shadow .2s;
+  min-height: 280px;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
-.problem-card:hover { box-shadow: 0 8px 32px rgba(28,43,58,0.1); }
+.problem-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 14px 32px rgba(28,43,58,0.09);
+}
+.problem-no {
+  font-size: 28px; font-weight: 800; color: var(--accent);
+  line-height: 1; letter-spacing: -1px;
+}
 .problem-num {
-  font-size: 10px; font-weight: 700; color: var(--accent);
-  letter-spacing: 2px;
+  font-size: 9.5px; font-weight: 800; color: var(--accent);
+  letter-spacing: 2.2px; text-transform: uppercase;
 }
 .problem-icon { display: flex; align-items: center; }
-.problem-title { font-size: 16px; font-weight: 700; color: var(--t1); letter-spacing: -0.3px; }
-.problem-desc { font-size: 13px; color: var(--t2); line-height: 1.7; }
+.problem-title { font-size: 19px; font-weight: 800; color: var(--t1); letter-spacing: -0.3px; line-height: 1.35; }
+.problem-desc { font-size: 13.5px; color: var(--t2); line-height: 1.75; word-break: keep-all; }
 .problem-quote {
   margin-top: auto;
-  padding: 12px 14px;
+  padding: 14px 16px 14px 36px;
   background: var(--accentL);
   border-radius: 10px;
   border-left: 3px solid var(--accent);
-  font-size: 12px; color: var(--accent); font-style: italic; line-height: 1.6;
+  font-size: 12.5px; color: var(--navy); font-style: italic; line-height: 1.65;
+  position: relative;
+  word-break: keep-all;
+}
+.problem-quote::before {
+  content: '\201C';
+  position: absolute;
+  top: 4px; left: 12px;
+  font-family: 'Cormorant Garamond','Georgia',serif;
+  font-size: 28px;
+  color: var(--accent);
+  line-height: 1;
 }
 
+/* Solution banner */
 .solution-banner {
   margin-top: 48px;
   background: var(--navy);
   border-radius: 20px;
-  padding: 36px 40px;
-  display: flex; align-items: center; gap: 40px;
+  padding: 40px 44px;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
+  align-items: center;
+  box-shadow: 0 14px 36px rgba(20,34,77,0.28);
 }
-.sol-left { flex: 1; }
-.sol-label { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.35); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-.sol-title { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.4px; line-height: 1.3; }
-.sol-right { display: flex; gap: 24px; }
-.sol-stat { text-align: center; }
-.sol-stat-val { font-size: 28px; font-weight: 700; color: var(--gold); letter-spacing: -0.5px; }
-.sol-stat-lbl { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 3px; }
+.sol-left { display: flex; flex-direction: column; gap: 16px; }
+.sol-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 10px; font-weight: 800; color: var(--gold);
+  letter-spacing: 2.5px; text-transform: uppercase;
+  background: rgba(198,165,106,0.18);
+  border: 1px solid rgba(198,165,106,0.32);
+  padding: 6px 12px; border-radius: 999px;
+  width: fit-content;
+}
+.sol-title {
+  font-size: 22px; font-weight: 700; color: #fff;
+  letter-spacing: -0.4px; line-height: 1.5;
+}
+.sol-title strong { color: var(--gold); font-weight: 800; }
+
+.sol-formula {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.sol-stat {
+  padding: 18px 14px 16px;
+  text-align: center;
+  background: rgba(198,165,106,0.08);
+  border: 1px solid rgba(198,165,106,0.22);
+  border-radius: 12px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.sol-stat-val {
+  font-size: 30px; font-weight: 800; color: var(--gold);
+  letter-spacing: -0.8px; line-height: 1.1;
+}
+.sol-stat-lbl {
+  font-size: 11px; color: rgba(255,255,255,0.65);
+  letter-spacing: 0.2px; font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .problem-grid { grid-template-columns: 1fr; }
+  .solution-banner { grid-template-columns: 1fr; }
+}
 
 /* ── 02 시장조사 ── */
 #market { background: var(--bg); }
@@ -221,9 +285,9 @@ nav {
 .compare-row:hover { background: var(--bg); }
 .compare-label { font-size: 12px; font-weight: 600; color: var(--t1); }
 .compare-bad { font-size: 11px; color: var(--t3); display: flex; align-items: center; gap: 5px; }
-.compare-bad::before { content: '✗'; color: var(--red); font-weight: 700; }
+.compare-bad::before { content: ''; color: var(--red); font-weight: 700; }
 .compare-good { font-size: 11px; color: var(--accent); display: flex; align-items: center; gap: 5px; font-weight: 600; }
-.compare-good::before { content: '✓'; color: var(--green); font-weight: 700; }
+.compare-good::before { content: ''; color: var(--green); font-weight: 700; }
 
 .market-stats { display: flex; flex-direction: column; gap: 14px; }
 .market-stat-card {
@@ -324,70 +388,6 @@ nav {
 .goal-header::before { content: ''; width: 5px; height: 5px; border-radius: 3px; background: var(--navy); }
 .goal-text { font-size: 12px; color: var(--t2); line-height: 1.6; }
 
-/* ── 04 유저 저니 ── */
-#journey { background: var(--bg); }
-
-.journey-wrap { margin-top: 48px; position: relative; }
-
-/* connector line */
-.journey-line {
-  position: absolute;
-  top: 38px; left: calc(16.66% - 1px);
-  width: calc(100% - 16.66% * 2 + 2px);
-  height: 2px;
-  background: linear-gradient(90deg, var(--navy) 0%, var(--accent) 100%);
-  opacity: 0.2;
-}
-
-.journey-steps {
-  display: grid; grid-template-columns: repeat(6, 1fr);
-  gap: 0;
-  position: relative;
-}
-.journey-step { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 0 8px; }
-
-.journey-dot {
-  width: 38px; height: 38px; border-radius: 19px;
-  background: var(--card);
-  border: 2px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; color: var(--t3);
-  position: relative; z-index: 1;
-  transition: all .2s;
-}
-.journey-step.active .journey-dot {
-  background: var(--navy);
-  border-color: var(--navy);
-  box-shadow: 0 0 0 6px rgba(59,81,120,0.12);
-  color: #fff;
-}
-.journey-step-label { font-size: 12px; font-weight: 700; color: var(--t1); text-align: center; }
-.journey-step-emotion { font-size: 11px; color: var(--t3); text-align: center; line-height: 1.4; }
-
-.journey-details {
-  display: grid; grid-template-columns: repeat(6, 1fr);
-  gap: 12px; margin-top: 28px;
-}
-.journey-detail-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px 12px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.jd-action-label { font-size: 8px; font-weight: 700; color: var(--t3); letter-spacing: 1.5px; text-transform: uppercase; }
-.jd-action { font-size: 11px; color: var(--t1); line-height: 1.5; }
-.jd-touch { font-size: 9px; color: var(--accent); font-weight: 600; padding: 3px 7px; background: var(--accentL); border-radius: 5px; align-self: flex-start; }
-
-/* emotion curve bar */
-.emotion-bar {
-  display: grid; grid-template-columns: repeat(6, 1fr);
-  gap: 12px; margin-top: 12px;
-}
-.emotion-cell { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.emotion-emoji { font-size: 18px; }
-.emotion-label { font-size: 9px; color: var(--t3); text-align: center; }
-
 /* ── FOOTER NAV ── */
 .part-nav {
   background: var(--dark);
@@ -411,24 +411,528 @@ nav {
   padding: 14px 32px; border-radius: 12px;
   text-decoration: none;
   letter-spacing: -0.2px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
+.part-nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(232,200,130,0.32);
+}
+
+/* ════════════ PART 2 STYLES (merged) ════════════ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#3B5178;--navy2:#2A3B5C;--accent:#C98B96;--accentL:#F4E6E9;
+  --gold:#C6A56A;--dustBlue:#6B8CAD;--bg:#F5F8FC;--bgDeep:#EBF0F6;--card:#FFFFFF;
+  --border:#DDE4EE;--t1:#1C2B3A;--t2:#5B6E82;--t3:#8EA0B5;
+  --dark:#1E222A;--olive:#6E7D62;--green:#5B9E6E;--red:#C05050;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);-webkit-font-smoothing:antialiased}
+
+.page{max-width:1100px;margin:0 auto;padding:0 40px}
+section{padding:88px 0}
+section+section{border-top:none}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:rgba(245,248,252,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+.nav-logo{font-size:13px;font-weight:800;letter-spacing:2px;color:var(--navy)}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:12px;color:var(--t3);text-decoration:none;font-weight:500}
+.nav-links a:hover{color:var(--navy)}
+.nav-part{font-size:10px;font-weight:700;color:var(--accent);letter-spacing:1.5px}
+
+/* SECTION HEADER */
+.sec-eyebrow{font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.sec-title{font-size:clamp(24px,3vw,34px);font-weight:300;letter-spacing:-0.8px;color:var(--t1);line-height:1.2;margin-bottom:14px}
+.sec-title strong{font-weight:700}
+.sec-desc{font-size:14px;color:var(--t2);line-height:1.8;max-width:560px}
+
+/* ── 05 FEATURE MAP ── */
+#features{background:var(--bgDeep)}
+#features .sec-title{font-size:32px;letter-spacing:-0.6px}
+.must-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.must-card{position:relative;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px 26px 26px;display:flex;flex-direction:column;gap:14px;min-height:210px;transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease}
+.must-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(28,43,58,0.09);border-color:var(--accent)}
+.must-card.prime{background:var(--navy);border-color:var(--navy);box-shadow:0 12px 28px rgba(20,34,77,0.18)}
+.must-card.prime:hover{transform:translateY(-3px);box-shadow:0 18px 38px rgba(20,34,77,0.28);border-color:var(--gold)}
+.must-no{font-size:28px;font-weight:800;color:var(--accent);line-height:1;letter-spacing:-1px}
+.must-card.prime .must-no{color:var(--gold)}
+.must-num{font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--t3);text-transform:uppercase}
+.must-num.light{color:rgba(255,255,255,0.5)}
+.must-icon{font-size:22px;display:flex;align-items:center}
+.must-title{font-size:19px;font-weight:800;color:var(--t1);letter-spacing:-0.3px;line-height:1.35}
+.must-title.light{color:#fff}
+.must-desc{font-size:13px;color:var(--t2);line-height:1.7}
+.must-desc.light{color:rgba(255,255,255,0.65)}
+.must-badge{display:inline-flex;align-items:center;padding:5px 11px;border-radius:7px;font-size:10px;font-weight:800;letter-spacing:1px;align-self:flex-start;margin-top:auto}
+.badge-must{background:rgba(198,165,106,0.22);color:var(--gold);border:1px solid rgba(198,165,106,0.4)}
+.must-card:not(.prime) .badge-must{background:rgba(198,165,106,0.14);color:#8E6F30;border-color:rgba(198,165,106,0.32)}
+.badge-should{background:rgba(201,139,150,0.16);color:var(--accent);border:1px solid rgba(201,139,150,0.34)}
+.badge-could{background:var(--bgDeep);color:var(--t3)}
+
+/* ── 06 AI ALGO ── */
+#algorithm{background:var(--dark)}
+#algorithm .sec-eyebrow{color:var(--gold)}
+#algorithm .sec-title{color:#fff}
+#algorithm .sec-desc{color:rgba(255,255,255,0.45)}
+
+.algo-wrap{margin-top:48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.algo-formula{display:flex;flex-direction:column;gap:14px}
+.algo-row{display:flex;align-items:center;gap:12px}
+.algo-bar-wrap{flex:1}
+.algo-bar-label{display:flex;justify-content:space-between;margin-bottom:6px}
+.algo-bar-name{font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)}
+.algo-bar-pct{font-size:12px;font-weight:700;color:var(--gold)}
+.algo-bar-bg{height:8px;background:#243550;border-radius:4px;overflow:hidden}
+.algo-bar-fill{height:100%;border-radius:4px}
+.algo-bar-desc{font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px}
+
+.algo-result{background:var(--navy2);border:1px solid var(--navy);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:20px}
+.algo-result-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase}
+.algo-candidate{display:flex;align-items:center;gap:14px;padding:14px;background:#1F2D40;border:1px solid var(--navy2);border-radius:12px}
+.algo-candidate:first-of-type{border-color:var(--gold)}
+.algo-avatar{width:40px;height:40px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.algo-cand-info{flex:1}
+.algo-cand-name{font-size:13px;font-weight:700;color:#fff}
+.algo-cand-dest{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px}
+.algo-pct{font-size:15px;font-weight:800;color:var(--gold)}
+.algo-mini-bars{display:flex;gap:4px;margin-top:5px}
+.algo-mini-bar{height:3px;border-radius:2px;flex:1}
+
+/* ── 07 DESIGN SYSTEM ── */
+#design{background:var(--bg)}
+.ds-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+.ds-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px}
+.ds-card-title{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:2px;text-transform:uppercase;margin-bottom:18px}
+
+/* colors */
+.color-row{display:flex;gap:10px;flex-wrap:wrap}
+.color-swatch{display:flex;flex-direction:column;align-items:center;gap:6px}
+.color-box{width:52px;height:52px;border-radius:12px;border:1px solid rgba(0,0,0,0.06)}
+.color-name{font-size:9px;color:var(--t3);font-weight:600;text-align:center}
+.color-hex{font-size:8px;color:var(--t3);font-family:monospace}
+
+/* typography */
+.type-row{display:flex;flex-direction:column;gap:14px}
+.type-item{display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:baseline;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.type-item:last-child{border-bottom:none;padding-bottom:0}
+.type-meta{font-size:10px;color:var(--t3);line-height:1.55;letter-spacing:0.2px}
+.type-sample{color:var(--t1);min-width:0;overflow-wrap:break-word}
+
+/* components */
+.comp-demo{display:flex;flex-direction:column;gap:12px}
+.demo-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.d-btn{padding:9px 18px;border-radius:10px;font-size:12px;font-weight:600;border:none}
+.d-btn.primary{background:var(--navy);color:#fff}
+.d-btn.accent{background:var(--accent);color:#fff}
+.d-btn.outline{background:transparent;border:1px solid var(--border);color:var(--t2)}
+.d-tag{padding:4px 10px;border-radius:7px;font-size:11px;font-weight:600}
+.d-tag.navy{background:rgba(59,81,120,0.1);color:var(--navy)}
+.d-tag.warm{background:var(--accentL);color:var(--accent)}
+.d-tag.olive{background:rgba(110,125,98,0.12);color:var(--olive)}
+.d-input{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:10px 14px;font-size:12px;color:var(--t3)}
+.d-avatar{width:36px;height:36px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+
+/* ── 08 WIREFRAMES ── */
+#wireframes{background:var(--card)}
+.wf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:44px}
+.wf-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.wf-label{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase}
+.wf-caption{font-size:11px;color:var(--t2);text-align:center;line-height:1.5}
+
+/* phone shell */
+.phone{width:200px;height:400px;background:var(--card);border-radius:30px;border:7px solid var(--t1);position:relative;overflow:hidden;box-shadow:0 16px 40px rgba(28,43,58,0.2),0 4px 10px rgba(28,43,58,0.1)}
+.phone::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:64px;height:18px;background:var(--t1);border-radius:0 0 12px 12px;z-index:100}
+.phone-screen{width:100%;height:100%;overflow:hidden;background:var(--bg);position:relative;font-size:0.7em}
+
+/* phone UI atoms */
+.ph-status{height:26px;display:flex;justify-content:space-between;align-items:center;padding:6px 14px 0;position:absolute;top:0;width:100%;z-index:20}
+.ph-time{font-size:8px;font-weight:700;color:var(--t1)}
+.ph-batt{width:13px;height:7px;border:1px solid var(--t1);border-radius:2px;opacity:.5;position:relative}
+.ph-batt::after{content:'';position:absolute;right:-3px;top:50%;transform:translateY(-50%);width:2px;height:4px;background:var(--t1);border-radius:1px}
+.ph-nav{position:absolute;bottom:0;left:0;right:0;height:36px;background:var(--card);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:0 4px 3px;z-index:50}
+.ph-nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.ph-nav-dot{width:14px;height:14px;border-radius:4px;background:var(--bgDeep)}
+.ph-nav-dot.on{background:var(--navy)}
+.ph-nav-txt{font-size:6px;color:var(--t3)}
+.ph-nav-txt.on{color:var(--navy);font-weight:700}
+
+/* ── SCREEN A: HOME ── */
+.s-home-wrap{padding-top:26px;padding-bottom:36px;height:100%;display:flex;flex-direction:column}
+.home-ivory{background:var(--bg);padding:8px 12px 28px}
+.home-appname{font-size:5.5px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:3px}
+.home-tagline{font-size:13px;font-weight:700;color:var(--t1);letter-spacing:-0.3px;margin-bottom:7px}
+.home-live{display:flex;align-items:center;gap:4px;margin-bottom:7px}
+.home-live-dot{width:5px;height:5px;border-radius:3px;background:#4CAF50}
+.home-live-txt{font-size:7px;color:var(--t2)}
+.home-live-txt b{color:var(--t1);font-weight:700}
+.home-search{display:flex;align-items:center;gap:5px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 9px;box-shadow:0 2px 6px rgba(28,43,58,0.06)}
+.home-search-txt{flex:1;font-size:7px;color:var(--t3)}
+.home-search-btn{background:var(--navy);border-radius:5px;padding:3px 7px;font-size:6px;color:#fff;font-weight:700}
+.home-navy{background:var(--navy);border-radius:14px 14px 0 0;margin-top:-12px;padding:14px 12px 16px;flex-shrink:0}
+.home-band-lbl{font-size:5.5px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:2px}
+.home-band-title{font-size:11px;font-weight:700;color:#fff;letter-spacing:-0.2px;margin-bottom:10px}
+.home-avatar{width:40px;height:40px;border-radius:20px;background:rgba(235,240,248,0.18);border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:rgba(235,240,248,0.8);margin:0 auto 6px}
+.home-feat-name{font-size:11px;font-weight:700;color:#fff;text-align:center;margin-bottom:2px}
+.home-feat-dest{font-size:7px;color:rgba(255,255,255,0.5);text-align:center;margin-bottom:6px}
+.home-feat-tags{display:flex;gap:4px;justify-content:center;margin-bottom:8px}
+.home-feat-tag{padding:2px 7px;border-radius:5px;font-size:6.5px;font-weight:500;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75)}
+.home-feat-tag.m{background:rgba(232,200,130,0.22);color:var(--gold);font-weight:700}
+.home-feat-cta{border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.1);border-radius:7px;padding:6px 0;font-size:7px;font-weight:600;color:#fff;text-align:center}
+.home-beige{background:#EDE8E0;border-radius:14px 14px 0 0;margin-top:-10px;padding:7px 12px 8px;flex:1}
+.home-drag{display:flex;justify-content:center;margin-bottom:8px}
+.home-drag-bar{width:22px;height:2.5px;border-radius:2px;background:rgba(92,82,72,0.2)}
+.home-beige-hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px}
+.home-beige-lbl{font-size:5.5px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px}
+.home-beige-title{font-size:9px;font-weight:600;color:var(--t1)}
+.home-more{font-size:6.5px;color:var(--t3)}
+.recruit-list{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.recruit-row{display:flex;align-items:center;padding:7px 8px 7px 0;gap:6px;border-bottom:1px solid var(--border)}
+.recruit-row:last-child{border-bottom:none}
+.r-bar{width:2px;height:18px;border-radius:1px;margin-left:7px;flex-shrink:0}
+.r-body{flex:1}
+.r-dest{font-size:8px;font-weight:700;color:var(--t1)}
+.r-meta{font-size:6px;color:var(--t2);margin-top:1px}
+.r-badge{border-radius:4px;padding:2px 5px;font-size:6px;font-weight:700;flex-shrink:0}
+
+/* ── SCREEN B: EXPLORE ── */
+.s-explore-wrap{padding-top:26px;height:100%;display:flex;flex-direction:column;background:var(--bg)}
+.exp-header{background:var(--card);border-bottom:1px solid var(--border);padding:6px 12px 10px;display:flex;align-items:flex-start;gap:7px;flex-shrink:0}
+.exp-back{width:20px;height:20px;border-radius:10px;background:var(--bgDeep);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:8px}
+.exp-back-arrow{width:6px;height:6px;border-left:1px solid var(--t2);border-bottom:1px solid var(--t2);transform:rotate(45deg)}
+.exp-header-lbl{font-size:5.5px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px}
+.exp-header-title{font-size:12px;font-weight:300;color:var(--t1);letter-spacing:-0.3px}
+.exp-body{overflow:hidden;flex:1;display:flex;flex-direction:column;padding-bottom:44px}
+.exp-sec{background:var(--card);padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+.exp-sec-title{font-size:9px;font-weight:500;color:var(--t1)}
+.exp-input{display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:6px 9px}
+.exp-pin{width:8px;height:10px;border-radius:2px 2px 0 0;background:var(--t3)}
+.exp-input-txt{font-size:7px;color:var(--t3)}
+.exp-chips{display:flex;gap:4px;flex-wrap:wrap}
+.exp-chip{padding:3px 7px;border-radius:999px;border:1px solid var(--border);background:var(--bg);font-size:6.5px;color:var(--t2)}
+.exp-chip.on{background:var(--accentL);border-color:var(--accent);color:var(--accent);font-weight:600}
+.exp-divider{height:5px;background:var(--bgDeep);flex-shrink:0}
+.exp-style-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.exp-style-cell{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 3px;border:1px solid var(--border);border-radius:7px;background:var(--bg)}
+.exp-style-cell.on{background:var(--accentL);border-color:var(--accent)}
+.exp-style-icon{width:10px;height:10px;border-radius:3px;background:var(--t3)}
+.exp-style-icon.on{background:var(--accent)}
+.exp-style-txt{font-size:5.5px;color:var(--t2)}
+.exp-style-txt.on{color:var(--accent);font-weight:600}
+.exp-bottom{position:absolute;bottom:36px;left:0;right:0;background:var(--card);padding:7px 12px;border-top:1px solid var(--border)}
+.exp-btn{background:var(--navy);border-radius:7px;height:26px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff}
+
+/* ── SCREEN C: MATCH LOADING ── */
+.s-loading{background:#1E222A;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:0;padding:0 16px}
+.loading-ring{width:52px;height:52px;border-radius:26px;border:1.5px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:16px}
+.loading-ring::after{content:'';position:absolute;top:-1.5px;left:-1.5px;right:-1.5px;bottom:-1.5px;border-radius:26px;border:1.5px solid transparent;border-top-color:var(--gold);border-right-color:var(--gold);animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-inner{width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:14px}
+.loading-label{font-size:6.5px;font-weight:700;color:rgba(255,255,255,0.25);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.loading-title{font-size:13px;font-weight:300;color:#fff;margin-bottom:3px;letter-spacing:-0.3px}
+.loading-sub{font-size:7px;color:rgba(255,255,255,0.35);margin-bottom:20px}
+.loading-steps{width:100%;display:flex;flex-direction:column;gap:6px}
+.loading-step{display:flex;align-items:center;gap:7px;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:8px}
+.loading-step.done{border-color:rgba(198,165,106,0.3)}
+.l-dot{width:6px;height:6px;border-radius:3px;background:rgba(255,255,255,0.12);flex-shrink:0}
+.l-dot.done{background:var(--gold)}
+.l-dot.active{background:var(--gold);animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.l-txt{font-size:7.5px;color:rgba(255,255,255,0.4)}
+.l-txt.done{color:rgba(255,255,255,0.75)}
+.l-check{font-size:7px;color:var(--gold);font-weight:700}
+
+/* ── SCREEN D: MATCH RESULT ── */
+.s-result{background:var(--bg);height:100%;overflow:hidden}
+.result-header{background:var(--card);border-bottom:1px solid var(--border);padding:26px 12px 10px;display:flex;align-items:flex-start;gap:7px}
+.result-hdr-info{}
+.result-hdr-lbl{font-size:5.5px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px}
+.result-hdr-title{font-size:12px;font-weight:300;color:var(--t1);letter-spacing:-0.3px;margin-bottom:4px}
+.result-count-row{display:flex;align-items:center;gap:5px}
+.result-count-badge{background:var(--navy);color:#fff;font-size:6.5px;font-weight:700;padding:2px 6px;border-radius:4px}
+.result-count-txt{font-size:7px;color:var(--t2)}
+.match-card-ph{background:var(--card);border:1px solid var(--border);border-radius:9px;overflow:hidden;margin:8px 10px 0}
+.match-card-ph-hdr{background:var(--navy);padding:9px 10px;display:flex;align-items:center;gap:8px}
+.match-ph-avatar{width:28px;height:28px;border-radius:14px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.match-ph-info{flex:1}
+.match-ph-name{font-size:9px;font-weight:700;color:#fff}
+.match-ph-dest{font-size:7px;color:rgba(255,255,255,0.5);margin-top:1px}
+.match-ph-pct{font-size:10px;font-weight:800;color:var(--gold)}
+.match-card-ph-body{padding:8px 10px}
+.match-ph-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.match-ph-tag{padding:2px 6px;border-radius:5px;font-size:6.5px;background:var(--bgDeep);color:var(--t2)}
+.match-ph-tag.a{background:var(--accentL);color:var(--accent);font-weight:600}
+.match-ph-tag.o{background:rgba(110,125,98,0.12);color:var(--olive)}
+.match-ph-desc{font-size:6.5px;color:var(--t2);line-height:1.5;margin-bottom:7px}
+.match-ph-actions{display:flex;gap:5px}
+.match-ph-pass{flex:1;padding:5px 0;border-radius:6px;border:1px solid var(--border);background:var(--bg);font-size:7px;color:var(--t2);text-align:center}
+.match-ph-apply{flex:2;padding:5px 0;border-radius:6px;background:var(--navy);font-size:7px;font-weight:700;color:#fff;text-align:center}
+
+/* ── SCREEN E: CHAT ── */
+.s-chat{background:var(--bg);height:100%;overflow:hidden}
+.chat-hdr{background:var(--card);border-bottom:1px solid var(--border);padding:26px 13px 0}
+.chat-hdr-top{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:8px}
+.chat-hdr-lbl{font-size:5.5px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px}
+.chat-title-row{display:flex;align-items:center;gap:5px}
+.chat-title{font-size:12px;font-weight:300;color:var(--t1);letter-spacing:-0.3px}
+.chat-badge{background:var(--accent);border-radius:999px;min-width:13px;height:13px;display:flex;align-items:center;justify-content:center;padding:0 3px;font-size:6.5px;font-weight:700;color:#fff}
+.chat-pending{display:flex;align-items:center;gap:4px;background:var(--accentL);border-radius:5px;padding:5px 8px;margin-bottom:7px}
+.chat-pending-dot{width:4px;height:4px;border-radius:2px;background:var(--accent)}
+.chat-pending-txt{font-size:7px;color:var(--t2)}
+.chat-pending-txt b{color:var(--accent);font-weight:700}
+.chat-tabs{display:flex;gap:0}
+.chat-tab{padding:7px 0;margin-right:12px;border-bottom:1px solid transparent;font-size:7.5px;color:var(--t3)}
+.chat-tab.on{border-bottom-color:var(--t1);color:var(--t1);font-weight:600}
+.chat-list-ph{}
+.chat-item-ph{display:flex;align-items:center;gap:8px;padding:9px 13px;border-bottom:1px solid var(--border);background:var(--card)}
+.chat-item-avatar{width:28px;height:28px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.chat-item-info{flex:1;min-width:0}
+.chat-item-name{font-size:8.5px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:4px}
+.chat-item-preview{font-size:7px;color:var(--t3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.chat-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.chat-item-time{font-size:6.5px;color:var(--t3)}
+.chat-item-unread{min-width:12px;height:12px;border-radius:6px;background:var(--accent);font-size:6.5px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 3px}
+.chat-status{font-size:6px;font-weight:600;padding:1.5px 5px;border-radius:3px}
+.chat-status.a{background:rgba(91,158,110,0.12);color:var(--green)}
+.chat-status.p{background:rgba(196,135,90,0.12);color:var(--accent)}
+
+/* ── SCREEN F: COMMUNITY ── */
+.s-comm{background:var(--bg);height:100%;overflow:hidden}
+.comm-hdr{background:var(--bg);padding:26px 13px 10px;display:flex;justify-content:space-between;align-items:flex-end}
+.comm-hdr-lbl{font-size:5.5px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:2px}
+.comm-hdr-title{font-size:12px;font-weight:300;color:var(--t1);letter-spacing:-0.3px}
+.comm-write{padding:4px 8px;border-radius:999px;border:1px solid var(--border);background:var(--card);font-size:6.5px;color:var(--t2)}
+.comm-ep-label{font-size:6px;font-weight:700;color:var(--t3);letter-spacing:2px;text-transform:uppercase;padding:0 13px;margin-bottom:6px}
+.comm-ep-scroll{display:flex;gap:8px;padding:0 13px 10px;overflow:hidden}
+.comm-ep-card{width:120px;border-radius:12px;background:var(--navy);padding:11px;flex-shrink:0;display:flex;flex-direction:column;gap:3px}
+.comm-ep-tag{background:rgba(255,255,255,0.1);border-radius:3px;padding:1.5px 5px;font-size:5.5px;color:rgba(255,255,255,0.7);font-weight:700;align-self:flex-start;margin-bottom:1px}
+.comm-ep-city{font-size:6px;color:rgba(255,255,255,0.35);font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.comm-ep-title{font-size:7.5px;font-weight:500;color:#fff;line-height:1.4}
+.comm-ep-footer{display:flex;justify-content:space-between;margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,255,255,0.1)}
+.comm-ep-author{font-size:6px;color:rgba(255,255,255,0.35)}
+.comm-ep-like{font-size:6px;color:rgba(255,255,255,0.25)}
+.comm-city-filter{display:flex;gap:4px;padding:0 13px 8px;overflow:hidden}
+.comm-city-tag{padding:3px 7px;border-radius:999px;border:1px solid var(--border);background:var(--card);font-size:7px;color:var(--t2);flex-shrink:0}
+.comm-city-tag.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.comm-cat-tabs{display:flex;padding:0 13px;border-bottom:1px solid var(--border)}
+.comm-cat-tab{padding:6px 0;margin-right:10px;border-bottom:1px solid transparent;font-size:7.5px;color:var(--t3)}
+.comm-cat-tab.on{border-bottom-color:var(--t1);color:var(--t1);font-weight:600}
+.comm-post{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px;margin:7px 13px 0}
+.comm-post-top{display:flex;align-items:center;gap:5px;margin-bottom:5px}
+.comm-post-avatar{width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
+.comm-post-author{font-size:7px;font-weight:600;color:var(--t1)}
+.comm-post-date{font-size:6.5px;color:var(--t3)}
+.comm-post-title{font-size:8px;font-weight:700;color:var(--t1);margin-bottom:3px;letter-spacing:-0.1px}
+.comm-post-preview{font-size:6.5px;color:var(--t2);line-height:1.5;margin-bottom:5px}
+.comm-post-footer{display:flex;justify-content:space-between;align-items:center}
+.comm-post-tags{display:flex;gap:3px}
+.comm-post-tag{padding:1.5px 5px;border-radius:4px;font-size:6px;background:var(--accentL);color:var(--accent);font-weight:600}
+.comm-post-like{font-size:6.5px;color:var(--t3)}
+
+/* ── SCREEN G: MATE PROFILE ── */
+.s-mate{background:var(--bg);height:100%;overflow:hidden}
+.mate-hero-ph{background:var(--navy);padding:26px 13px 14px}
+.mate-hero-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.mate-back{width:20px;height:20px;border-radius:10px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center}
+.mate-back-arrow{width:6px;height:6px;border-left:1px solid rgba(255,255,255,0.6);border-bottom:1px solid rgba(255,255,255,0.6);transform:rotate(45deg)}
+.mate-verified{background:rgba(110,125,98,0.3);border-radius:5px;padding:2px 6px;font-size:6px;font-weight:700;color:#B4D9A0}
+.mate-avatar-ph{width:44px;height:44px;border-radius:22px;background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:rgba(235,240,248,0.8);margin:0 auto 7px}
+.mate-nick{font-size:12px;font-weight:700;color:#fff;text-align:center;margin-bottom:2px}
+.mate-meta-ph{font-size:7px;color:rgba(255,255,255,0.45);text-align:center;margin-bottom:7px}
+.mate-tags-ph{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:10px}
+.mate-tag-ph{padding:2px 7px;border-radius:5px;font-size:6.5px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.75)}
+.mate-stats-ph{display:flex;background:rgba(255,255,255,0.06);border-radius:9px}
+.mate-stat-ph{flex:1;text-align:center;padding:7px 4px;border-right:1px solid rgba(255,255,255,0.08)}
+.mate-stat-ph:last-child{border-right:none}
+.mate-stat-val-ph{font-size:10px;font-weight:700;color:#fff}
+.mate-stat-lbl-ph{font-size:6px;color:rgba(255,255,255,0.35);margin-top:1px}
+.mate-body-ph{padding:10px;display:flex;flex-direction:column;gap:7px}
+.mate-info-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px}
+.mate-info-lbl{font-size:6px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.mate-info-txt{font-size:7px;color:var(--t2);line-height:1.5}
+.mate-trip-row{display:flex;align-items:center;gap:7px}
+.mate-trip-icon{width:22px;height:22px;border-radius:6px;background:var(--accentL);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0}
+.mate-trip-dest{font-size:8.5px;font-weight:600;color:var(--t1)}
+.mate-trip-dates{font-size:6.5px;color:var(--t3);margin-top:1px}
+.mate-trip-nights{font-size:6px;font-weight:700;padding:2px 5px;border-radius:4px;background:var(--bgDeep);color:var(--t2)}
+.mate-cta-ph{position:absolute;bottom:36px;left:0;right:0;background:var(--card);padding:7px 10px;border-top:1px solid var(--border);display:flex;gap:5px}
+.mate-like-btn{width:28px;height:28px;border-radius:7px;background:var(--bgDeep);display:flex;align-items:center;justify-content:center;font-size:12px}
+.mate-chat-btn{flex:1;height:28px;border-radius:7px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff}
+
+/* ── SCREEN H: CONFIRMED ── */
+.s-confirmed{background:#1E222A;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 16px}
+.conf-circle{width:60px;height:60px;border-radius:30px;border:1.5px solid rgba(198,165,106,0.4);display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:12px}
+.conf-circle::after{content:'';position:absolute;top:-1.5px;left:-1.5px;right:-1.5px;bottom:-1.5px;border-radius:30px;border:1.5px solid transparent;border-top-color:var(--gold);border-right-color:var(--gold)}
+.conf-lbl{font-size:6.5px;font-weight:700;color:rgba(255,255,255,0.25);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.conf-title{font-size:14px;font-weight:300;color:#fff;margin-bottom:3px;letter-spacing:-0.3px}
+.conf-desc{font-size:7px;color:rgba(255,255,255,0.4);text-align:center;line-height:1.5;margin-bottom:14px}
+.conf-avatars{display:flex;align-items:center;margin-bottom:14px}
+.conf-av{width:34px;height:34px;border-radius:17px;border:1.5px solid rgba(198,165,106,0.4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:rgba(255,255,255,0.6)}
+.conf-av.a{background:rgba(235,240,248,0.1)}
+.conf-av.b{background:rgba(216,226,238,0.1)}
+.conf-plane{width:22px;height:22px;border-radius:11px;background:rgba(198,165,106,0.15);border:1px solid rgba(198,165,106,0.4);display:flex;align-items:center;justify-content:center;font-size:9px;margin:0 -5px;z-index:2}
+.conf-detail{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:10px;margin-bottom:12px}
+.conf-detail-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.conf-detail-row:last-child{border-bottom:none}
+.conf-detail-key{font-size:7px;color:rgba(255,255,255,0.3)}
+.conf-detail-val{font-size:7px;font-weight:600;color:rgba(255,255,255,0.75)}
+.conf-btns{width:100%;display:flex;flex-direction:column;gap:5px}
+.conf-btn-main{background:var(--gold);border-radius:8px;height:30px;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:var(--dark)}
+.conf-btn-sec{border:1px solid rgba(255,255,255,0.12);border-radius:8px;height:26px;display:flex;align-items:center;justify-content:center;font-size:7.5px;color:rgba(255,255,255,0.35)}
+
+/* ── 09 TECH STACK ── */
+#tech{background:var(--card)}
+#tech .sec-title{font-size:32px;letter-spacing:-0.6px}
+.tech-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"front front" "back ai";gap:20px;margin-top:48px}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 28px;display:flex;flex-direction:column;gap:22px;transition:border-color .2s ease, box-shadow .2s ease}
+.tech-card:hover{border-color:var(--accent);box-shadow:0 12px 28px rgba(28,43,58,0.06)}
+.tech-card.is-front{grid-area:front;background:var(--bgDeep);border-color:var(--border)}
+.tech-card.is-back{grid-area:back}
+.tech-card.is-back.is-built{background:var(--bgDeep)}
+.tech-card.is-ai{grid-area:ai;border-style:dashed}
+.tech-card-head{display:flex;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.tech-card-category{font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-0.3px}
+.tech-card-status{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:5px 11px;border-radius:999px}
+.tech-card-status.built{background:rgba(110,125,98,0.18);color:var(--olive);border:1px solid rgba(110,125,98,0.32)}
+.tech-card-status.planned{background:rgba(107,140,173,0.16);color:var(--dustBlue);border:1px solid rgba(107,140,173,0.32)}
+.tech-card-count{margin-left:auto;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:0.5px}
+.tech-stack-list{display:grid;grid-template-columns:1fr;gap:16px}
+.tech-card.is-front .tech-stack-list{grid-template-columns:1fr 1fr;gap:18px 24px}
+.tech-item{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:flex-start;padding-bottom:14px;border-bottom:1px dashed var(--border)}
+.tech-item:last-child{border-bottom:none;padding-bottom:0}
+.tech-card.is-front .tech-stack-list .tech-item:nth-last-child(2){border-bottom:none;padding-bottom:0}
+.tech-dot{width:8px;height:8px;border-radius:4px;background:var(--accent);margin-top:6px;flex-shrink:0}
+.tech-card.is-ai .tech-dot{background:var(--dustBlue)}
+.tech-name{font-family:'SF Mono', Menlo, Consolas, monospace;font-size:13.5px;font-weight:700;color:var(--t1);letter-spacing:-0.2px;line-height:1.4;margin-bottom:4px}
+.tech-note{font-size:12.5px;color:var(--t2);line-height:1.6}
+
+@media (max-width: 900px) {
+  .tech-grid{grid-template-columns:1fr;grid-template-areas:"front" "back" "ai"}
+  .tech-card.is-front .tech-stack-list{grid-template-columns:1fr}
+}
+
+
+/* ── STATE & DATA ARCHITECTURE ── */
+#architecture { background: var(--card); }
+#architecture .sec-title { font-size: 32px; letter-spacing: -0.6px; }
+
+/* Flow strip (top) */
+.arch-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 48px; position: relative; }
+.arch-flow-step { background: var(--bgDeep); border: 1px solid var(--border); border-radius: 14px; padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+.arch-flow-step::after { content: '→'; position: absolute; right: -16px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--accent); font-weight: 400; z-index: 1; }
+.arch-flow-step:last-child::after { content: none; }
+.arch-flow-tier { font-size: 18px; font-weight: 800; color: var(--accent); line-height: 1; letter-spacing: -0.3px; }
+.arch-flow-name { font-size: 14px; font-weight: 800; color: var(--t1); letter-spacing: -0.3px; }
+.arch-flow-desc { font-size: 11px; color: var(--t2); line-height: 1.55; }
+
+/* Detail cards */
+.arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+.arch-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 28px 26px; display: flex; flex-direction: column; gap: 20px; transition: border-color .2s ease, box-shadow .2s ease; }
+.arch-card:hover { border-color: var(--accent); box-shadow: 0 12px 28px rgba(28,43,58,0.06); }
+.arch-card-head { display: flex; align-items: baseline; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.arch-card-cat { font-size: 16px; font-weight: 800; color: var(--t1); letter-spacing: -0.3px; }
+.arch-card-count { font-size: 11px; font-weight: 700; color: var(--accent); padding: 3px 9px; background: var(--accentL); border-radius: 999px; letter-spacing: 0.5px; }
+.arch-card-list { display: flex; flex-direction: column; gap: 14px; }
+.arch-item { display: grid; grid-template-columns: 190px 1fr; gap: 20px; align-items: baseline; padding-bottom: 14px; border-bottom: 1px dashed var(--border); }
+.arch-item:last-child { border-bottom: none; padding-bottom: 0; }
+.arch-name { font-size: 13.5px; font-weight: 700; color: var(--t1); letter-spacing: -0.2px; font-family: 'SF Mono', Menlo, Consolas, monospace; min-width: 0; overflow-wrap: anywhere; }
+.arch-note { font-size: 12.5px; color: var(--t2); line-height: 1.7; min-width: 0; }
+.arch-dot { display: none; }
+.arch-callout { margin-top: 20px; padding: 18px 22px; background: var(--navy); border-radius: 14px; color: #fff; grid-column: 1 / -1; display: flex; align-items: center; gap: 18px; }
+.arch-callout-label { font-size: 10px; font-weight: 800; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; flex-shrink: 0; padding: 6px 12px; background: rgba(198,165,106,0.18); border-radius: 999px; }
+.arch-callout-text { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.65; }
+
+@media (max-width: 900px) {
+  .arch-flow { grid-template-columns: 1fr 1fr; }
+  .arch-flow-step::after { content: none; }
+  .arch-grid { grid-template-columns: 1fr; }
+  .arch-item { grid-template-columns: 1fr; gap: 4px; }
+  .arch-callout { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── TRAVEL PERSONALITY ── */
+#personality { background: var(--bgDeep); }
+#personality .sec-title { font-size: 32px; letter-spacing: -0.6px; }
+.pers-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 48px; }
+.pers-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px 22px 24px; display: flex; flex-direction: column; gap: 16px; transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; min-height: 170px; }
+.pers-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 10px 24px rgba(28,43,58,0.07); }
+.pers-card-head { display: flex; flex-direction: column; gap: 6px; }
+.pers-key { font-size: 9.5px; font-weight: 800; color: var(--accent); letter-spacing: 2.2px; text-transform: uppercase; }
+.pers-title { font-size: 16px; font-weight: 800; color: var(--t1); letter-spacing: -0.3px; line-height: 1.3; }
+.pers-bar { position: relative; height: 4px; background: var(--bgDeep); border-radius: 2px; margin-top: auto; }
+.pers-bar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--navy) 0%, var(--accent) 100%); border-radius: 2px; opacity: 0.45; }
+.pers-bar::after { content: ''; position: absolute; left: 0; right: 0; top: -3px; height: 10px; }
+.pers-dot-l, .pers-dot-r { position: absolute; top: -3px; width: 10px; height: 10px; border-radius: 5px; }
+.pers-dot-l { left: 0; background: var(--navy); }
+.pers-dot-r { right: 0; background: var(--accent); }
+.pers-axis { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; line-height: 1.4; }
+.pers-axis span { display: block; max-width: 50%; }
+.pers-axis span:first-child { color: var(--navy); font-weight: 700; text-align: left; }
+.pers-axis span:last-child { color: var(--accent); font-weight: 700; text-align: right; }
+
+/* "Why 7 dimensions" card — same grid slot */
+.pers-card.is-note { background: var(--navy); border-color: var(--navy); justify-content: center; gap: 12px; }
+.pers-card.is-note:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 14px 30px rgba(20,34,77,0.25); }
+.pers-card.is-note .pers-note-lbl { font-size: 9.5px; font-weight: 800; color: var(--gold); letter-spacing: 2.2px; text-transform: uppercase; }
+.pers-card.is-note .pers-note-title { font-size: 16px; font-weight: 800; color: #fff; letter-spacing: -0.3px; line-height: 1.35; }
+.pers-card.is-note .pers-note-txt { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.7; }
+
+@media (max-width: 900px) {
+  .pers-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* FOOTER */
+/* =========================================================
+   DYNAMIC LAYER — scroll progress · reveal · count-up · bars
+   ========================================================= */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  z-index: 1000;
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.95s cubic-bezier(0.22,1,0.36,1), transform 0.95s cubic-bezier(0.22,1,0.36,1); will-change: opacity, transform; }
+.reveal.is-in { opacity: 1; transform: translateY(0); }
+
+.reveal-stagger > * { opacity: 0; transform: translateY(28px); transition: opacity 1.15s cubic-bezier(0.22,1,0.36,1), transform 1.15s cubic-bezier(0.22,1,0.36,1); }
+.reveal-stagger.is-in > * { opacity: 1; transform: translateY(0); }
+.reveal-stagger.is-in > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger.is-in > *:nth-child(2) { transition-delay: 120ms; }
+.reveal-stagger.is-in > *:nth-child(3) { transition-delay: 240ms; }
+.reveal-stagger.is-in > *:nth-child(4) { transition-delay: 360ms; }
+.reveal-stagger.is-in > *:nth-child(5) { transition-delay: 480ms; }
+.reveal-stagger.is-in > *:nth-child(6) { transition-delay: 600ms; }
+.reveal-stagger.is-in > *:nth-child(7) { transition-delay: 720ms; }
+.reveal-stagger.is-in > *:nth-child(8) { transition-delay: 840ms; }
+
+/* Algorithm bars start at width:0; JS sets data-w on intersect */
+.algo-bar-fill { width: 0; transition: width 1.7s cubic-bezier(0.22,1,0.36,1); }
+
+/* Respect users who prefer no motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal-stagger > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .algo-bar-fill { transition: none !important; }
+  .scroll-progress { display: none; }
+}
+
+footer{background:var(--t1);padding:64px 40px 52px}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.footer-logo{font-size:12px;font-weight:800;letter-spacing:2.5px;color:#fff}
+.footer-tag{font-size:12px;color:rgba(255,255,255,0.45);letter-spacing:-0.2px}
+.footer-top{display:inline-block;margin-top:4px;font-size:10px;letter-spacing:1.2px;color:rgba(255,255,255,0.4);text-decoration:none;border:1px solid rgba(255,255,255,0.15);border-radius:999px;padding:6px 14px;transition:all .2s}
+.footer-top:hover{color:#fff;border-color:rgba(255,255,255,0.4)}
+.footer-meta{margin-top:10px;font-size:9px;letter-spacing:1.2px;color:rgba(255,255,255,0.22)}
+
 </style>
 </head>
 <body>
-
-<!-- NAV -->
-<nav>
-  <div class="nav-inner">
-    <div class="nav-logo">TRIPMATE</div>
-    <div class="nav-links">
-      <a href="#background">기획 배경</a>
-      <a href="#market">시장 조사</a>
-      <a href="#persona">페르소나</a>
-      <a href="#journey">유저 저니</a>
-    </div>
-    <div class="nav-part">PART 1 / 2</div>
-  </div>
-</nav>
 
 <!-- ════════════ HERO ════════════ -->
 <section class="hero" id="top">
@@ -474,31 +978,21 @@ nav {
 
     <div class="hero-right">
       <div class="hero-stat-card">
-        <div class="hero-stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div>
         <div class="hero-stat-text">
-          <div class="hero-stat-num">87% <span>매칭 정확도</span></div>
-          <div class="hero-stat-desc">일정(40%) + 스타일(40%) + 신뢰도(20%) 가중 평균</div>
+          <div class="hero-stat-num" data-count="25" data-suffix="+ "><span>구현 화면</span></div>
+          <div class="hero-stat-desc">Expo Router · Web 배포 (docs/)</div>
         </div>
       </div>
       <div class="hero-stat-card">
-        <div class="hero-stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         <div class="hero-stat-text">
-          <div class="hero-stat-num">10,000 <span>명</span></div>
-          <div class="hero-stat-desc">6개월 목표 DAU</div>
+          <div class="hero-stat-num">Full <span>Stack</span></div>
+          <div class="hero-stat-desc">Frontend + Express · Prisma · Postgres 백엔드 V1</div>
         </div>
       </div>
       <div class="hero-stat-card">
-        <div class="hero-stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
         <div class="hero-stat-text">
-          <div class="hero-stat-num">8 <span>개 핵심 화면</span></div>
-          <div class="hero-stat-desc">구현 완료 · Expo Web 배포</div>
-        </div>
-      </div>
-      <div class="hero-stat-card">
-        <div class="hero-stat-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-        <div class="hero-stat-text">
-          <div class="hero-stat-num">9,900 <span>원/월</span></div>
-          <div class="hero-stat-desc">프리미엄 구독 · 3가지 수익 모델</div>
+          <div class="hero-stat-num" data-count="7" data-suffix=" "><span>차원</span></div>
+          <div class="hero-stat-desc">여행 성향 진단 · 매칭 점수에 연결</div>
         </div>
       </div>
     </div>
@@ -510,55 +1004,33 @@ nav {
 <section id="background">
   <div class="page">
     <p class="sec-eyebrow">01 · Background</p>
-    <h2 class="sec-title">왜 <strong>TripMate</strong>를<br>기획했는가</h2>
-    <p class="sec-desc">
-      1인 가구 급증과 함께 솔로 여행 수요는 늘었지만, 동행을 찾는 방식은
-      여전히 10년 전 네이버 카페 수준에 머물러 있습니다.
-      세 가지 핵심 문제를 발견하고, AI 매칭으로 해결하고자 했습니다.
-    </p>
+    <h2 class="sec-title">왜 <strong>TripMate</strong>를 기획했는가</h2>
+    <p class="sec-desc">솔로 여행 수요는 빠르게 늘었지만, 동행을 구하는 방식은 여전히 카페 글쓰기·SNS 모집·지인 네트워크에 머물러 있습니다. 사용자 인터뷰에서 반복적으로 나온 세 가지 문제에서 출발했습니다.</p>
 
     <!-- 3 problem cards -->
-    <div class="problem-grid">
+    <div class="problem-grid reveal-stagger">
       <div class="problem-card">
-        <div class="problem-num">PROBLEM 01</div>
-        <div class="problem-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-        <div class="problem-title">동행 탐색의 비효율</div>
-        <div class="problem-desc">
-          커뮤니티 글쓰기, SNS 모집, 지인 네트워크에 의존하는 방식은
-          시간이 많이 걸리고 성공률이 낮습니다. 원하는 조건의 동행을
-          직접 필터링할 수 있는 도구가 없었습니다.
-        </div>
-        <div class="problem-quote">
-          "카페에 글 올려도 연락이 없거나, 스타일이 너무 달라서 포기했어요."
-        </div>
+        <div class="problem-no">01</div>
+        <div class="problem-num">Problem · 탐색</div>
+        <div class="problem-title">동행 탐색의<br>비효율</div>
+        <div class="problem-desc">카페 글쓰기·SNS 모집·지인 추천에 의존하는 방식은 시간이 많이 걸리고 성공률이 낮습니다. 원하는 조건으로 직접 필터링할 도구가 없었습니다.</div>
+        <div class="problem-quote">카페에 글 올려도 연락이 없거나, 스타일이 너무 달라서 포기했어요.</div>
       </div>
 
       <div class="problem-card">
-        <div class="problem-num">PROBLEM 02</div>
-        <div class="problem-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <div class="problem-title">신뢰할 수 없는 동행자</div>
-        <div class="problem-desc">
-          온라인에서 만난 낯선 사람과 여행을 떠나는 것에 대한
-          불안감이 큽니다. 프로필 검증 방법이 없고, 사전에
-          성향을 파악할 수단도 부족합니다.
-        </div>
-        <div class="problem-quote">
-          "프로필 사진 한 장만 보고 연락하기엔 너무 무섭고 불안해요."
-        </div>
+        <div class="problem-no">02</div>
+        <div class="problem-num">Problem · 신뢰</div>
+        <div class="problem-title">신뢰할 수 없는<br>동행자</div>
+        <div class="problem-desc">온라인에서 만난 낯선 사람과 함께 여행하는 것에 대한 불안감이 큽니다. 프로필 검증 방법도, 성향을 미리 가늠할 수단도 부족합니다.</div>
+        <div class="problem-quote">프로필 사진 한 장만 보고 연락하기엔 너무 무섭고 불안해요.</div>
       </div>
 
       <div class="problem-card">
-        <div class="problem-num">PROBLEM 03</div>
-        <div class="problem-icon"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-        <div class="problem-title">여행 스타일 불일치</div>
-        <div class="problem-desc">
-          같은 목적지라도 빠른 관광 vs 느린 힐링, 아침형 vs 저녁형 등
-          여행 스타일 차이로 동행 갈등이 빈번하게 발생합니다.
-          사전에 스타일을 맞출 방법이 없었습니다.
-        </div>
-        <div class="problem-quote">
-          "일정표도 다르고 일어나는 시간도 달라서 결국 따로 다녔어요."
-        </div>
+        <div class="problem-no">03</div>
+        <div class="problem-num">Problem · 궁합</div>
+        <div class="problem-title">여행 스타일<br>불일치</div>
+        <div class="problem-desc">같은 목적지라도 빠른 관광 ↔ 느린 힐링, 아침형 ↔ 저녁형 등 스타일 차이로 동행 갈등이 자주 발생합니다. 사전에 스타일을 맞출 장치가 없었습니다.</div>
+        <div class="problem-quote">일정표도 다르고 일어나는 시간도 달라서 결국 따로 다녔어요.</div>
       </div>
     </div>
 
@@ -567,21 +1039,21 @@ nav {
       <div class="sol-left">
         <div class="sol-label">Our Solution</div>
         <div class="sol-title">
-          AI가 일정·스타일·신뢰도를 자동 분석해<br>
-          최적의 동행을 매칭률(%) 순으로 제시합니다
+          일정 · 스타일 · 신뢰도를 가중 평균해<br>
+          <strong>매칭률(%) 순으로 동행을 제안</strong>합니다
         </div>
       </div>
-      <div class="sol-right">
+      <div class="sol-formula">
         <div class="sol-stat">
-          <div class="sol-stat-val">40%</div>
+          <div class="sol-stat-val" data-count="40" data-suffix="%">0%</div>
           <div class="sol-stat-lbl">일정 겹침</div>
         </div>
         <div class="sol-stat">
-          <div class="sol-stat-val">40%</div>
+          <div class="sol-stat-val" data-count="40" data-suffix="%">0%</div>
           <div class="sol-stat-lbl">스타일 유사도</div>
         </div>
         <div class="sol-stat">
-          <div class="sol-stat-val">20%</div>
+          <div class="sol-stat-val" data-count="20" data-suffix="%">0%</div>
           <div class="sol-stat-lbl">신뢰도 점수</div>
         </div>
       </div>
@@ -596,15 +1068,12 @@ nav {
     <p class="sec-eyebrow">02 · Market Research</p>
     <h2 class="sec-title"><strong>시장 조사</strong>와<br>경쟁 서비스 분석</h2>
     <p class="sec-desc">
-      국내 해외여행 시장은 코로나 이후 빠르게 회복 중이며, 20~30대 솔로 여행 비중이
-      꾸준히 증가하고 있습니다. 기존 경쟁 서비스의 한계를 분석하고
-      TripMate만의 차별점을 도출했습니다.
+      20~30대 솔로 여행 수요는 빠르게 늘고 있지만, 동행을 구하는 방식은 여전히 카페·SNS 글쓰기 수준에 머물러 있습니다. 매칭 자동화와 신뢰 검증, 두 축에서 비어 있는 자리를 TripMate가 채웁니다.
     </p>
 
     <div class="market-top">
-      <!-- 비교표 -->
       <div>
-        <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:12px;letter-spacing:0.5px;">기존 방식 vs TripMate 비교</div>
+        <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:12px;letter-spacing:0.5px;">기존 방식 vs TripMate</div>
         <div class="compare-table">
           <div class="compare-head">
             <div class="compare-head-cell">구분</div>
@@ -613,78 +1082,37 @@ nav {
           </div>
           <div class="compare-row">
             <div class="compare-label">동행 탐색</div>
-            <div class="compare-bad">커뮤니티 글쓰기·검색</div>
-            <div class="compare-good">AI 자동 매칭 + 스마트 필터</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-label">신뢰도 검증</div>
-            <div class="compare-bad">불가능</div>
-            <div class="compare-good">소셜 인증 + 리뷰 시스템</div>
+            <div class="compare-bad">카페 글쓰기 · 검색</div>
+            <div class="compare-good">필터 + 매칭률 자동 정렬</div>
           </div>
           <div class="compare-row">
             <div class="compare-label">일정 매칭</div>
             <div class="compare-bad">수동 비교</div>
-            <div class="compare-good">자동 일정 겹침 분석</div>
+            <div class="compare-good">날짜 겹침 자동 계산</div>
           </div>
           <div class="compare-row">
             <div class="compare-label">스타일 매칭</div>
-            <div class="compare-bad">텍스트 기반 (주관적)</div>
-            <div class="compare-good">AI 스타일 벡터 분석</div>
+            <div class="compare-bad">텍스트 · 주관적</div>
+            <div class="compare-good">7차원 성향 + 스타일 태그</div>
           </div>
           <div class="compare-row">
-            <div class="compare-label">안전성</div>
-            <div class="compare-bad">미보장</div>
-            <div class="compare-good">신고/차단 + 인증 시스템</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-label">여행 커뮤니티</div>
-            <div class="compare-bad">산재된 외부 플랫폼</div>
-            <div class="compare-good">앱 내 Travel Journal</div>
+            <div class="compare-label">신뢰 검증</div>
+            <div class="compare-bad">사실상 없음</div>
+            <div class="compare-good">인증 배지 + 리뷰 + 신뢰도 점수</div>
           </div>
         </div>
       </div>
 
-      <!-- 시장 수치 -->
       <div class="market-stats">
         <div class="market-stat-card featured">
-          <div class="m-stat-label light">국내 해외여행 시장</div>
+          <div class="m-stat-label light">2024 출국자 수</div>
           <div class="m-stat-val light">2,600<span style="font-size:16px;font-weight:400;color:rgba(232,200,130,0.6);">만 명</span></div>
-          <div class="m-stat-desc light">2024년 출국자 수 (한국관광공사)</div>
+          <div class="m-stat-desc light">코로나 이전 회복 · 한국관광공사</div>
         </div>
         <div class="market-stat-card">
           <div class="m-stat-label">20~30대 솔로 여행 비중</div>
           <div class="m-stat-val">38<span style="font-size:16px;color:var(--t3);">%</span></div>
-          <div class="m-stat-desc">전체 여행 중 혼자 또는 동행 탐색 경험</div>
-        </div>
-        <div class="market-stat-card">
-          <div class="m-stat-label">주요 타겟 연령대</div>
-          <div class="m-stat-val" style="font-size:22px;">20~30<span style="font-size:16px;color:var(--t3);">대</span></div>
-          <div class="m-stat-desc">솔로 여행자 · 동행 희망 여행자</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 경쟁사 분석 -->
-    <div style="margin-top:32px;">
-      <div style="font-size:12px;font-weight:600;color:var(--t2);margin-bottom:12px;letter-spacing:0.5px;">경쟁 서비스 분석</div>
-      <div class="comp-grid">
-        <div class="comp-card">
-          <div class="comp-name">네이버 카페 (여행 커뮤니티)</div>
-          <div><span class="comp-tag red">낮은 효율</span></div>
-          <div class="comp-feature">📌 가장 많은 사용자 기반<br>📌 다양한 여행 정보 공유</div>
-          <div class="comp-weakness">⚠ 글쓰기·검색 방식<br>⚠ 검증 시스템 없음<br>⚠ 매칭 자동화 불가</div>
-        </div>
-        <div class="comp-card">
-          <div class="comp-name">에어비앤비 (같이살기)</div>
-          <div><span class="comp-tag yellow">부분 경쟁</span></div>
-          <div class="comp-feature">📌 숙박 공유 기반 네트워크<br>📌 글로벌 서비스</div>
-          <div class="comp-weakness">⚠ 여행 동행 특화 아님<br>⚠ 여행 스타일 매칭 없음<br>⚠ 국내 동행 수요 미충족</div>
-        </div>
-        <div class="comp-card" style="border-color: var(--accent); background: var(--accentL);">
-          <div class="comp-name" style="color:var(--navy);">TripMate ← 우리</div>
-          <div><span class="comp-tag green">차별화</span></div>
-          <div class="comp-feature" style="color:var(--navy);">✅ AI 기반 자동 매칭<br>✅ 여행 스타일 벡터 분석<br>✅ 소셜 인증 + 리뷰</div>
-          <div class="comp-weakness" style="color:var(--accent); border-color:rgba(196,135,90,0.3);">🎯 여행 동행 특화 플랫폼<br>🎯 인앱 커뮤니티 통합<br>🎯 일정 공유 카드</div>
+          <div class="m-stat-desc">동행 탐색 수요가 큰 핵심 세그먼트</div>
         </div>
       </div>
     </div>
@@ -718,10 +1146,10 @@ nav {
           <div class="p-row">
             <div class="p-label">여행 스타일</div>
             <div class="p-tags">
-              <span class="p-tag">☕ 카페 탐방</span>
-              <span class="p-tag">📸 사진 여행</span>
-              <span class="p-tag">🍜 맛집 탐방</span>
-              <span class="p-tag">🌿 힐링</span>
+              <span class="p-tag"> 카페 탐방</span>
+              <span class="p-tag"> 사진 여행</span>
+              <span class="p-tag"> 맛집 탐방</span>
+              <span class="p-tag"> 힐링</span>
             </div>
           </div>
           <div class="p-row">
@@ -760,10 +1188,10 @@ nav {
           <div class="p-row">
             <div class="p-label">여행 스타일</div>
             <div class="p-tags">
-              <span class="p-tag">🏪 현지 맛집</span>
-              <span class="p-tag">🗺️ 로컬 탐방</span>
-              <span class="p-tag">🎒 자유 여행</span>
-              <span class="p-tag">📷 사진</span>
+              <span class="p-tag"> 현지 맛집</span>
+              <span class="p-tag">️ 로컬 탐방</span>
+              <span class="p-tag"> 자유 여행</span>
+              <span class="p-tag"> 사진</span>
             </div>
           </div>
           <div class="p-row">
@@ -792,114 +1220,855 @@ nav {
   </div>
 </section>
 
-<!-- ════════════ 04 유저 저니 ════════════ -->
-<section id="journey">
+<!-- ════════ 05 핵심 기능 ════════ -->
+<section id="features">
   <div class="page">
-    <p class="sec-eyebrow">04 · User Journey</p>
-    <h2 class="sec-title">사용자 여정<br><strong>6단계 흐름</strong></h2>
-    <p class="sec-desc">
-      사용자가 앱을 처음 발견하는 순간부터 여행을 마치고 리뷰를 남기기까지,
-      각 단계의 행동과 감정 변화를 분석했습니다.
-    </p>
+    <p class="sec-eyebrow">05 · Feature Map</p>
+    <h2 class="sec-title"><strong>핵심 기능</strong> 6가지</h2>
+    <p class="sec-desc">MoSCoW 우선순위로 정리한 기능 맵입니다. 매칭 흐름의 척추가 되는 Must Have 4개를 먼저 출시하고, Should Have 2개로 커뮤니티·신뢰 레이어를 확장합니다.</p>
 
-    <div class="journey-wrap">
-      <div class="journey-line"></div>
-
-      <div class="journey-steps">
-        <div class="journey-step">
-          <div class="journey-dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
-          <div class="journey-step-label">인식</div>
-          <div class="journey-step-emotion">호기심<br>기대감</div>
-        </div>
-        <div class="journey-step active">
-          <div class="journey-dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg></div>
-          <div class="journey-step-label">가입</div>
-          <div class="journey-step-emotion">설레임<br>번거로움</div>
-        </div>
-        <div class="journey-step active">
-          <div class="journey-dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-          <div class="journey-step-label">탐색</div>
-          <div class="journey-step-emotion">흥미<br>비교 고민</div>
-        </div>
-        <div class="journey-step active">
-          <div class="journey-dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
-          <div class="journey-step-label">매칭</div>
-          <div class="journey-step-emotion">기대<br>설레임</div>
-        </div>
-        <div class="journey-step active">
-          <div class="journey-dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-          <div class="journey-step-label">확정</div>
-          <div class="journey-step-emotion">확신<br>기대</div>
-        </div>
-        <div class="journey-step">
-          <div class="journey-dot"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-          <div class="journey-step-label">여행 후</div>
-          <div class="journey-step-emotion">만족감<br>신뢰</div>
-        </div>
+    <div class="must-grid reveal-stagger">
+      <div class="must-card prime">
+        <div class="must-no">01</div>
+        <div class="must-num light">MUST HAVE</div>
+        <div class="must-title light">AI 동행 매칭</div>
+        <div class="must-desc light">일정 겹침 · 스타일 · 신뢰도를 가중 평균해 매칭률(%) 순위 제공. 서비스의 핵심 차별점.</div>
+        <div class="must-badge badge-must">MUST</div>
       </div>
-
-      <div class="journey-details">
-        <div class="journey-detail-card">
-          <div class="jd-action-label">행동</div>
-          <div class="jd-action">SNS·지인 추천으로 앱 발견</div>
-          <div class="jd-touch">광고 · 입소문</div>
-        </div>
-        <div class="journey-detail-card">
-          <div class="jd-action-label">행동</div>
-          <div class="jd-action">소셜 로그인 후 여행 스타일 프로필 작성</div>
-          <div class="jd-touch">온보딩 화면</div>
-        </div>
-        <div class="journey-detail-card">
-          <div class="jd-action-label">행동</div>
-          <div class="jd-action">여행 등록 후 AI 매칭 또는 직접 탐색</div>
-          <div class="jd-touch">탐색 · 매칭 화면</div>
-        </div>
-        <div class="journey-detail-card">
-          <div class="jd-action-label">행동</div>
-          <div class="jd-action">AI 매칭 결과 확인 및 채팅 시작</div>
-          <div class="jd-touch">매칭 결과 · 채팅</div>
-        </div>
-        <div class="journey-detail-card">
-          <div class="jd-action-label">행동</div>
-          <div class="jd-action">동행 확정 → 일정 공유 카드 교환</div>
-          <div class="jd-touch">동행 확정 화면</div>
-        </div>
-        <div class="journey-detail-card">
-          <div class="jd-action-label">행동</div>
-          <div class="jd-action">리뷰 작성 · 재방문 유도 알림</div>
-          <div class="jd-touch">리뷰 · 알림</div>
-        </div>
+      <div class="must-card prime">
+        <div class="must-no">02</div>
+        <div class="must-num light">MUST HAVE</div>
+        <div class="must-title light">여행 등록</div>
+        <div class="must-desc light">목적지 · 날짜 · 스타일 태그 입력, 동행 조건(성별·인증 여부) 설정. 매칭 모델의 인풋 데이터.</div>
+        <div class="must-badge badge-must">MUST</div>
       </div>
-
-      <div class="emotion-bar">
-        <div class="emotion-cell"><div class="emotion-emoji">😐</div><div class="emotion-label">궁금</div></div>
-        <div class="emotion-cell"><div class="emotion-emoji">😊</div><div class="emotion-label">설렘</div></div>
-        <div class="emotion-cell"><div class="emotion-emoji">🤔</div><div class="emotion-label">고민</div></div>
-        <div class="emotion-cell"><div class="emotion-emoji">😍</div><div class="emotion-label">기대</div></div>
-        <div class="emotion-cell"><div class="emotion-emoji">🥰</div><div class="emotion-label">확신</div></div>
-        <div class="emotion-cell"><div class="emotion-emoji">🌟</div><div class="emotion-label">만족</div></div>
+      <div class="must-card prime">
+        <div class="must-no">03</div>
+        <div class="must-num light">MUST HAVE</div>
+        <div class="must-title light">실시간 채팅</div>
+        <div class="must-desc light">1:1 채팅, 여행 일정 공유 카드, 동행 수락 / 거절, 동행 확정 화면까지 한 흐름.</div>
+        <div class="must-badge badge-must">MUST</div>
+      </div>
+      <div class="must-card">
+        <div class="must-no">04</div>
+        <div class="must-num">MUST HAVE</div>
+        <div class="must-title">메이트 탐색</div>
+        <div class="must-desc">여행지·날짜·스타일 필터 검색, 매칭률 기반 정렬, 프로필 상세 보기까지 4단계 탐색 플로우.</div>
+        <div class="must-badge badge-must">MUST</div>
+      </div>
+      <div class="must-card">
+        <div class="must-no">05</div>
+        <div class="must-num">SHOULD HAVE</div>
+        <div class="must-title">커뮤니티</div>
+        <div class="must-desc">동행 모집 게시글, 여행 기록(Travel Tips), 로컬 추천, 루트 아카이브. 매칭 외 체류 동기 부여.</div>
+        <div class="must-badge badge-should">SHOULD</div>
+      </div>
+      <div class="must-card">
+        <div class="must-no">06</div>
+        <div class="must-num">SHOULD HAVE</div>
+        <div class="must-title">리뷰 &amp; 인증</div>
+        <div class="must-desc">동행 완료 후 별점 · 태그 · 텍스트 리뷰. SNS 연동 인증 배지로 신뢰도 점수에 가중치를 더함.</div>
+        <div class="must-badge badge-should">SHOULD</div>
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- PART 2 안내 -->
-<div class="part-nav">
-  <div class="part-nav-inner">
-    <div class="part-nav-label">NEXT · PART 2 OF 2</div>
-    <div class="part-nav-title">핵심 기능 · AI 알고리즘 · 디자인 시스템 · 와이어프레임 · 수익 모델</div>
-    <div class="part-nav-chips">
-      <span class="part-nav-chip">05 핵심 기능 정의</span>
-      <span class="part-nav-chip">06 AI 매칭 알고리즘</span>
-      <span class="part-nav-chip">07 디자인 시스템</span>
-      <span class="part-nav-chip">08 와이어프레임</span>
-      <span class="part-nav-chip">09 기술 스택</span>
-      <span class="part-nav-chip">10 수익 모델 · KPI</span>
-    </div>
-    <a class="part-nav-btn" href="portfolio-part2.html">2부 보러 가기 →</a>
-  </div>
-</div>
+<!-- ════════ 06 AI 알고리즘 ════════ -->
+<section id="algorithm">
+  <div class="page">
+    <p class="sec-eyebrow">06 · Matching Model</p>
+    <h2 class="sec-title"><strong>매칭률</strong> 산출 모델</h2>
+    <p class="sec-desc">Express 백엔드(<code>server/src/lib/score.ts</code>)에 구현되어 동작 중입니다. 일정 겹침(40%) + 스타일 코사인 유사도(40%) + 신뢰도(20%)를 가중 평균해 0–100 점수를 계산하고, 상위 10명을 정렬해 반환합니다.</p>
 
+    <div class="algo-wrap">
+      <div class="algo-formula">
+        <div class="algo-row">
+          <div class="algo-bar-wrap">
+            <div class="algo-bar-label">
+              <span class="algo-bar-name"> 일정 겹침 분석</span>
+              <span class="algo-bar-pct">40%</span>
+            </div>
+            <div class="algo-bar-bg"><div class="algo-bar-fill" data-w="40%" style="background:linear-gradient(90deg,var(--gold),rgba(232,200,130,0.6))"></div></div>
+            <div class="algo-bar-desc">여행 날짜 overlap 계산 · 자동 일정 비교</div>
+          </div>
+        </div>
+        <div class="algo-row">
+          <div class="algo-bar-wrap">
+            <div class="algo-bar-label">
+              <span class="algo-bar-name"> 스타일 유사도</span>
+              <span class="algo-bar-pct">40%</span>
+            </div>
+            <div class="algo-bar-bg"><div class="algo-bar-fill" data-w="40%" style="background:linear-gradient(90deg,var(--accent),rgba(196,135,90,0.6))"></div></div>
+            <div class="algo-bar-desc">여행 스타일 태그 코사인 유사도 · 벡터 분석</div>
+          </div>
+        </div>
+        <div class="algo-row">
+          <div class="algo-bar-wrap">
+            <div class="algo-bar-label">
+              <span class="algo-bar-name">️ 신뢰도 점수</span>
+              <span class="algo-bar-pct">20%</span>
+            </div>
+            <div class="algo-bar-bg"><div class="algo-bar-fill" data-w="20%" style="background:linear-gradient(90deg,var(--olive),rgba(110,125,98,0.6))"></div></div>
+            <div class="algo-bar-desc">인증 여부 + 리뷰 평점 + 활동 이력</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;background:var(--navy2);border:1px solid var(--navy);border-radius:12px;padding:16px 20px;">
+          <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:2px;margin-bottom:8px;">FORMULA</div>
+          <div style="font-size:14px;font-weight:300;color:rgba(255,255,255,0.75);letter-spacing:-0.2px;line-height:1.8;">
+            매칭률 = <span style="color:var(--gold);font-weight:700;">일정(0.4)</span> +
+            <span style="color:var(--accent);font-weight:700;">스타일(0.4)</span> +
+            <span style="color:#B4D9A0;font-weight:700;">신뢰도(0.2)</span>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:8px;">구현 완료 · POST /match/find · 상위 10명 가중 점수 정렬</div>
+        </div>
+      </div>
+
+      <div class="algo-result">
+        <div class="algo-result-title">MATCH RESULT PREVIEW</div>
+        <div class="algo-candidate">
+          <div class="algo-avatar" style="background:rgba(216,226,238,0.18);color:rgba(216,226,238,0.8);">한</div>
+          <div class="algo-cand-info">
+            <div class="algo-cand-name">한소희</div>
+            <div class="algo-cand-dest"> 오사카 · 6월 15–19일</div>
+            <div class="algo-mini-bars">
+              <div class="algo-mini-bar" style="background:var(--gold);opacity:0.9;flex:2"></div>
+              <div class="algo-mini-bar" style="background:var(--accent);opacity:0.9;flex:2"></div>
+              <div class="algo-mini-bar" style="background:#B4D9A0;opacity:0.7;flex:1"></div>
+            </div>
+          </div>
+          <div class="algo-pct">97%</div>
+        </div>
+        <div class="algo-candidate">
+          <div class="algo-avatar" style="background:rgba(196,135,90,0.18);color:rgba(196,135,90,0.8);">조</div>
+          <div class="algo-cand-info">
+            <div class="algo-cand-name">조승연</div>
+            <div class="algo-cand-dest"> 오사카 · 6월 18–22일</div>
+            <div class="algo-mini-bars">
+              <div class="algo-mini-bar" style="background:var(--gold);opacity:0.7;flex:1.5"></div>
+              <div class="algo-mini-bar" style="background:var(--accent);opacity:0.9;flex:2"></div>
+              <div class="algo-mini-bar" style="background:#B4D9A0;opacity:0.7;flex:1"></div>
+            </div>
+          </div>
+          <div class="algo-pct">94%</div>
+        </div>
+        <div class="algo-candidate" style="opacity:.5">
+          <div class="algo-avatar" style="background:rgba(110,125,98,0.18);color:rgba(110,125,98,0.8);">양</div>
+          <div class="algo-cand-info">
+            <div class="algo-cand-name">양세은</div>
+            <div class="algo-cand-dest"> 오사카 · 6월 15–19일</div>
+          </div>
+          <div class="algo-pct" style="font-size:13px;color:rgba(232,200,130,0.6);">91%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 07 디자인 시스템 ════════ -->
+<section id="design">
+  <div class="page">
+    <p class="sec-eyebrow">07 · Design System</p>
+    <h2 class="sec-title"><strong>디자인 시스템</strong></h2>
+    <p class="sec-desc">네이비 + 더스티 로즈를 축으로 한 에디토리얼 컬러 시스템. 신뢰도 점수는 올리브 / 더스트 블루로, 다크 화면 강조는 뮤트 골드로 분리해 톤이 흐트러지지 않게 설계했습니다.</p>
+
+    <div class="ds-grid reveal-stagger">
+      <!-- 컬러 -->
+      <div class="ds-card">
+        <div class="ds-card-title">Color Palette · constants/colors.ts</div>
+        <div class="color-row">
+          <div class="color-swatch"><div class="color-box" style="background:#3B5178"></div><div class="color-name">Navy</div><div class="color-hex">#3B5178</div></div>
+          <div class="color-swatch"><div class="color-box" style="background:#C98B96"></div><div class="color-name">Accent (Rose)</div><div class="color-hex">#C98B96</div></div>
+          <div class="color-swatch"><div class="color-box" style="background:#F4E6E9"></div><div class="color-name">Accent L</div><div class="color-hex">#F4E6E9</div></div>
+          <div class="color-swatch"><div class="color-box" style="background:#6E7D62"></div><div class="color-name">Olive (≥80)</div><div class="color-hex">#6E7D62</div></div>
+          <div class="color-swatch"><div class="color-box" style="background:#6B8CAD"></div><div class="color-name">Dust Blue (50–79)</div><div class="color-hex">#6B8CAD</div></div>
+          <div class="color-swatch"><div class="color-box" style="background:#C6A56A"></div><div class="color-name">Mute Gold</div><div class="color-hex">#C6A56A</div></div>
+          <div class="color-swatch"><div class="color-box" style="background:#1E222A"></div><div class="color-name">Dark BG</div><div class="color-hex">#1E222A</div></div>
+          <div class="color-swatch"><div class="color-box" style="background:#F5F8FC;border:1px solid #DDE4EE"></div><div class="color-name">BG</div><div class="color-hex">#F5F8FC</div></div>
+        </div>
+        <div style="margin-top:14px;padding:10px 12px;background:var(--bgDeep);border-radius:8px;font-size:11px;color:var(--t2);line-height:1.65;">
+          신뢰도 점수 0–49는 기본 텍스트, 50–79는 <span style="color:#6B8CAD;font-weight:700">Dust Blue</span>, 80+는 <span style="color:#6E7D62;font-weight:700">Olive</span>로 색상 밴드를 구분합니다.
+        </div>
+      </div>
+
+      <!-- 타이포 -->
+      <div class="ds-card">
+        <div class="ds-card-title">Typography · SUIT + Cormorant Garamond</div>
+        <div class="type-row">
+          <div class="type-item">
+            <div class="type-meta">Editorial · 26px · 300 · serif</div>
+            <div class="type-sample" style="font-size:22px;font-weight:300;letter-spacing:-0.5px;color:var(--t1);font-family:'Cormorant Garamond','Georgia',serif">Find your travel mate.</div>
+          </div>
+          <div class="type-item">
+            <div class="type-meta">H1 · 30px · 300</div>
+            <div class="type-sample" style="font-size:22px;font-weight:300;letter-spacing:-0.5px;color:var(--t1)">동행 매칭</div>
+          </div>
+          <div class="type-item">
+            <div class="type-meta">H2 · 22px · 400</div>
+            <div class="type-sample" style="font-size:16px;font-weight:500;letter-spacing:-0.3px;color:var(--t1)">나와 잘 맞는 여행자</div>
+          </div>
+          <div class="type-item">
+            <div class="type-meta">Body · 15px · 400</div>
+            <div class="type-sample" style="font-size:13px;font-weight:400;color:var(--t2)">여행 스타일이 맞는 동행을 찾아보세요</div>
+          </div>
+          <div class="type-item">
+            <div class="type-meta">Label · 10px · 700 · 2.5 tracking</div>
+            <div class="type-sample" style="font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--t3);text-transform:uppercase">TRAVEL PERSONALITY</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 컴포넌트 -->
+      <div class="ds-card" style="grid-column:1/-1">
+        <div class="ds-card-title">Components</div>
+        <div class="comp-demo">
+          <div class="demo-row">
+            <button class="d-btn primary">동행 신청</button>
+            <button class="d-btn accent">여행자 찾기</button>
+            <button class="d-btn outline">패스</button>
+            <span class="d-tag navy">97% 매칭</span>
+            <span class="d-tag warm">카페 탐방</span>
+            <span class="d-tag olive">인증 완료</span>
+          </div>
+          <div class="demo-row">
+            <div class="d-input" style="flex:1;max-width:240px">
+              
+              도시 또는 국가
+            </div>
+            <div class="d-avatar" style="background:#D8E2EE;color:#3A5878">지</div>
+            <div class="d-avatar" style="background:#EDE3D8;color:#7A5C3E">조</div>
+            <div class="d-avatar" style="background:#D8EAE0;color:#3A6B55">양</div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;color:var(--t2);display:flex;align-items:center;gap:6px">
+              <div style="width:6px;height:6px;border-radius:3px;background:#4CAF50"></div>
+              6개 동행 모집 중
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 08 와이어프레임 ════════ -->
+<section id="wireframes">
+  <div class="page">
+    <p class="sec-eyebrow">08 · Wireframes</p>
+    <h2 class="sec-title"><strong>화면 구성</strong></h2>
+    <p class="sec-desc">매칭 여정의 대표 8개 화면입니다. 실제 앱은 온보딩·탐색·채팅·커뮤니티·프로필 5개 탭 위에 25+개 화면이 동작하며, 여기에는 핵심 동선만 모았습니다.</p>
+
+    <div class="wf-grid reveal-stagger">
+
+      <!-- A: HOME -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status"><span class="ph-time">9:41</span><div class="ph-batt"></div></div>
+            <div class="s-home-wrap">
+              <div class="home-ivory">
+                <div class="home-appname">TRIPMATE</div>
+                <div class="home-tagline">동행 매칭</div>
+                <div class="home-live"><div class="home-live-dot"></div><div class="home-live-txt">지금 <b>6개</b> 동행 모집 중</div></div>
+                <div class="home-search"><div class="home-search-txt">도시, 날짜로 동행 찾기</div><div class="home-search-btn">검색</div></div>
+              </div>
+              <div class="home-navy">
+                <div class="home-band-lbl">AI 동행 매칭</div>
+                <div class="home-band-title">나와 잘 맞는 여행자</div>
+                <div class="home-avatar">지</div>
+                <div class="home-feat-name">한소희</div>
+                <div class="home-feat-dest"> 오사카</div>
+                <div class="home-feat-tags"><div class="home-feat-tag">카페 탐방</div><div class="home-feat-tag m">97% 매칭</div></div>
+                <div class="home-feat-cta">프로필 보기</div>
+              </div>
+              <div class="home-beige">
+                <div class="home-drag"><div class="home-drag-bar"></div></div>
+                <div class="home-beige-hdr">
+                  <div><div class="home-beige-lbl">동행 모집</div><div class="home-beige-title">지금 멤버 찾는 중</div></div>
+                  <div class="home-more">전체 보기 ›</div>
+                </div>
+                <div class="recruit-list">
+                  <div class="recruit-row"><div class="r-bar" style="background:#7A5C3E"></div><div class="r-body"><div class="r-dest">오사카</div><div class="r-meta">박민준 · 26세 · 6월 15일</div></div><div class="r-badge" style="background:#EDE3D8;color:#7A5C3E">1명</div></div>
+                  <div class="recruit-row"><div class="r-bar" style="background:#3A5878"></div><div class="r-body"><div class="r-dest">도쿄</div><div class="r-meta">이수연 · 24세 · 7월 3일</div></div><div class="r-badge" style="background:#D8E2EE;color:#3A5878">2명</div></div>
+                  <div class="recruit-row"><div class="r-bar" style="background:#3A6B55"></div><div class="r-body"><div class="r-dest">방콕</div><div class="r-meta">최동원 · 29세 · 8월 11일</div></div><div class="r-badge" style="background:#D8EAE0;color:#3A6B55">1명</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="ph-nav">
+              <div class="ph-nav-item"><div class="ph-nav-dot on"></div><div class="ph-nav-txt on">홈</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">탐색</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">채팅</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">커뮤니티</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">프로필</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">01 · 홈</div>
+        <div class="wf-caption">AI 매칭 + 실시간<br>동행 모집 현황</div>
+      </div>
+
+      <!-- B: EXPLORE -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status" style="background:var(--card)"><span class="ph-time">9:41</span><div class="ph-batt"></div></div>
+            <div class="s-explore-wrap">
+              <div class="exp-header">
+                <div class="exp-back"><div class="exp-back-arrow"></div></div>
+                <div><div class="exp-header-lbl">EXPLORE</div><div class="exp-header-title">동행 찾기</div></div>
+              </div>
+              <div class="exp-body">
+                <div class="exp-sec">
+                  <div class="exp-sec-title">어디로 떠나요?</div>
+                  <div class="exp-input"><div class="exp-pin"></div><div class="exp-input-txt">도시 또는 국가</div></div>
+                  <div class="exp-chips"><div class="exp-chip on">오사카</div><div class="exp-chip">도쿄</div><div class="exp-chip">방콕</div><div class="exp-chip">파리</div><div class="exp-chip">발리</div></div>
+                </div>
+                <div class="exp-divider"></div>
+                <div class="exp-sec">
+                  <div class="exp-sec-title">어떤 여행을 즐기나요?</div>
+                  <div class="exp-style-grid">
+                    <div class="exp-style-cell on"><div class="exp-style-icon on"></div><div class="exp-style-txt on">카페</div></div>
+                    <div class="exp-style-cell"><div class="exp-style-icon"></div><div class="exp-style-txt">사진</div></div>
+                    <div class="exp-style-cell on"><div class="exp-style-icon on"></div><div class="exp-style-txt on">맛집</div></div>
+                    <div class="exp-style-cell"><div class="exp-style-icon"></div><div class="exp-style-txt">힐링</div></div>
+                    <div class="exp-style-cell"><div class="exp-style-icon"></div><div class="exp-style-txt">관광</div></div>
+                    <div class="exp-style-cell"><div class="exp-style-icon"></div><div class="exp-style-txt">쇼핑</div></div>
+                    <div class="exp-style-cell"><div class="exp-style-icon"></div><div class="exp-style-txt">액티비티</div></div>
+                    <div class="exp-style-cell"><div class="exp-style-icon"></div><div class="exp-style-txt">역사/문화</div></div>
+                  </div>
+                </div>
+                <div class="exp-bottom"><div class="exp-btn">여행자 찾기</div></div>
+              </div>
+            </div>
+            <div class="ph-nav">
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">홈</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot on"></div><div class="ph-nav-txt on">탐색</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">채팅</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">커뮤니티</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">프로필</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">02 · 동행 찾기</div>
+        <div class="wf-caption">목적지·스타일<br>필터 검색</div>
+      </div>
+
+      <!-- C: LOADING -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status" style="background:transparent"><span class="ph-time" style="color:rgba(255,255,255,0.5)">9:41</span><div class="ph-batt" style="border-color:rgba(255,255,255,0.35);opacity:.5"></div></div>
+            <div class="s-loading">
+              <div class="loading-ring"><div class="loading-inner"></div></div>
+              <div class="loading-label">AI MATCHING</div>
+              <div class="loading-title">동행 찾는 중</div>
+              <div class="loading-sub">최적의 여행 메이트를 분석하고 있어요</div>
+              <div class="loading-steps">
+                <div class="loading-step done"><div class="l-dot done"></div><div class="l-txt done">여행 스타일 분석 완료</div><div class="l-check"></div></div>
+                <div class="loading-step done"><div class="l-dot done"></div><div class="l-txt done">일정 매칭 완료</div><div class="l-check"></div></div>
+                <div class="loading-step" style="border-color:rgba(198,165,106,0.3)"><div class="l-dot active"></div><div class="l-txt" style="color:rgba(255,255,255,0.7)">동행 후보 선별 중</div></div>
+                <div class="loading-step"><div class="l-dot"></div><div class="l-txt">매칭 점수 계산</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">03 · AI 매칭</div>
+        <div class="wf-caption">4단계 분석<br>프로세스 시각화</div>
+      </div>
+
+      <!-- D: RESULT -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status" style="background:var(--card)"><span class="ph-time">9:41</span><div class="ph-batt"></div></div>
+            <div class="s-result">
+              <div class="result-header">
+                <div class="exp-back"><div class="exp-back-arrow"></div></div>
+                <div class="result-hdr-info">
+                  <div class="result-hdr-lbl">MATCH RESULT</div>
+                  <div class="result-hdr-title">매칭 결과</div>
+                  <div class="result-count-row"><div class="result-count-badge">8</div><div class="result-count-txt">명의 동행 후보</div></div>
+                </div>
+              </div>
+              <div class="match-card-ph">
+                <div class="match-card-ph-hdr">
+                  <div class="match-ph-avatar">한</div>
+                  <div class="match-ph-info"><div class="match-ph-name">한소희</div><div class="match-ph-dest"> 오사카 · 6월 15–19일</div></div>
+                  <div class="match-ph-pct">97%</div>
+                </div>
+                <div class="match-card-ph-body">
+                  <div class="match-ph-tags"><div class="match-ph-tag">카페 탐방</div><div class="match-ph-tag a">맛집 투어</div><div class="match-ph-tag o">인증 완료</div></div>
+                  <div class="match-ph-desc">조용하고 여유로운 여행 선호. 사진 많이 찍고 현지 카페 순례가 목표입니다.</div>
+                  <div class="match-ph-actions"><div class="match-ph-pass">패스</div><div class="match-ph-apply">동행 신청</div></div>
+                </div>
+              </div>
+              <div class="match-card-ph" style="opacity:.5;margin-top:6px">
+                <div class="match-card-ph-hdr" style="background:#6B8CAD"><div class="match-ph-avatar">조</div><div class="match-ph-info"><div class="match-ph-name">조승연</div><div class="match-ph-dest"> 오사카 · 6월 18–22일</div></div><div class="match-ph-pct">94%</div></div>
+              </div>
+            </div>
+            <div class="ph-nav">
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">홈</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot on"></div><div class="ph-nav-txt on">탐색</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">채팅</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">커뮤니티</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">프로필</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">04 · 매칭 결과</div>
+        <div class="wf-caption">매칭률 순 후보<br>카드 리스트</div>
+      </div>
+
+      <!-- E: CHAT -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status" style="background:var(--card)"><span class="ph-time">9:41</span><div class="ph-batt"></div></div>
+            <div class="s-chat">
+              <div class="chat-hdr">
+                <div class="chat-hdr-top">
+                  <div><div class="chat-hdr-lbl">TRAVEL TALK</div><div class="chat-title-row"><div class="chat-title">여행 대화</div><div class="chat-badge">3</div></div></div>
+                </div>
+                <div class="chat-pending"><div class="chat-pending-dot"></div><div class="chat-pending-txt">동행 신청 <b>2건</b> 수락 대기</div></div>
+                <div class="chat-tabs"><div class="chat-tab on">전체</div><div class="chat-tab">대화 중</div><div class="chat-tab">수락 대기</div></div>
+              </div>
+              <div class="chat-list-ph">
+                <div class="chat-item-ph">
+                  <div class="chat-item-avatar" style="background:#D8E2EE;color:#3A5878">한</div>
+                  <div class="chat-item-info"><div class="chat-item-name">한소희 <span class="chat-status a">대화 중</span></div><div class="chat-item-preview">오사카 도착하면 연락주세요!</div></div>
+                  <div class="chat-item-right"><div class="chat-item-time">오전 9:24</div><div class="chat-item-unread">2</div></div>
+                </div>
+                <div class="chat-item-ph">
+                  <div class="chat-item-avatar" style="background:#EDE3D8;color:#7A5C3E">조</div>
+                  <div class="chat-item-info"><div class="chat-item-name">조승연 <span class="chat-status p">수락 대기</span></div><div class="chat-item-preview">동행 신청했습니다 :)</div></div>
+                  <div class="chat-item-right"><div class="chat-item-time">어제</div><div class="chat-item-unread">1</div></div>
+                </div>
+                <div class="chat-item-ph" style="opacity:.5">
+                  <div class="chat-item-avatar" style="background:#D8EAE0;color:#3A6B55">정</div>
+                  <div class="chat-item-info"><div class="chat-item-name">정다은</div><div class="chat-item-preview">아메리카무라 카페 추천해요 </div></div>
+                  <div class="chat-item-right"><div class="chat-item-time">5월 25일</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="ph-nav">
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">홈</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">탐색</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot on"></div><div class="ph-nav-txt on">채팅</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">커뮤니티</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">프로필</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">05 · 채팅</div>
+        <div class="wf-caption">대화 목록·수락 대기<br>상태 탭</div>
+      </div>
+
+      <!-- F: COMMUNITY -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status" style="background:var(--bg)"><span class="ph-time">9:41</span><div class="ph-batt"></div></div>
+            <div class="s-comm">
+              <div class="comm-hdr"><div><div class="comm-hdr-lbl">TRAVEL JOURNAL</div><div class="comm-hdr-title">여행자들의 이야기</div></div><div class="comm-write">+ 기록하기</div></div>
+              <div class="comm-ep-label">EDITOR'S PICK</div>
+              <div class="comm-ep-scroll">
+                <div class="comm-ep-card"><div class="comm-ep-tag">여행 기록</div><div class="comm-ep-city">오사카</div><div class="comm-ep-title">도톤보리 뒷골목의 오래된 카페들</div><div class="comm-ep-footer"><div class="comm-ep-author">김지아</div><div class="comm-ep-like"> 47</div></div></div>
+                <div class="comm-ep-card" style="opacity:.6;width:90px"><div class="comm-ep-tag">동행 찾기</div><div class="comm-ep-city">도쿄</div><div class="comm-ep-title">진보초 서점 골목 같이 걸을 분</div></div>
+              </div>
+              <div class="comm-city-filter"><div class="comm-city-tag on">전체</div><div class="comm-city-tag">오사카</div><div class="comm-city-tag">도쿄</div><div class="comm-city-tag">방콕</div></div>
+              <div class="comm-cat-tabs"><div class="comm-cat-tab on">전체</div><div class="comm-cat-tab">동행</div><div class="comm-cat-tab">기록</div><div class="comm-cat-tab">추천</div></div>
+              <div class="comm-post">
+                <div class="comm-post-top">
+                  <div class="comm-post-avatar" style="background:#D8E2EE;color:#3A5878">정</div>
+                  <div><div class="comm-post-author">정다은</div><div class="comm-post-date">5월 8일 · 오사카</div></div>
+                </div>
+                <div class="comm-post-title">오사카 여행 팁 총정리 ️</div>
+                <div class="comm-post-preview">교통패스부터 숨은 맛집까지. 3번 다녀온 경험을 정리했어요.</div>
+                <div class="comm-post-footer"><div class="comm-post-tags"><div class="comm-post-tag">여행 기록</div></div><div class="comm-post-like"> 89</div></div>
+              </div>
+            </div>
+            <div class="ph-nav">
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">홈</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">탐색</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">채팅</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot on"></div><div class="ph-nav-txt on">커뮤니티</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">프로필</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">06 · 커뮤니티</div>
+        <div class="wf-caption">여행 기록·에디터 픽<br>루트 아카이브</div>
+      </div>
+
+      <!-- G: MATE PROFILE -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status" style="background:transparent"><span class="ph-time" style="color:rgba(255,255,255,0.6)">9:41</span><div class="ph-batt" style="border-color:rgba(255,255,255,0.4);opacity:.5"></div></div>
+            <div class="s-mate">
+              <div class="mate-hero-ph">
+                <div class="mate-hero-top"><div class="mate-back"><div class="mate-back-arrow"></div></div><div class="mate-verified"> 인증 완료</div></div>
+                <div class="mate-avatar-ph">한</div>
+                <div class="mate-nick">한소희</div>
+                <div class="mate-meta-ph">26세 · 서울 · 여성</div>
+                <div class="mate-tags-ph"><div class="mate-tag-ph">카페 탐방</div><div class="mate-tag-ph">사진 여행</div><div class="mate-tag-ph">맛집</div></div>
+                <div class="mate-stats-ph">
+                  <div class="mate-stat-ph"><div class="mate-stat-val-ph">15</div><div class="mate-stat-lbl-ph">여행 횟수</div></div>
+                  <div class="mate-stat-ph"><div class="mate-stat-val-ph">4.9</div><div class="mate-stat-lbl-ph">평점</div></div>
+                  <div class="mate-stat-ph"><div class="mate-stat-val-ph">8</div><div class="mate-stat-lbl-ph">동행 완료</div></div>
+                </div>
+              </div>
+              <div class="mate-body-ph">
+                <div class="mate-info-card"><div class="mate-info-lbl">ABOUT</div><div class="mate-info-txt">오사카 현지 맛집을 직접 찾아다니는 걸 좋아해요. 구글 맵핑한 리스트 300개 보유중 </div></div>
+                <div class="mate-info-card">
+                  <div class="mate-info-lbl">UPCOMING TRIP</div>
+                  <div class="mate-trip-row">
+                    <div class="mate-trip-icon"></div>
+                    <div><div class="mate-trip-dest">오사카</div><div class="mate-trip-dates">6월 15일 – 19일</div></div>
+                    <div class="mate-trip-nights">4박 5일</div>
+                  </div>
+                </div>
+              </div>
+              <div class="mate-cta-ph"><div class="mate-like-btn"></div><div class="mate-chat-btn">채팅 시작하기</div></div>
+            </div>
+            <div class="ph-nav">
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">홈</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot on"></div><div class="ph-nav-txt on">탐색</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">채팅</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">커뮤니티</div></div>
+              <div class="ph-nav-item"><div class="ph-nav-dot"></div><div class="ph-nav-txt">프로필</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">07 · 메이트 프로필</div>
+        <div class="wf-caption">여행자 상세 통계<br>채팅 연결</div>
+      </div>
+
+      <!-- H: CONFIRMED -->
+      <div class="wf-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="ph-status" style="background:transparent"><span class="ph-time" style="color:rgba(255,255,255,0.4)">9:41</span><div class="ph-batt" style="border-color:rgba(255,255,255,0.3);opacity:.4"></div></div>
+            <div class="s-confirmed">
+              <div class="conf-circle"><span style="font-size:22px"></span></div>
+              <div class="conf-lbl">MATCH CONFIRMED</div>
+              <div class="conf-title">동행 매칭 완료!</div>
+              <div class="conf-desc">한소희님과 오사카 여행을<br>함께하게 되었어요</div>
+              <div class="conf-avatars">
+                <div class="conf-av a">나</div>
+                <div class="conf-plane"></div>
+                <div class="conf-av b">한</div>
+              </div>
+              <div class="conf-detail">
+                <div class="conf-detail-row"><div class="conf-detail-key">목적지</div><div class="conf-detail-val">오사카, 일본</div></div>
+                <div class="conf-detail-row"><div class="conf-detail-key">일정</div><div class="conf-detail-val">6월 15–19일 · 4박 5일</div></div>
+                <div class="conf-detail-row"><div class="conf-detail-key">스타일</div><div class="conf-detail-val">카페, 맛집, 사진</div></div>
+              </div>
+              <div class="conf-btns">
+                <div class="conf-btn-main">채팅 시작하기</div>
+                <div class="conf-btn-sec">나중에</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="wf-label">08 · 매칭 확정</div>
+        <div class="wf-caption">동행 확정 + 여행<br>정보 요약</div>
+      </div>
+
+    </div><!-- /wf-grid -->
+  </div>
+</section>
+
+<!-- ════════ NEW 상태 & 데이터 아키텍처 ════════ -->
+<section id="architecture">
+  <div class="page">
+    <p class="sec-eyebrow">+ · State &amp; Data Architecture</p>
+    <h2 class="sec-title"><strong>상태 관리</strong>와 데이터 흐름</h2>
+    <p class="sec-desc">실서버 없이도 전체 사용자 경험을 검증할 수 있도록 Mock-first 구조 위에 4계층으로 데이터를 분리했습니다. UI → Context → Service → Data 한 방향 흐름.</p>
+
+    <!-- Flow strip -->
+    <div class="arch-flow reveal-stagger">
+      <div class="arch-flow-step">
+        <div class="arch-flow-tier">01</div>
+        <div class="arch-flow-name">UI Layer</div>
+        <div class="arch-flow-desc">35+개 화면 · Expo Router 라우팅. Context를 직접 구독.</div>
+      </div>
+      <div class="arch-flow-step">
+        <div class="arch-flow-tier">02</div>
+        <div class="arch-flow-name">Context Layer</div>
+        <div class="arch-flow-desc">도메인별 5개 Context. AsyncStorage에 자동 영속화.</div>
+      </div>
+      <div class="arch-flow-step">
+        <div class="arch-flow-tier">03</div>
+        <div class="arch-flow-name">Service Layer</div>
+        <div class="arch-flow-desc">매칭/채팅/커뮤니티 서비스. mock 또는 실 API 호출.</div>
+      </div>
+      <div class="arch-flow-step">
+        <div class="arch-flow-tier">04</div>
+        <div class="arch-flow-name">Data Source</div>
+        <div class="arch-flow-desc">Express + Prisma + Postgres 실서버에 연결됨. 환경변수로 mock ↔ real 전환.</div>
+      </div>
+    </div>
+
+    <!-- Detail cards -->
+    <div class="arch-grid reveal-stagger">
+      <div class="arch-card">
+        <div class="arch-card-head">
+          <div class="arch-card-cat">Domain Context</div>
+          <div class="arch-card-count">5개</div>
+        </div>
+        <div class="arch-card-list">
+          <div class="arch-item"><div class="arch-name">AuthContext</div><div class="arch-note">user · signIn / signOut · 토큰 영속화</div></div>
+          <div class="arch-item"><div class="arch-name">ProfileContext</div><div class="arch-note">아바타 · 바이오 · MBTI · 스타일 · 찜한 글</div></div>
+          <div class="arch-item"><div class="arch-name">PersonalityContext</div><div class="arch-note">7차원 여행 성향 응답 저장</div></div>
+          <div class="arch-item"><div class="arch-name">TripsContext</div><div class="arch-note">upcoming · history · recent 트립 관리</div></div>
+          <div class="arch-item"><div class="arch-name">VerificationContext</div><div class="arch-note">신뢰도 점수(0–100) · 색상 밴드</div></div>
+        </div>
+      </div>
+
+      <div class="arch-card">
+        <div class="arch-card-head">
+          <div class="arch-card-cat">Service Layer</div>
+          <div class="arch-card-count">4개</div>
+        </div>
+        <div class="arch-card-list">
+          <div class="arch-item"><div class="arch-name">matchService</div><div class="arch-note">findMates / getRecommended / likeMate</div></div>
+          <div class="arch-item"><div class="arch-name">chatService</div><div class="arch-note">데모 룸(c1·c2·c3) + 동적 룸, 동행 카드</div></div>
+          <div class="arch-item"><div class="arch-name">communityService</div><div class="arch-note">mate · tips · review 카테고리 피드</div></div>
+          <div class="arch-item"><div class="arch-name">api.ts</div><div class="arch-note">Axios · 환경변수로 mock ↔ 실서버 라우팅</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arch-callout">
+      <div class="arch-callout-label">Mock ↔ Real 스위칭 · 백엔드 V1 연결됨</div>
+      <div class="arch-callout-text">디자인 검증과 백엔드 구현을 병렬로 진행하기 위해 Mock-first로 설계했고, 현재는 Express + Prisma + Postgres 백엔드가 붙어 실 데이터로 동작합니다. 환경변수(<code>EXPO_PUBLIC_API_URL</code>) 하나로 다시 mock 모드로 돌릴 수 있어 데모 환경에서는 서버 없이도 둘러볼 수 있습니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ NEW 여행 성향 진단 ════════ -->
+<section id="personality">
+  <div class="page">
+    <p class="sec-eyebrow">+ · Travel Personality</p>
+    <h2 class="sec-title">7차원 <strong>여행 성향 진단</strong></h2>
+    <p class="sec-desc">MBTI를 보조하는 여행 전용 성향 지표입니다. 매칭 모델의 스타일 유사도(40%) 산출에 활용될 기준 데이터로 설계했고, 현재 응답 수집·영속화까지 구현되어 있습니다.</p>
+
+    <div class="pers-grid reveal-stagger">
+      <div class="pers-card">
+        <div class="pers-card-head">
+          <div class="pers-key">01 · Pace</div>
+          <div class="pers-title">여행 페이스</div>
+        </div>
+        <div class="pers-axis"><span>여유롭게</span><span>빡빡하게</span></div>
+        <div class="pers-bar"><span class="pers-dot-l"></span><span class="pers-dot-r"></span></div>
+      </div>
+      <div class="pers-card">
+        <div class="pers-card-head">
+          <div class="pers-key">02 · Time</div>
+          <div class="pers-title">활동 시간대</div>
+        </div>
+        <div class="pers-axis"><span>아침형</span><span>저녁형</span></div>
+        <div class="pers-bar"><span class="pers-dot-l"></span><span class="pers-dot-r"></span></div>
+      </div>
+      <div class="pers-card">
+        <div class="pers-card-head">
+          <div class="pers-key">03 · Companion</div>
+          <div class="pers-title">동행 스타일</div>
+        </div>
+        <div class="pers-axis"><span>같이 다니기</span><span>따로 또 같이</span></div>
+        <div class="pers-bar"><span class="pers-dot-l"></span><span class="pers-dot-r"></span></div>
+      </div>
+      <div class="pers-card">
+        <div class="pers-card-head">
+          <div class="pers-key">04 · Stay</div>
+          <div class="pers-title">숙소 선호</div>
+        </div>
+        <div class="pers-axis"><span>편안한 호텔</span><span>현지 게하</span></div>
+        <div class="pers-bar"><span class="pers-dot-l"></span><span class="pers-dot-r"></span></div>
+      </div>
+      <div class="pers-card">
+        <div class="pers-card-head">
+          <div class="pers-key">05 · Dining</div>
+          <div class="pers-title">식사 취향</div>
+        </div>
+        <div class="pers-axis"><span>유명 맛집</span><span>현지 로컬</span></div>
+        <div class="pers-bar"><span class="pers-dot-l"></span><span class="pers-dot-r"></span></div>
+      </div>
+      <div class="pers-card">
+        <div class="pers-card-head">
+          <div class="pers-key">06 · Plan</div>
+          <div class="pers-title">계획 성향</div>
+        </div>
+        <div class="pers-axis"><span>꼼꼼한 일정</span><span>즉흥적으로</span></div>
+        <div class="pers-bar"><span class="pers-dot-l"></span><span class="pers-dot-r"></span></div>
+      </div>
+      <div class="pers-card">
+        <div class="pers-card-head">
+          <div class="pers-key">07 · Budget</div>
+          <div class="pers-title">예산 감각</div>
+        </div>
+        <div class="pers-axis"><span>가성비</span><span>경험에 투자</span></div>
+        <div class="pers-bar"><span class="pers-dot-l"></span><span class="pers-dot-r"></span></div>
+      </div>
+      <div class="pers-card is-note">
+        <div class="pers-note-lbl">왜 7차원인가</div>
+        <div class="pers-note-title">MBTI 한 줄로는<br>여행 궁합이 안 잡힌다</div>
+        <div class="pers-note-txt">"아침형 + 즉흥적 + 로컬 선호" 같은 조합이 실제 동행 만족도를 더 잘 예측합니다. 매칭 점수 모델에 직접 연결되는 차원만 추렸어요.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ 09 기술 스택 ════════ -->
+<section id="tech">
+  <div class="page">
+    <p class="sec-eyebrow">09 · Tech Stack</p>
+    <h2 class="sec-title"><strong>기술 스택</strong></h2>
+    <p class="sec-desc">React Native + Expo로 iOS/Android/Web을 한 코드베이스로 구현. 백엔드는 Express + Prisma + Postgres로 V1을 직접 구현해 실 데이터까지 연결했습니다. 실시간 채팅은 V1에서 HTTP 폴링으로 시작하고, WebSocket / 외부 AI 서버는 V2 확장 과제로 분리했습니다.</p>
+
+    <div class="tech-grid reveal-stagger">
+      <div class="tech-card is-front">
+        <div class="tech-card-head">
+          <div class="tech-card-category">Frontend</div>
+          <div class="tech-card-status built">구현 완료</div>
+          <div class="tech-card-count">6 항목</div>
+        </div>
+        <div class="tech-stack-list">
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">React Native 0.81 / Expo SDK 54</div><div class="tech-note">iOS · Android · Web 단일 코드베이스</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">expo-router 6</div><div class="tech-note">파일 기반 라우팅 · 35+ 화면 연결</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">TypeScript 5.9</div><div class="tech-note">도메인 타입 정의 · 타입 안전성</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">AsyncStorage</div><div class="tech-note">Auth · Profile · Trips 영속화</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">Axios</div><div class="tech-note">mock ↔ 실서버 환경변수 스위칭</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">Reanimated · Gesture Handler</div><div class="tech-note">매칭 로딩 · 스와이프 인터랙션</div></div></div>
+        </div>
+      </div>
+
+      <div class="tech-card is-back is-built">
+        <div class="tech-card-head">
+          <div class="tech-card-category">Backend V1</div>
+          <div class="tech-card-status built">구현 완료</div>
+          <div class="tech-card-count">6 항목</div>
+        </div>
+        <div class="tech-stack-list">
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">Node + Express + TS</div><div class="tech-note">REST API · 13개 엔드포인트 · zod 검증</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">PostgreSQL 16 + Prisma 5</div><div class="tech-note">10개 모델 · 마이그레이션 · 시드 스크립트</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">JWT + bcrypt</div><div class="tech-note">이메일/비번 · requireAuth 미들웨어</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">Matching Engine</div><div class="tech-note">일정 40 + 코사인 40 + 신뢰 20 가중 점수</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">HTTP 폴링 (V1)</div><div class="tech-note">채팅 메시지 · unread 카운트 동기화</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">CORS · dotenv · 에러 핸들러</div><div class="tech-note">중앙 HttpError · 환경별 설정</div></div></div>
+        </div>
+      </div>
+
+      <div class="tech-card is-ai">
+        <div class="tech-card-head">
+          <div class="tech-card-category">V2 확장 과제</div>
+          <div class="tech-card-status planned">다음 단계</div>
+          <div class="tech-card-count">3 항목</div>
+        </div>
+        <div class="tech-stack-list">
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">Socket.io</div><div class="tech-note">실시간 채팅 · 동행 알림 (현재 HTTP 폴링)</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">OAuth 2.0 소셜 로그인</div><div class="tech-note">Google · Apple · Kakao 연동</div></div></div>
+          <div class="tech-item"><div class="tech-dot"></div><div><div class="tech-name">Redis 캐시 + 큐</div><div class="tech-note">매칭 후보 캐싱 · 알림 발송 큐</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">TRIPMATE</div>
+    <div class="footer-tag">읽어주셔서 감사합니다.</div>
+    <a class="footer-top" href="#top">맨 위로</a>
+    <div class="footer-meta">© 2025 TripMate Portfolio</div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // ── 1) Scroll progress bar (top 2px, fills 0 → 100%)
+  const bar = document.createElement('div');
+  bar.className = 'scroll-progress';
+  document.body.appendChild(bar);
+  function updateProgress() {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    const pct = max > 0 ? h.scrollTop / max : 0;
+    bar.style.transform = 'scaleX(' + pct + ')';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
+  updateProgress();
+
+  // ── 2) Section + stagger reveal on scroll
+  const sections = document.querySelectorAll('section, .solution-banner, .arch-callout');
+  sections.forEach((el) => el.classList.add('reveal'));
+
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-in');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -80px 0px', threshold: 0.08 });
+
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => revealObs.observe(el));
+
+  // ── 3) Number count-up animation
+  function setLeadingText(el, text) {
+    if (!el.firstChild || el.firstChild.nodeType !== 3) {
+      el.insertBefore(document.createTextNode(text), el.firstChild || null);
+    } else {
+      el.firstChild.nodeValue = text;
+    }
+  }
+  function animateCount(el) {
+    const target = parseFloat(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const useComma = el.dataset.format === 'comma' || target >= 1000;
+    const duration = 1900;
+    const start = performance.now();
+    function step(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const value = target * eased;
+      const display = useComma ? Math.round(value).toLocaleString() : Math.round(value);
+      setLeadingText(el, display + suffix);
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  // Initialize count targets to 0 so they don't flash final value before animating
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const suffix = el.dataset.suffix || '';
+    setLeadingText(el, '0' + suffix);
+  });
+  const countObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        animateCount(e.target);
+        countObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('[data-count]').forEach((el) => countObs.observe(el));
+
+  // ── 4) Algorithm bars: width 0 → data-w on intersect
+  const barObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.algo-bar-fill[data-w]').forEach((b) => {
+          b.style.width = b.dataset.w;
+        });
+        barObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  document.querySelectorAll('#algorithm').forEach((el) => barObs.observe(el));
+})();
+</script>
 </body>
 </html>
