@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, LayoutChangeEvent, Pressable, Image,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, LayoutChangeEvent, Pressable, Image, Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Font, Elevation, Radius, Space } from '../../constants/colors';
+import { DestImage } from '../../components/ui/DestImage';
 import { ArrowLeftIcon } from '../../components/ui/Icon';
 
 
@@ -183,8 +184,18 @@ export default function RouteArchiveScreen() {
       {activeCity && (
         <Pressable style={styles.popupOverlay} onPress={() => setActive(null)}>
           <Pressable style={styles.popupCard} onPress={(e) => e.stopPropagation()}>
-            <Text style={styles.popupFlag}>{activeCity.flag}</Text>
-            <Text style={styles.popupCity}>{activeCity.city}</Text>
+            {/* City photo */}
+            <DestImage
+              dest={activeCity.city}
+              style={styles.popupHero}
+              scrim="bottom"
+              radius={Radius.md}
+            >
+              <View style={styles.popupHeroContent}>
+                <Text style={styles.popupFlag}>{activeCity.flag}</Text>
+                <Text style={styles.popupCity}>{activeCity.city}</Text>
+              </View>
+            </DestImage>
             <Text style={styles.popupCountry}>{activeCity.country}</Text>
             <View style={styles.popupDivider} />
             <View style={styles.popupRow}>
@@ -227,7 +238,11 @@ const styles = StyleSheet.create({
     fontSize: 9, fontWeight: '700', color: Colors.textMuted, letterSpacing: 2.5,
   },
   headerTitle: {
-    fontSize: 17, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.3,
+    fontSize: 17,
+    fontWeight: '300',
+    color: Colors.textPrimary,
+    letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif }, native: {} }),
   },
   headerRight: { width: 36 },
 
@@ -263,7 +278,13 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.cardBorder,
   },
   statItem: { flex: 1, alignItems: 'center', gap: 4 },
-  statValue: { fontSize: 22, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.5 },
+  statValue: {
+    fontSize: 26,
+    fontWeight: '300',
+    color: Colors.textPrimary,
+    letterSpacing: -0.8,
+    ...Platform.select({ web: { fontFamily: Font.serif }, native: {} }),
+  },
   statLabel: { fontSize: 11, color: Colors.textMuted },
   statDivider: { width: 1, height: 28, backgroundColor: Colors.cardBorder },
 
@@ -309,27 +330,29 @@ const styles = StyleSheet.create({
   popupOverlay: {
     position: 'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(20,16,12,0.45)',
+    backgroundColor: 'rgba(20,16,12,0.52)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   popupCard: {
     backgroundColor: Colors.card,
-    borderRadius: 24,
-    paddingVertical: 32,
-    paddingHorizontal: 36,
+    borderRadius: Radius.xl,
+    paddingBottom: Space.xxxl,
     alignItems: 'center',
-    gap: 6,
-    minWidth: 220,
-    shadowColor: 'rgba(0,0,0,0.2)',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 1,
-    shadowRadius: 24,
-    elevation: 10,
+    gap: Space.sm,
+    width: 280,
+    overflow: 'hidden',
+    ...Elevation.xl,
   },
-  popupFlag: { fontSize: 44, marginBottom: 4 },
+  popupHero: { width: 280, height: 140 },
+  popupHeroContent: { gap: 3 },
+  popupFlag: { fontSize: 28 },
   popupCity: {
-    fontSize: 26, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.5,
+    fontSize: 24,
+    fontWeight: '300',
+    color: Colors.white,
+    letterSpacing: -0.4,
+    ...Platform.select({ web: { fontFamily: Font.serif }, native: {} }),
   },
   popupCountry: { fontSize: 13, color: Colors.textMuted, fontWeight: '400' },
   popupDivider: {

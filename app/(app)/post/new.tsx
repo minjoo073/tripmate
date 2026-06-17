@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Elevation, Radius, Space, Font } from '../../../constants/colors';
 import { ArrowLeftIcon, MapPinIcon, CameraIcon } from '../../../components/ui/Icon';
 
 const POST_TYPES = [
@@ -36,7 +36,7 @@ export default function NewPostScreen() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <View style={[styles.root, { paddingTop: insets.top + 12 }]}>
+      <View style={[styles.root, { paddingTop: insets.top }]}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.iconBtn} onPress={() => router.back()}>
@@ -44,7 +44,7 @@ export default function NewPostScreen() {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>기록하기</Text>
           <TouchableOpacity
-            style={[styles.postBtn, !canSubmit && styles.postBtnDisabled]}
+            style={[styles.postBtn, !canSubmit && styles.postBtnDisabled, canSubmit && Elevation.primary]}
             onPress={handlePost}
             disabled={!canSubmit}
             activeOpacity={0.85}
@@ -55,7 +55,7 @@ export default function NewPostScreen() {
 
         <ScrollView
           style={styles.scroll}
-          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 40 }]}
+          contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 48 }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -64,9 +64,13 @@ export default function NewPostScreen() {
             {POST_TYPES.map((pt) => (
               <TouchableOpacity
                 key={pt.id}
-                style={[styles.typeCard, type === pt.id && styles.typeCardActive]}
+                style={[
+                  styles.typeCard,
+                  type === pt.id && styles.typeCardActive,
+                  type === pt.id && Elevation.sm,
+                ]}
                 onPress={() => setType(pt.id)}
-                activeOpacity={0.8}
+                activeOpacity={0.82}
               >
                 <Text style={[styles.typeLabel, type === pt.id && styles.typeLabelActive]}>{pt.label}</Text>
                 <Text style={[styles.typeDesc, type === pt.id && styles.typeDescActive]}>{pt.desc}</Text>
@@ -75,18 +79,21 @@ export default function NewPostScreen() {
           </View>
 
           {/* Photo placeholder */}
-          <TouchableOpacity style={styles.photoArea} activeOpacity={0.8}>
-            <CameraIcon color={Colors.textMuted} size={24} />
-            <Text style={styles.photoText}>사진 추가</Text>
-            <Text style={styles.photoSub}>최대 10장</Text>
+          <TouchableOpacity style={[styles.photoArea, Elevation.sm]} activeOpacity={0.82}>
+            <View style={styles.photoInner}>
+              <CameraIcon color={Colors.textMuted} size={22} />
+              <Text style={styles.photoText}>사진 추가</Text>
+              <Text style={styles.photoSub}>최대 10장</Text>
+            </View>
           </TouchableOpacity>
 
           {/* Title */}
-          <View style={styles.field}>
+          <View style={[styles.field, Elevation.sm]}>
+            <Text style={styles.fieldLabel}>제목</Text>
             <TextInput
               style={styles.titleInput}
               placeholder="제목을 입력하세요"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={Colors.textPlaceholder}
               value={title}
               onChangeText={setTitle}
               maxLength={60}
@@ -94,11 +101,12 @@ export default function NewPostScreen() {
           </View>
 
           {/* Content */}
-          <View style={styles.field}>
+          <View style={[styles.field, Elevation.sm]}>
+            <Text style={styles.fieldLabel}>본문</Text>
             <TextInput
               style={styles.contentInput}
               placeholder="여행 이야기를 자유롭게 써보세요..."
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={Colors.textPlaceholder}
               value={content}
               onChangeText={setContent}
               multiline
@@ -107,12 +115,12 @@ export default function NewPostScreen() {
           </View>
 
           {/* Destination */}
-          <View style={styles.inlineField}>
-            <MapPinIcon color={Colors.textMuted} size={13} />
+          <View style={[styles.inlineField, Elevation.sm]}>
+            <MapPinIcon color={Colors.accent} size={14} />
             <TextInput
               style={styles.inlineInput}
               placeholder="여행지 (예: 도쿄, 일본)"
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={Colors.textPlaceholder}
               value={destination}
               onChangeText={setDestination}
             />
@@ -127,9 +135,9 @@ export default function NewPostScreen() {
                 return (
                   <TouchableOpacity
                     key={t}
-                    style={[styles.tag, active && styles.tagActive]}
+                    style={[styles.tag, active && styles.tagActive, active && Elevation.sm]}
                     onPress={() => toggleTag(t)}
-                    activeOpacity={0.8}
+                    activeOpacity={0.82}
                   >
                     <Text style={[styles.tagText, active && styles.tagTextActive]}>{t}</Text>
                   </TouchableOpacity>
@@ -149,34 +157,55 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
     backgroundColor: Colors.card,
   },
-  iconBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { flex: 1, fontSize: 16, fontWeight: '600', color: Colors.textPrimary, textAlign: 'center', letterSpacing: -0.2 },
+  iconBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    textAlign: 'center',
+    letterSpacing: -0.2,
+    ...Platform.select({ web: { fontFamily: Font.serif, fontWeight: '400', fontSize: 18 } }),
+  },
   postBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.xs + 3,
   },
-  postBtnDisabled: { backgroundColor: Colors.bgDeep },
+  postBtnDisabled: {
+    backgroundColor: Colors.bgDeep,
+    shadowColor: 'transparent',
+    elevation: 0,
+  },
   postBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
   postBtnTextDisabled: { color: Colors.textMuted },
 
   scroll: { flex: 1 },
-  content: { padding: 20, gap: 16 },
+  content: {
+    padding: Space.xl,
+    gap: Space.md,
+  },
 
-  typeRow: { flexDirection: 'row', gap: 8 },
+  // ── Post type cards ───────────────────────────────────────────────────────
+  typeRow: { flexDirection: 'row', gap: Space.sm },
   typeCard: {
     flex: 1,
     backgroundColor: Colors.card,
-    borderRadius: 12,
-    padding: 12,
-    gap: 4,
+    borderRadius: Radius.md,
+    padding: Space.md,
+    gap: Space.xs,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
@@ -189,53 +218,70 @@ const styles = StyleSheet.create({
   typeDesc: { fontSize: 10, color: Colors.textMuted, lineHeight: 14 },
   typeDescActive: { color: Colors.dustBlue },
 
+  // ── Photo area ────────────────────────────────────────────────────────────
   photoArea: {
     backgroundColor: Colors.card,
-    borderRadius: 14,
+    borderRadius: Radius.md,
     borderWidth: 1.5,
     borderColor: Colors.cardBorder,
     borderStyle: 'dashed',
-    height: 110,
+    height: 120,
+    overflow: 'hidden',
+  },
+  photoInner: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: Space.xs,
   },
   photoText: { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
   photoSub: { fontSize: 11, color: Colors.textMuted },
 
+  // ── Input fields ──────────────────────────────────────────────────────────
   field: {
     backgroundColor: Colors.card,
-    borderRadius: 12,
+    borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     overflow: 'hidden',
+    paddingTop: Space.md,
+  },
+  fieldLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    paddingHorizontal: Space.lg,
+    marginBottom: Space.xs,
   },
   titleInput: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 15,
+    paddingHorizontal: Space.lg,
+    paddingBottom: Space.md,
+    fontSize: 16,
     fontWeight: '500',
     color: Colors.textPrimary,
+    letterSpacing: -0.2,
   },
   contentInput: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: Space.lg,
+    paddingBottom: Space.md,
     fontSize: 14,
     color: Colors.textPrimary,
-    lineHeight: 22,
-    minHeight: 140,
+    lineHeight: 23,
+    minHeight: 160,
   },
 
   inlineField: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Space.sm,
     backgroundColor: Colors.card,
-    borderRadius: 12,
+    borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.md,
   },
   inlineInput: {
     flex: 1,
@@ -243,21 +289,28 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
   },
 
-  tagSection: { gap: 10 },
+  // ── Style tags ────────────────────────────────────────────────────────────
+  tagSection: { gap: Space.sm },
   tagSectionTitle: {
-    fontSize: 11, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 0.5, textTransform: 'uppercase',
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textMuted,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
-  tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
   tag: {
-    borderRadius: 999,
-    paddingHorizontal: 13,
-    paddingVertical: 6,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.xs + 2,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
-  tagActive: { backgroundColor: Colors.primaryLight, borderColor: Colors.primary },
+  tagActive: {
+    backgroundColor: Colors.primaryLight,
+    borderColor: Colors.primary,
+  },
   tagText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
-  tagTextActive: { color: Colors.primary, fontWeight: '500' },
+  tagTextActive: { color: Colors.primary, fontWeight: '600' },
 });

@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, Easing, Image,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Animated, Easing, Image, Platform,
 } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Elevation, Radius, Font } from '../../../constants/colors';
+import { DestImage } from '../../../components/ui/DestImage';
 import { getProfileIcon } from '../../../constants/profileIcons';
 import { MatchResult, Post } from '../../../types';
 import { getRecommended } from '../../../services/matchService';
@@ -519,6 +520,12 @@ export default function HomeScreen() {
                     activeOpacity={0.7}
                   >
                     <View style={[styles.accentBar, { backgroundColor: ac.text }]} />
+                    <DestImage
+                      dest={d}
+                      style={styles.recruitThumb}
+                      radius={Radius.sm}
+                      scrim="none"
+                    />
                     <View style={styles.recruitBody}>
                       <View style={styles.recruitTopRow}>
                         <Text style={styles.recruitDest}>{d}</Text>
@@ -555,6 +562,17 @@ export default function HomeScreen() {
                 </View>
               )}
             </View>
+            {dest && (
+              <DestImage
+                dest={dest}
+                style={styles.detailBanner}
+                radius={Radius.md}
+                scrim="bottom"
+                align="flex-end"
+              >
+                <Text style={styles.detailBannerCity}>{dest}</Text>
+              </DestImage>
+            )}
             <View style={[styles.detailDateRow, { backgroundColor: accent.bg }]}>
               <Text style={[styles.detailDateText, { color: accent.text }]}>
                 {dateLabel}{nights ? `  ·  ${nights}` : ''}
@@ -632,7 +650,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end', marginBottom: 14,
   },
   appLabel: { fontSize: 10, fontWeight: '700', color: Colors.textMuted, letterSpacing: 2.5, marginBottom: 6 },
-  tagline: { fontSize: 26, fontWeight: '700', color: Colors.textPrimary, letterSpacing: -0.5 },
+  tagline: {
+    fontSize: 26, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5,
+    ...Platform.select({ web: { fontFamily: Font.serif }, default: {} }),
+  },
   bellBtn: { padding: 4 },
   liveRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
   liveDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#4CAF50' },
@@ -643,8 +664,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.card, borderRadius: 14,
     paddingHorizontal: 16, paddingVertical: 14,
     borderWidth: 1, borderColor: Colors.cardBorder, gap: 10,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 }, shadowOpacity: 1, shadowRadius: 8, elevation: 1,
+    ...Elevation.sm,
   },
   searchText: { flex: 1, fontSize: 14, color: Colors.textMuted },
   searchCta: { backgroundColor: Colors.primary, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
@@ -666,7 +686,9 @@ const styles = StyleSheet.create({
   recruitList: {
     backgroundColor: Colors.card, borderRadius: 16,
     borderWidth: 1, borderColor: Colors.cardBorder, overflow: 'hidden',
+    ...Elevation.sm,
   },
+  recruitThumb: { width: 56, height: 56, flexShrink: 0 },
   recruitRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 18, paddingRight: 16, gap: 14 },
   recruitDivider: { borderBottomWidth: 1, borderBottomColor: Colors.cardBorder },
   accentBar: { width: 3, height: 36, borderRadius: 2, marginLeft: 16, flexShrink: 0 },
@@ -701,6 +723,16 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: Colors.cardBorder,
   },
   detailStyleText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500' },
+  detailBanner: { height: 96, width: '100%' },
+  detailBannerCity: {
+    color: Colors.white,
+    fontSize: 18,
+    fontWeight: '300',
+    letterSpacing: -0.3,
+    paddingHorizontal: 14,
+    paddingBottom: 4,
+    ...Platform.select({ web: { fontFamily: Font.serif }, default: {} }),
+  },
   detailContent: { fontSize: 14, color: Colors.textPrimary, lineHeight: 22 },
   detailCta: {
     borderRadius: 12, paddingVertical: 14,

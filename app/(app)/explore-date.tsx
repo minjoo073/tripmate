@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import {
+  Colors, Editorial, Elevation, Radius, Space, Font,
+} from '../../constants/colors';
 import { getProfileIcon } from '../../constants/profileIcons';
+import { DestImage } from '../../components/ui/DestImage';
+import { ArrowLeftIcon } from '../../components/ui/Icon';
 
 type MonthKey = 'this' | 'next' | 'in2' | 'in3';
 
@@ -58,15 +62,15 @@ export default function ExploreDateScreen() {
   const posts = POSTS[activeMonth];
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
+          <ArrowLeftIcon color={Colors.textPrimary} size={20} />
         </TouchableOpacity>
-        <View>
+        <View style={styles.headerText}>
+          <Text style={styles.headerLabel}>BY DATE</Text>
           <Text style={styles.title}>날짜별 메이트</Text>
-          <Text style={styles.subtitle}>여행 일정이 맞는 동행을 찾아보세요</Text>
         </View>
       </View>
 
@@ -82,6 +86,7 @@ export default function ExploreDateScreen() {
             key={m.key}
             style={[styles.monthTab, activeMonth === m.key && styles.monthTabActive]}
             onPress={() => setActiveMonth(m.key)}
+            activeOpacity={0.88}
           >
             <Text style={[styles.monthTabLabel, activeMonth === m.key && styles.monthTabLabelActive]}>
               {m.label}
@@ -107,24 +112,34 @@ export default function ExploreDateScreen() {
       >
         {posts.map((post) => (
           <View key={post.id} style={styles.card}>
-            {/* Date bar */}
-            <View style={styles.dateBanner}>
-              <Text style={styles.dateBannerFlag}>{post.flag}</Text>
-              <Text style={styles.dateBannerDest}>{post.destination}</Text>
-              <View style={styles.dateBannerRight}>
-                <Text style={styles.dateBannerDate}>
-                  {post.startDate} – {post.endDate}
-                </Text>
+            {/* DestImage header — replaces the flat colored banner */}
+            <DestImage
+              dest={post.destination}
+              style={styles.cardImage}
+              scrim="bottom"
+              radius={0}
+            >
+              <View style={styles.dateBannerOverlay}>
+                <View style={styles.dateBannerLeft}>
+                  <Text style={styles.dateBannerDest}>{post.flag} {post.destination}</Text>
+                  <Text style={styles.dateBannerDate}>
+                    {post.startDate} – {post.endDate}
+                  </Text>
+                </View>
                 <View style={styles.nightsBadge}>
                   <Text style={styles.nightsText}>{post.nights}박</Text>
                 </View>
               </View>
-            </View>
+            </DestImage>
 
             {/* User row */}
             <View style={styles.userRow}>
               <View style={styles.avatar}>
-                <Image source={getProfileIcon(post.nickname)} style={styles.avatarImage} resizeMode="contain" />
+                <Image
+                  source={getProfileIcon(post.nickname)}
+                  style={styles.avatarImage}
+                  resizeMode="contain"
+                />
               </View>
               <View style={styles.userInfo}>
                 <View style={styles.userNameRow}>
@@ -155,6 +170,7 @@ export default function ExploreDateScreen() {
             <TouchableOpacity
               style={styles.chatBtn}
               onPress={() => router.push(`/mate/${post.id}`)}
+              activeOpacity={0.88}
             >
               <Text style={styles.chatBtnText}>💬 채팅 신청</Text>
             </TouchableOpacity>
@@ -166,26 +182,49 @@ export default function ExploreDateScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+  container: { flex: 1, backgroundColor: Colors.bgDeep },
+
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
+    alignItems: 'flex-start',
+    gap: Space.md,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xxl,
+    paddingBottom: Space.lg,
+    backgroundColor: Colors.card,
+    ...Elevation.sm,
   },
-  backBtn: { padding: 4 },
-  backIcon: { fontSize: 22, color: Colors.textPrimary },
-  title: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
-  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  backBtn: { padding: Space.xs, marginTop: 2 },
+  headerText: { flex: 1 },
+  headerLabel: {
+    ...Editorial.eyebrow,
+    color: Colors.accent,
+    marginBottom: Space.xs,
+  },
+  title: {
+    fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
+  },
 
-  monthTabScroll: { maxHeight: 72 },
-  monthTabContent: { paddingHorizontal: 20, gap: 10, flexDirection: 'row', paddingBottom: 8 },
+  monthTabScroll: {
+    maxHeight: 68,
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
+  monthTabContent: {
+    paddingHorizontal: Space.xl,
+    paddingBottom: Space.md,
+    paddingTop: Space.xs,
+    gap: Space.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   monthTab: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 14,
-    backgroundColor: Colors.white,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.sm,
+    borderRadius: Radius.md,
+    backgroundColor: Colors.bg,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     alignItems: 'center',
@@ -194,44 +233,45 @@ const styles = StyleSheet.create({
   monthTabActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
   monthTabLabel: { fontSize: 13, fontWeight: '600', color: Colors.textSecondary },
   monthTabLabelActive: { color: Colors.white },
-  monthTabSub: { fontSize: 11, color: Colors.textPlaceholder },
-  monthTabSubActive: { color: 'rgba(255,255,255,0.75)' },
+  monthTabSub: { fontSize: 11, color: Colors.textMuted },
+  monthTabSubActive: { color: 'rgba(255,255,255,0.72)' },
 
-  countRow: { paddingHorizontal: 20, paddingVertical: 12 },
+  countRow: {
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.md,
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
   countText: { fontSize: 13, color: Colors.textSecondary },
   countNum: { fontWeight: '700', color: Colors.primary },
 
   scroll: { flex: 1 },
-  list: { paddingHorizontal: 20, gap: 14 },
+  list: { paddingHorizontal: Space.xl, paddingTop: Space.lg, gap: Space.md },
 
   card: {
-    backgroundColor: Colors.white,
-    borderRadius: 18,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    ...Elevation.md,
   },
-  dateBanner: {
-    backgroundColor: Colors.primary,
+
+  cardImage: { height: 108 },
+  dateBannerOverlay: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
   },
-  dateBannerFlag: { fontSize: 20 },
-  dateBannerDest: { fontSize: 15, fontWeight: '700', color: Colors.white, flex: 1 },
-  dateBannerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  dateBannerDate: { fontSize: 12, color: 'rgba(255,255,255,0.8)' },
+  dateBannerLeft: { gap: 3 },
+  dateBannerDest: {
+    fontSize: 17, fontWeight: '600', color: Colors.white,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
+  },
+  dateBannerDate: { fontSize: 12, color: 'rgba(255,255,255,0.75)' },
   nightsBadge: {
     backgroundColor: Colors.pointYellow,
-    borderRadius: 6,
-    paddingHorizontal: 8,
+    borderRadius: Radius.xs,
+    paddingHorizontal: Space.sm,
     paddingVertical: 3,
   },
   nightsText: { fontSize: 11, color: Colors.textPrimary, fontWeight: '700' },
@@ -239,16 +279,13 @@ const styles = StyleSheet.create({
   userRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    gap: 12,
+    padding: Space.lg,
+    gap: Space.md,
   },
   avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 48, height: 48, borderRadius: Radius.pill,
     backgroundColor: Colors.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
   },
   avatarImage: { width: 32, height: 32 },
   userInfo: { flex: 1, gap: 6 },
@@ -256,20 +293,15 @@ const styles = StyleSheet.create({
   userName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   userMeta: { fontSize: 12, color: Colors.textSecondary },
   verifiedBadge: {
-    backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    backgroundColor: Colors.primaryBg, borderRadius: Radius.xs,
+    paddingHorizontal: 6, paddingVertical: 2,
   },
   verifiedText: { fontSize: 10, color: Colors.primary, fontWeight: '700' },
   tagsRow: { flexDirection: 'row', gap: 6 },
   tag: {
-    backgroundColor: Colors.bg,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    backgroundColor: Colors.bgDeep, borderRadius: Radius.xs,
+    paddingHorizontal: Space.sm, paddingVertical: 3,
+    borderWidth: 1, borderColor: Colors.cardBorder,
   },
   tagText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '500' },
   mateSlot: { alignItems: 'center', gap: 2 },
@@ -277,12 +309,13 @@ const styles = StyleSheet.create({
   mateSlotLabel: { fontSize: 10, color: Colors.textSecondary },
 
   chatBtn: {
-    margin: 12,
-    marginTop: 0,
+    marginHorizontal: Space.md,
+    marginBottom: Space.md,
     backgroundColor: Colors.primary,
-    borderRadius: 12,
-    paddingVertical: 12,
+    borderRadius: Radius.sm,
+    paddingVertical: Space.md,
     alignItems: 'center',
+    ...Elevation.primary,
   },
   chatBtnText: { fontSize: 14, color: Colors.white, fontWeight: '700' },
 });

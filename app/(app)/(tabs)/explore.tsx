@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import {
+  Colors, Editorial, Elevation, Radius, Space, Font,
+} from '../../../constants/colors';
 import { FindMateFilter } from '../../../types';
 import { TRAVEL_STYLES } from '../../../mock/data';
 import {
@@ -13,22 +15,23 @@ import {
   BackpackIcon, ShoppingBagIcon, LandmarkIcon, StoreIcon, LeafIcon,
 } from '../../../components/ui/Icon';
 import { DateRangePicker, formatMD } from '../../../components/ui/DateRangePicker';
+import { DestImage } from '../../../components/ui/DestImage';
 
 const POPULAR_CITIES = ['오사카', '도쿄', '방콕', '파리', '발리', '뉴욕'];
 
 const STYLE_ICON: Record<string, (color: string) => React.ReactNode> = {
-  '피식':      (c) => <SmileIcon color={c} size={17} />,
-  '액티비티':  (c) => <ZapIcon color={c} size={17} />,
-  '사진':      (c) => <CameraIcon color={c} size={17} />,
-  '관광':      (c) => <MapIcon color={c} size={17} />,
-  '힐링':      (c) => <LeafIcon color={c} size={17} />,
-  '카페':      (c) => <CoffeeIcon color={c} size={17} />,
-  '배낭':      (c) => <BackpackIcon color={c} size={17} />,
-  '쇼핑':      (c) => <ShoppingBagIcon color={c} size={17} />,
-  '맛집':      (c) => <UtensilsIcon color={c} size={17} />,
-  '역사/문화': (c) => <LandmarkIcon color={c} size={17} />,
+  '피식':        (c) => <SmileIcon color={c} size={17} />,
+  '액티비티':    (c) => <ZapIcon color={c} size={17} />,
+  '사진':        (c) => <CameraIcon color={c} size={17} />,
+  '관광':        (c) => <MapIcon color={c} size={17} />,
+  '힐링':        (c) => <LeafIcon color={c} size={17} />,
+  '카페':        (c) => <CoffeeIcon color={c} size={17} />,
+  '배낭':        (c) => <BackpackIcon color={c} size={17} />,
+  '쇼핑':        (c) => <ShoppingBagIcon color={c} size={17} />,
+  '맛집':        (c) => <UtensilsIcon color={c} size={17} />,
+  '역사/문화':   (c) => <LandmarkIcon color={c} size={17} />,
   '나이트라이프': (c) => <MoonIcon color={c} size={17} />,
-  '현지시장':  (c) => <StoreIcon color={c} size={17} />,
+  '현지시장':    (c) => <StoreIcon color={c} size={17} />,
 };
 
 const GENDER_OPTIONS = ['무관', '여성', '남성'] as const;
@@ -57,7 +60,7 @@ function SegmentRow<T extends string>({
             key={opt}
             style={[segStyles.segBtn, value === opt && segStyles.segBtnActive]}
             onPress={() => onChange(opt)}
-            activeOpacity={0.75}
+            activeOpacity={0.85}
           >
             <Text style={[segStyles.segText, value === opt && segStyles.segTextActive]}>
               {opt}
@@ -70,18 +73,22 @@ function SegmentRow<T extends string>({
 }
 
 const segStyles = StyleSheet.create({
-  wrap: { gap: 8 },
-  label: { fontSize: 12, fontWeight: '600', color: Colors.textSecondary },
+  wrap: { gap: Space.sm },
+  label: {
+    fontSize: 11, fontWeight: '700', color: Colors.textSecondary, letterSpacing: 0.3,
+  },
   seg: {
     flexDirection: 'row',
     backgroundColor: Colors.bgDeep,
-    borderRadius: 12,
+    borderRadius: Radius.sm,
     overflow: 'hidden',
+    padding: 3,
   },
   segBtn: {
-    flex: 1, paddingVertical: 8, alignItems: 'center',
+    flex: 1, paddingVertical: 9, alignItems: 'center',
+    borderRadius: Radius.xs,
   },
-  segBtnActive: { backgroundColor: Colors.accent, borderRadius: 10 },
+  segBtnActive: { backgroundColor: Colors.accent },
   segText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
   segTextActive: { color: Colors.white, fontWeight: '600' },
 });
@@ -157,7 +164,7 @@ export default function ExploreScreen() {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 100 }]}
+        contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 108 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -174,20 +181,34 @@ export default function ExploreScreen() {
               placeholderTextColor={Colors.textMuted}
             />
           </View>
-          <View style={styles.chipRow}>
+
+          {/* Popular city photo cards */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.cityScroll}
+          >
             {POPULAR_CITIES.map((city) => (
               <TouchableOpacity
                 key={city}
-                style={[styles.chip, destination === city && styles.chipActive]}
+                style={[
+                  styles.cityCardWrap,
+                  destination === city && styles.cityCardWrapActive,
+                ]}
                 onPress={() => setDestination(destination === city ? '' : city)}
-                activeOpacity={0.75}
+                activeOpacity={0.88}
               >
-                <Text style={[styles.chipText, destination === city && styles.chipTextActive]}>
-                  {city}
-                </Text>
+                <DestImage
+                  dest={city}
+                  style={styles.cityImg}
+                  scrim="bottom"
+                  radius={Radius.sm - 1}
+                >
+                  <Text style={styles.cityLabel}>{city}</Text>
+                </DestImage>
               </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         <View style={styles.divider} />
@@ -197,7 +218,10 @@ export default function ExploreScreen() {
           <Text style={styles.sectionTitle}>언제 떠나요?</Text>
           <View style={styles.dateRow}>
             <TouchableOpacity
-              style={[styles.dateSide, pickerOpen && pickerInitialMode === 'start' && styles.dateSideActive]}
+              style={[
+                styles.dateSide,
+                pickerOpen && pickerInitialMode === 'start' && styles.dateSideActive,
+              ]}
               onPress={() => openPicker('start')}
               activeOpacity={0.7}
             >
@@ -208,7 +232,10 @@ export default function ExploreScreen() {
             </TouchableOpacity>
             <Text style={styles.dateArrow}>—</Text>
             <TouchableOpacity
-              style={[styles.dateSide, pickerOpen && pickerInitialMode === 'end' && styles.dateSideActive]}
+              style={[
+                styles.dateSide,
+                pickerOpen && pickerInitialMode === 'end' && styles.dateSideActive,
+              ]}
               onPress={() => openPicker('end')}
               activeOpacity={0.7}
             >
@@ -238,12 +265,16 @@ export default function ExploreScreen() {
                   key={style}
                   style={[styles.styleCell, active && styles.styleCellActive]}
                   onPress={() => toggleStyle(style)}
-                  activeOpacity={0.75}
+                  activeOpacity={0.88}
                 >
                   <View style={styles.styleIconWrap}>
-                    {(STYLE_ICON[style] ?? ((c: string) => <CompassIcon color={c} size={17} />))(active ? Colors.accent : Colors.textMuted)}
+                    {(STYLE_ICON[style] ?? ((c: string) => <CompassIcon color={c} size={17} />))(
+                      active ? Colors.white : Colors.textMuted,
+                    )}
                   </View>
-                  <Text style={[styles.styleText, active && styles.styleTextActive]}>{style}</Text>
+                  <Text style={[styles.styleText, active && styles.styleTextActive]}>
+                    {style}
+                  </Text>
                 </TouchableOpacity>
               );
             })}
@@ -275,10 +306,12 @@ export default function ExploreScreen() {
                   key={label}
                   style={[styles.toggleChip, value && styles.toggleChipActive]}
                   onPress={() => (setter as (v: boolean) => void)(!value)}
-                  activeOpacity={0.75}
+                  activeOpacity={0.88}
                 >
                   {renderIcon(value ? Colors.accent : Colors.textSecondary)}
-                  <Text style={[styles.toggleChipText, value && styles.toggleChipTextActive]}>{label}</Text>
+                  <Text style={[styles.toggleChipText, value && styles.toggleChipTextActive]}>
+                    {label}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -287,10 +320,14 @@ export default function ExploreScreen() {
       </ScrollView>
 
       {/* 하단 고정 CTA */}
-      <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
+      <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 14 }]}>
         {filledCount > 0 && (
           <Text style={styles.bottomHint}>
-            {destination || '목적지'}{startDate ? ` · ${startDate}` : ''}{selectedStyles.length > 0 ? ` · ${selectedStyles[0]}${selectedStyles.length > 1 ? ` 외 ${selectedStyles.length - 1}` : ''}` : ''}
+            {destination || '목적지'}
+            {startDate ? ` · ${startDate}` : ''}
+            {selectedStyles.length > 0
+              ? ` · ${selectedStyles[0]}${selectedStyles.length > 1 ? ` 외 ${selectedStyles.length - 1}` : ''}`
+              : ''}
           </Text>
         )}
         <TouchableOpacity style={styles.searchBtn} onPress={handleSearch} activeOpacity={0.88}>
@@ -312,36 +349,37 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+  container: { flex: 1, backgroundColor: Colors.bgDeep },
 
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
-    paddingHorizontal: 20,
+    gap: Space.md,
+    paddingHorizontal: Space.xl,
     paddingTop: 44,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.cardBorder,
+    paddingBottom: Space.xl,
     backgroundColor: Colors.card,
+    ...Elevation.sm,
   },
-  backBtn: { padding: 4, marginTop: 16 },
+  backBtn: { padding: Space.xs, marginTop: Space.lg },
   headerText: { flex: 1 },
   headerLabel: {
-    fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 8,
+    ...Editorial.eyebrow,
+    color: Colors.accent,
+    marginBottom: Space.sm,
   },
   title: {
     fontSize: 26, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
   },
 
   scroll: { flex: 1 },
-  content: { paddingTop: 4 },
+  content: { paddingTop: Space.xs },
 
   section: {
-    paddingHorizontal: 22,
-    paddingVertical: 24,
-    gap: 14,
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.xxl,
+    gap: Space.lg,
     backgroundColor: Colors.card,
   },
   sectionHeader: {
@@ -350,105 +388,112 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: Colors.textPrimary,
-    letterSpacing: -0.2,
+    fontSize: 17, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.2,
   },
   selectedCount: {
-    fontSize: 12,
-    color: Colors.accent,
-    fontWeight: '600',
+    fontSize: 12, color: Colors.accent, fontWeight: '600',
   },
-  divider: {
-    height: 8,
-    backgroundColor: Colors.bgDeep,
-  },
+  divider: { height: 10, backgroundColor: Colors.bgDeep },
 
   inputWrap: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: Colors.bg, borderRadius: 12,
-    paddingHorizontal: 14, paddingVertical: 12,
+    flexDirection: 'row', alignItems: 'center', gap: Space.sm,
+    backgroundColor: Colors.bg, borderRadius: Radius.sm,
+    paddingHorizontal: Space.lg, paddingVertical: Space.md,
     borderWidth: 1, borderColor: Colors.cardBorder,
+    ...Elevation.sm,
   },
   input: { flex: 1, fontSize: 15, color: Colors.textPrimary },
 
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
-  chip: {
-    paddingHorizontal: 13, paddingVertical: 6,
-    borderRadius: 999, borderWidth: 1, borderColor: Colors.cardBorder,
-    backgroundColor: Colors.bg,
+  cityScroll: { gap: Space.sm, paddingBottom: Space.xs },
+  cityCardWrap: {
+    borderRadius: Radius.sm,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    ...Elevation.sm,
   },
-  chipActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
-  chipText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '400' },
-  chipTextActive: { color: Colors.accent, fontWeight: '600' },
+  cityCardWrapActive: { borderColor: Colors.accent },
+  cityImg: { width: 84, height: 70 },
+  cityLabel: {
+    fontSize: 11, fontWeight: '700', color: Colors.white,
+    letterSpacing: 0.2, textAlign: 'center',
+  },
 
   dateRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    backgroundColor: Colors.bg,
-    borderRadius: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    gap: Space.md,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.md,
+    paddingHorizontal: Space.xxl,
+    paddingVertical: Space.lg,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
+    ...Elevation.sm,
   },
-  dateSide: { flex: 1, alignItems: 'center', gap: 6, paddingVertical: 6, borderRadius: 10 },
+  dateSide: {
+    flex: 1, alignItems: 'center', gap: 6,
+    paddingVertical: Space.sm, borderRadius: Radius.xs,
+  },
   dateSideActive: { backgroundColor: Colors.accentLight },
-  dateLabel: { fontSize: 10, fontWeight: '600', color: Colors.textMuted, letterSpacing: 0.5 },
+  dateLabel: {
+    fontSize: 10, fontWeight: '700', color: Colors.textMuted, letterSpacing: 1,
+  },
   dateValue: {
-    fontSize: 20, fontWeight: '300', color: Colors.textPrimary,
+    fontSize: 22, fontWeight: '300', color: Colors.textPrimary,
     letterSpacing: -0.5, textAlign: 'center', minWidth: 70,
   },
   datePlaceholder: { color: Colors.textMuted },
   dateArrow: { fontSize: 16, color: Colors.textMuted },
 
-  styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  styleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
   styleCell: {
     width: '30%', flexGrow: 1,
-    paddingVertical: 11, borderRadius: 12,
-    alignItems: 'center', gap: 5,
+    paddingVertical: Space.md, borderRadius: Radius.sm,
+    alignItems: 'center', gap: 6,
     borderWidth: 1, borderColor: Colors.cardBorder,
-    backgroundColor: Colors.bg,
+    backgroundColor: Colors.card,
+    ...Elevation.sm,
   },
-  styleCellActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
-  styleIconWrap: { width: 18, height: 18, alignItems: 'center', justifyContent: 'center' },
-  styleText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
-  styleTextActive: { color: Colors.accent, fontWeight: '600' },
+  styleCellActive: {
+    backgroundColor: Colors.accent, borderColor: Colors.accent,
+    shadowOpacity: 0, elevation: 0,
+  },
+  styleIconWrap: { width: 20, height: 20, alignItems: 'center', justifyContent: 'center' },
+  styleText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '500' },
+  styleTextActive: { color: Colors.white, fontWeight: '700' },
 
-  filterStack: { gap: 14 },
+  filterStack: { gap: Space.lg },
   filterDivider: { height: 1, backgroundColor: Colors.bgDeep },
   toggleGroupLabel: {
-    fontSize: 12, fontWeight: '600', color: Colors.textSecondary,
+    fontSize: 11, fontWeight: '700', color: Colors.textSecondary, letterSpacing: 0.3,
   },
-  toggleChips: { flexDirection: 'row', gap: 8 },
+  toggleChips: { flexDirection: 'row', gap: Space.sm },
   toggleChip: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    gap: 5, paddingVertical: 9,
-    borderRadius: 10, borderWidth: 1, borderColor: Colors.cardBorder,
+    gap: 5, paddingVertical: Space.md,
+    borderRadius: Radius.xs, borderWidth: 1, borderColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
   toggleChipActive: { backgroundColor: Colors.accentLight, borderColor: Colors.accent },
-  toggleChipText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '400' },
-  toggleChipTextActive: { color: Colors.accent, fontWeight: '600' },
+  toggleChipText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '500' },
+  toggleChipTextActive: { color: Colors.accent, fontWeight: '700' },
 
   bottomBar: {
     position: 'absolute', bottom: 0, left: 0, right: 0,
     backgroundColor: Colors.card,
-    paddingHorizontal: 20, paddingTop: 12,
-    borderTopWidth: 1, borderTopColor: Colors.cardBorder,
-    gap: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 6,
+    paddingHorizontal: Space.xl, paddingTop: Space.md,
+    gap: Space.sm,
+    ...Elevation.lg,
   },
-  bottomHint: { fontSize: 11, color: Colors.textMuted, textAlign: 'center', fontWeight: '400' },
+  bottomHint: {
+    fontSize: 11, color: Colors.textMuted, textAlign: 'center', fontWeight: '400',
+  },
   searchBtn: {
-    backgroundColor: Colors.primary, borderRadius: 12,
-    height: 48, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: Colors.primary, borderRadius: Radius.sm,
+    height: 52, alignItems: 'center', justifyContent: 'center',
+    ...Elevation.primary,
   },
-  searchBtnText: { fontSize: 15, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
+  searchBtnText: {
+    fontSize: 15, fontWeight: '700', color: Colors.white, letterSpacing: 0.2,
+  },
 });

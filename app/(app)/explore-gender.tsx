@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import {
+  Colors, Editorial, Elevation, Radius, Space, Font,
+} from '../../constants/colors';
 import { getProfileIcon } from '../../constants/profileIcons';
+import { DestImage } from '../../components/ui/DestImage';
+import { ArrowLeftIcon } from '../../components/ui/Icon';
 
 type GenderFilter = 'all' | 'female' | 'male';
 type AgeRange = 'all' | '20s' | '30s' | '40s';
@@ -56,15 +60,15 @@ export default function ExploreGenderScreen() {
   });
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
+          <ArrowLeftIcon color={Colors.textPrimary} size={20} />
         </TouchableOpacity>
-        <View>
+        <View style={styles.headerText}>
+          <Text style={styles.headerLabel}>MATES</Text>
           <Text style={styles.title}>성별 · 나이 메이트</Text>
-          <Text style={styles.subtitle}>원하는 조건의 동행을 찾아보세요</Text>
         </View>
       </View>
 
@@ -81,6 +85,7 @@ export default function ExploreGenderScreen() {
               key={g.key}
               style={[styles.genderBtn, genderFilter === g.key && styles.genderBtnActive]}
               onPress={() => setGenderFilter(g.key)}
+              activeOpacity={0.88}
             >
               <Text style={styles.genderBtnEmoji}>{g.emoji}</Text>
               <Text style={[styles.genderBtnText, genderFilter === g.key && styles.genderBtnTextActive]}>
@@ -100,6 +105,7 @@ export default function ExploreGenderScreen() {
               key={a.key}
               style={[styles.ageBtn, ageRange === a.key && styles.ageBtnActive]}
               onPress={() => setAgeRange(a.key)}
+              activeOpacity={0.88}
             >
               <Text style={[styles.ageBtnText, ageRange === a.key && styles.ageBtnTextActive]}>
                 {a.label}
@@ -133,13 +139,22 @@ export default function ExploreGenderScreen() {
               key={mate.id}
               style={styles.card}
               onPress={() => router.push(`/mate/${mate.id}`)}
-              activeOpacity={0.85}
+              activeOpacity={0.88}
             >
               {/* Avatar + basic info */}
               <View style={styles.cardTop}>
-                <View style={[styles.avatar, { backgroundColor: mate.gender === 'female' ? 'rgba(255,182,193,0.3)' : Colors.primaryBg }]}>
-                  <Image source={getProfileIcon(mate.nickname)} style={styles.avatarImage} resizeMode="contain" />
-                  <Text style={styles.avatarGender}>{mate.gender === 'female' ? '👩' : '👨'}</Text>
+                <View style={[
+                  styles.avatar,
+                  { backgroundColor: mate.gender === 'female' ? 'rgba(255,182,193,0.25)' : Colors.primaryBg },
+                ]}>
+                  <Image
+                    source={getProfileIcon(mate.nickname)}
+                    style={styles.avatarImage}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.avatarGender}>
+                    {mate.gender === 'female' ? '👩' : '👨'}
+                  </Text>
                 </View>
                 <View style={styles.basicInfo}>
                   <View style={styles.nameRow}>
@@ -165,11 +180,16 @@ export default function ExploreGenderScreen() {
                 </View>
               </View>
 
-              {/* Destination */}
+              {/* Destination — DestImage thumbnail */}
               <View style={styles.destRow}>
-                <Text style={styles.destFlag}>{mate.flag}</Text>
+                <DestImage
+                  dest={mate.destination}
+                  style={styles.destThumb}
+                  scrim="none"
+                  radius={Radius.xs}
+                />
                 <View style={styles.destInfo}>
-                  <Text style={styles.destName}>{mate.destination}</Text>
+                  <Text style={styles.destName}>{mate.flag} {mate.destination}</Text>
                   <Text style={styles.destDates}>{mate.dates}</Text>
                 </View>
               </View>
@@ -181,7 +201,11 @@ export default function ExploreGenderScreen() {
                     <Text style={styles.tagText}>{s}</Text>
                   </View>
                 ))}
-                <TouchableOpacity style={styles.chatBtn} onPress={() => router.push(`/mate/${mate.id}`)}>
+                <TouchableOpacity
+                  style={styles.chatBtn}
+                  onPress={() => router.push(`/mate/${mate.id}`)}
+                  activeOpacity={0.88}
+                >
                   <Text style={styles.chatBtnText}>채팅하기 →</Text>
                 </TouchableOpacity>
               </View>
@@ -194,80 +218,95 @@ export default function ExploreGenderScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+  container: { flex: 1, backgroundColor: Colors.bgDeep },
+
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
+    alignItems: 'flex-start',
+    gap: Space.md,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xxl,
+    paddingBottom: Space.lg,
+    backgroundColor: Colors.card,
+    ...Elevation.sm,
   },
-  backBtn: { padding: 4 },
-  backIcon: { fontSize: 22, color: Colors.textPrimary },
-  title: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
-  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  backBtn: { padding: Space.xs, marginTop: 2 },
+  headerText: { flex: 1 },
+  headerLabel: {
+    ...Editorial.eyebrow,
+    color: Colors.accent,
+    marginBottom: Space.xs,
+  },
+  title: {
+    fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
+  },
 
-  filterSection: { paddingHorizontal: 20, marginBottom: 12 },
-  filterLabel: { fontSize: 13, fontWeight: '700', color: Colors.textSecondary, marginBottom: 8 },
-  genderBtns: { flexDirection: 'row', gap: 10 },
+  filterSection: {
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.lg,
+    gap: Space.sm,
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
+  filterLabel: {
+    fontSize: 11, fontWeight: '700', color: Colors.textSecondary, letterSpacing: 0.3,
+  },
+  genderBtns: { flexDirection: 'row', gap: Space.sm },
   genderBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    paddingVertical: 12,
-    borderRadius: 14,
-    backgroundColor: Colors.white,
+    paddingVertical: Space.md,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.bg,
     borderWidth: 1.5,
     borderColor: Colors.cardBorder,
   },
   genderBtnActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  genderBtnEmoji: { fontSize: 18 },
+  genderBtnEmoji: { fontSize: 17 },
   genderBtnText: { fontSize: 13, fontWeight: '600', color: Colors.textSecondary },
   genderBtnTextActive: { color: Colors.white },
 
-  ageBtns: { flexDirection: 'row', gap: 8 },
+  ageBtns: { flexDirection: 'row', gap: Space.sm },
   ageBtn: {
-    flex: 1,
-    paddingVertical: 9,
-    borderRadius: 10,
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    flex: 1, paddingVertical: Space.sm,
+    borderRadius: Radius.xs,
+    backgroundColor: Colors.bg,
+    borderWidth: 1, borderColor: Colors.cardBorder,
     alignItems: 'center',
   },
   ageBtnActive: { backgroundColor: Colors.primaryBg, borderColor: Colors.primary },
   ageBtnText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
   ageBtnTextActive: { color: Colors.primary, fontWeight: '700' },
 
-  resultRow: { paddingHorizontal: 20, paddingBottom: 12 },
+  resultRow: {
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.md,
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
   resultText: { fontSize: 13, color: Colors.textSecondary },
   resultNum: { fontWeight: '700', color: Colors.primary },
 
   scroll: { flex: 1 },
-  list: { paddingHorizontal: 20, gap: 14 },
+  list: { paddingHorizontal: Space.xl, paddingTop: Space.lg, gap: Space.md },
 
   card: {
-    backgroundColor: Colors.white,
-    borderRadius: 18,
-    padding: 18,
-    gap: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
+    padding: Space.lg,
+    gap: Space.md,
+    ...Elevation.md,
   },
-  cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 14 },
+  cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: Space.md },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 56, height: 56, borderRadius: Radius.pill,
+    alignItems: 'center', justifyContent: 'center',
     position: 'relative',
   },
   avatarImage: { width: 38, height: 38 },
@@ -278,54 +317,51 @@ const styles = StyleSheet.create({
   ageBadge: { fontSize: 13, color: Colors.textSecondary },
   mbtiBadge: {
     backgroundColor: Colors.pointPurple,
-    borderRadius: 6,
-    paddingHorizontal: 7,
-    paddingVertical: 2,
+    borderRadius: Radius.xs,
+    paddingHorizontal: 7, paddingVertical: 2,
   },
   mbtiText: { fontSize: 11, color: Colors.textPrimary, fontWeight: '700' },
   verifiedBadge: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    borderRadius: Radius.xs,
+    paddingHorizontal: 6, paddingVertical: 2,
   },
   verifiedText: { fontSize: 10, color: Colors.primary, fontWeight: '700' },
   bio: { fontSize: 13, color: Colors.textSecondary },
   statsRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   stat: { fontSize: 12, color: Colors.textSecondary },
-  statDot: { fontSize: 12, color: Colors.textPlaceholder },
+  statDot: { fontSize: 12, color: Colors.textMuted },
 
+  // Destination row with DestImage thumbnail
   destRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    backgroundColor: Colors.bg,
-    borderRadius: 12,
-    padding: 12,
+    gap: Space.md,
+    backgroundColor: Colors.bgDeep,
+    borderRadius: Radius.sm,
+    padding: Space.sm,
   },
-  destFlag: { fontSize: 28 },
-  destInfo: { gap: 2 },
+  destThumb: { width: 52, height: 52 },
+  destInfo: { flex: 1, gap: 3 },
   destName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   destDates: { fontSize: 12, color: Colors.textSecondary },
 
   tagsRow: { flexDirection: 'row', gap: 6, alignItems: 'center', flexWrap: 'wrap' },
   tag: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    borderRadius: Radius.xs,
+    paddingHorizontal: Space.sm, paddingVertical: 4,
   },
   tagText: { fontSize: 11, color: Colors.primary, fontWeight: '600' },
   chatBtn: {
     marginLeft: 'auto',
     backgroundColor: Colors.primary,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
+    borderRadius: Radius.xs,
+    paddingHorizontal: Space.md, paddingVertical: 6,
   },
   chatBtnText: { fontSize: 12, color: Colors.white, fontWeight: '700' },
 
-  empty: { paddingTop: 40, alignItems: 'center', gap: 10 },
+  empty: { paddingTop: 48, alignItems: 'center', gap: Space.md },
   emptyIcon: { fontSize: 40 },
   emptyTitle: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
   emptyDesc: { fontSize: 13, color: Colors.textSecondary },

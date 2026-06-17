@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../constants/colors';
 import { ArrowLeftIcon, HeartIcon, MapPinIcon } from '../../components/ui/Icon';
 import { Avatar } from '../../components/ui/Avatar';
 import { CalendarIcon } from '../../components/ui/Icon';
+import { DestImage } from '../../components/ui/DestImage';
 import { mockMatchResults, mockMyTrip } from '../../mock/data';
 import { JoinSheet } from '../../components/mate/JoinSheet';
 import { MatchResult } from '../../types';
@@ -68,69 +69,80 @@ export default function LikedMatesScreen() {
             return (
               <TouchableOpacity
                 key={item.user.id}
-                style={styles.card}
-                activeOpacity={0.82}
+                style={[styles.card, Elevation.md]}
+                activeOpacity={0.88}
                 onPress={() => router.push(`/mate/${item.user.id}`)}
               >
-                {/* Top row */}
-                <View style={styles.cardTop}>
-                  <View style={styles.avatarWrap}>
-                    <Avatar nickname={item.user.nickname} size={52} />
-                    {item.user.isVerified && <View style={styles.verifiedDot} />}
-                  </View>
-                  <View style={styles.info}>
-                    <Text style={styles.name}>{item.user.nickname}</Text>
-                    <View style={styles.destRow}>
-                      <MapPinIcon color={Colors.textMuted} size={11} />
-                      <Text style={styles.dest}>{item.trip.destination}</Text>
+                {/* Destination hero photo */}
+                <DestImage
+                  dest={item.trip.destination}
+                  style={styles.cardHero}
+                  scrim="bottom"
+                  radius={0}
+                >
+                  <View style={styles.cardHeroContent}>
+                    <View style={styles.avatarWrap}>
+                      <Avatar nickname={item.user.nickname} size={48} />
+                      {item.user.isVerified && <View style={styles.verifiedDot} />}
                     </View>
-                    <View style={styles.overlapRow}>
-                      <CalendarIcon color={overlap ? Colors.accent : Colors.textMuted} size={10} />
-                      <Text style={[styles.overlapText, !overlap && styles.overlapTextNone]}>
-                        {overlap ? `${overlap.label} · ${overlap.days}일 겹침` : '일정 겹침 없음'}
-                      </Text>
-                    </View>
-                  </View>
-                  {/* Match rate + heart */}
-                  <View style={styles.rightCol}>
-                    <View style={styles.matchWrap}>
-                      <Text style={styles.matchPct}>{item.matchRate}%</Text>
-                      <View style={styles.compatDots}>
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <View
-                            key={i}
-                            style={[styles.compatDot, i <= filledDots && styles.compatDotFilled]}
-                          />
-                        ))}
+                    <View style={styles.heroInfo}>
+                      <Text style={styles.nameOnPhoto}>{item.user.nickname}</Text>
+                      <View style={styles.destRow}>
+                        <MapPinIcon color="rgba(255,255,255,0.75)" size={10} />
+                        <Text style={styles.destOnPhoto}>{item.trip.destination}</Text>
                       </View>
                     </View>
-                    <View style={styles.heartBadge}>
-                      <HeartIcon color={Colors.accent} size={12} filled />
+                    {/* Match rate badge */}
+                    <View style={styles.matchBadgeOnPhoto}>
+                      <Text style={styles.matchPctOnPhoto}>{item.matchRate}%</Text>
+                      <Text style={styles.matchLabelOnPhoto}>매칭</Text>
                     </View>
                   </View>
+                </DestImage>
+
+                {/* Card body */}
+                <View style={styles.cardBody}>
+                  {/* Overlap row */}
+                  <View style={styles.overlapRow}>
+                    <CalendarIcon color={overlap ? Colors.accent : Colors.textMuted} size={10} />
+                    <Text style={[styles.overlapText, !overlap && styles.overlapTextNone]}>
+                      {overlap ? `${overlap.label} · ${overlap.days}일 겹침` : '일정 겹침 없음'}
+                    </Text>
+                  </View>
+
+                  {/* Tags */}
+                  <Text style={styles.stylesText}>
+                    {item.user.travelStyles.slice(0, 3).join(' · ')}
+                  </Text>
+
+                  {/* Trust row */}
+                  <View style={styles.trustRow}>
+                    {item.user.isVerified && (
+                      <Text style={styles.trustVerified}>● 인증</Text>
+                    )}
+                    <Text style={styles.trustMeta}>재동행 {reRate}%</Text>
+                    <Text style={styles.trustMeta}>응답 빠름</Text>
+                  </View>
+
+                  {/* Compat dots */}
+                  <View style={styles.compatRow}>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <View
+                        key={i}
+                        style={[styles.compatDot, i <= filledDots && styles.compatDotFilled]}
+                      />
+                    ))}
+                    <Text style={styles.compatLabel}>여행 스타일 매칭</Text>
+                  </View>
+
+                  <TouchableOpacity
+                    style={styles.joinBtn}
+                    onPress={(e) => { e.stopPropagation?.(); setJoinTarget(item); }}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.joinBtnText}>동행 신청</Text>
+                  </TouchableOpacity>
                 </View>
-
-                {/* Tags — plain text */}
-                <Text style={styles.stylesText}>
-                  {item.user.travelStyles.slice(0, 3).join(' · ')}
-                </Text>
-
-                {/* Trust — inline text */}
-                <View style={styles.trustRow}>
-                  {item.user.isVerified && (
-                    <Text style={styles.trustVerified}>● 인증</Text>
-                  )}
-                  <Text style={styles.trustMeta}>재동행 {reRate}%</Text>
-                  <Text style={styles.trustMeta}>응답 빠름</Text>
-                </View>
-
-                <TouchableOpacity
-                  style={styles.joinBtn}
-                  onPress={(e) => { e.stopPropagation?.(); setJoinTarget(item); }}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.joinBtnText}>동행 신청</Text>
-                </TouchableOpacity>
               </TouchableOpacity>
             );
           })}
@@ -155,10 +167,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
+    gap: Space.md,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xl,
+    paddingBottom: Space.xl,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
   },
@@ -168,9 +180,7 @@ const styles = StyleSheet.create({
     fontSize: 10, fontWeight: '700', color: Colors.textMuted,
     letterSpacing: 2.5, marginBottom: 8,
   },
-  title: {
-    fontSize: 26, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5,
-  },
+  title: { fontSize: 26, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5 },
   countBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -178,71 +188,74 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accentLight,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     marginTop: 18,
   },
   countText: { fontSize: 12, fontWeight: '600', color: Colors.accent },
 
   scroll: { flex: 1 },
-  content: { padding: 20, gap: 12 },
+  content: { padding: Space.xl, gap: Space.md },
 
+  // Card — column layout with destination photo header
   card: {
     backgroundColor: Colors.card,
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    gap: 14,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 1,
   },
-  cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  avatarWrap: { position: 'relative' },
+  cardHero: { height: 140 },
+  cardHeroContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: Space.md,
+    width: '100%',
+  },
+  avatarWrap: { position: 'relative', flexShrink: 0 },
   verifiedDot: {
     position: 'absolute', bottom: 1, right: 1,
     width: 10, height: 10, borderRadius: 5,
     backgroundColor: Colors.olive,
-    borderWidth: 1.5, borderColor: Colors.card,
+    borderWidth: 1.5, borderColor: Colors.white,
   },
-  info: { flex: 1, gap: 5 },
-  name: { fontSize: 16, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
+  heroInfo: { flex: 1, gap: 3 },
+  nameOnPhoto: { fontSize: 16, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
   destRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  dest: { fontSize: 12, color: Colors.textSecondary },
+  destOnPhoto: { fontSize: 12, color: 'rgba(255,255,255,0.8)' },
+  matchBadgeOnPhoto: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(59,81,120,0.65)',
+    borderRadius: Radius.sm,
+    paddingHorizontal: Space.sm,
+    paddingVertical: 4,
+    flexShrink: 0,
+  },
+  matchPctOnPhoto: { fontSize: 14, fontWeight: '700', color: Colors.white, letterSpacing: -0.3 },
+  matchLabelOnPhoto: { fontSize: 9, color: 'rgba(255,255,255,0.75)', fontWeight: '500', letterSpacing: 0.5 },
+
+  // Card body
+  cardBody: { padding: Space.lg, gap: Space.md },
   overlapRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   overlapText: { fontSize: 11, color: Colors.accent, fontWeight: '500' },
   overlapTextNone: { color: Colors.textMuted, fontWeight: '400' },
 
-  rightCol: { alignItems: 'flex-end', gap: 8 },
-  matchWrap: { alignItems: 'flex-end', gap: 5 },
-  matchPct: { fontSize: 13, fontWeight: '700', color: Colors.primary, letterSpacing: -0.3 },
-  compatDots: { flexDirection: 'row', gap: 3 },
-  compatDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.bgDeep },
-  compatDotFilled: { backgroundColor: Colors.dustBlue },
-  heartBadge: {
-    width: 28, height: 28, borderRadius: 14,
-    backgroundColor: Colors.accentLight,
-    alignItems: 'center', justifyContent: 'center',
-  },
-
-  stylesText: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    fontWeight: '400',
-  },
+  stylesText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
 
   trustRow: {
     flexDirection: 'row', gap: 10,
-    paddingTop: 12,
+    paddingTop: Space.md,
     borderTopWidth: 1, borderTopColor: Colors.cardBorder,
   },
   trustVerified: { fontSize: 11, color: Colors.olive, fontWeight: '500' },
   trustMeta: { fontSize: 11, color: Colors.textMuted, fontWeight: '400' },
 
+  compatRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  compatDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.bgDeep },
+  compatDotFilled: { backgroundColor: Colors.dustBlue },
+  compatLabel: { fontSize: 10, color: Colors.textMuted, marginLeft: 4 },
+
   joinBtn: {
-    backgroundColor: Colors.primary, borderRadius: 12,
+    backgroundColor: Colors.primary, borderRadius: Radius.sm,
     paddingVertical: 11, alignItems: 'center',
   },
   joinBtnText: { fontSize: 13, fontWeight: '600', color: Colors.white },
@@ -260,7 +273,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: Colors.primary,
     paddingHorizontal: 24, paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: Radius.sm,
   },
   emptyBtnText: { fontSize: 14, fontWeight: '600', color: Colors.white },
 });

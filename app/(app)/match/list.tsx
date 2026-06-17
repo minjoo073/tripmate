@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Font, Space } from '../../../constants/colors';
 import { MatchResult } from '../../../types';
 import { MatchCard } from '../../../components/match/MatchCard';
 import { mockMatchResults } from '../../../mock/data';
@@ -67,9 +67,9 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 24,
     gap: 14,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     fontWeight: '300',
     color: Colors.textPrimary,
     letterSpacing: -0.4,
+    ...Platform.select({ web: { fontFamily: Font.serif }, default: {} }),
   },
   subtitle: {
     fontSize: 13,

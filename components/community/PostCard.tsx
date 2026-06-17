@@ -1,11 +1,12 @@
 import React from 'react';
-import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Post } from '../../types';
 import { Avatar } from '../ui/Avatar';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space, Font } from '../../constants/colors';
 import { HeartIcon, MessageIcon, MapPinIcon } from '../ui/Icon';
 import { StyleTag } from '../ui/StyleTag';
+import { DestImage } from '../ui/DestImage';
 
 interface Props {
   item: Post;
@@ -23,41 +24,159 @@ export function PostCard({ item }: Props) {
   const cat = CATEGORY_LABELS[item.category ?? 'all'] ?? CATEGORY_LABELS['all'];
   const destination = item.trip?.destination ?? '';
   const isMatePost = item.category === 'mate';
+  const hasDestination = destination.length > 0;
 
+  // Mate posts get a large hero image; tip/review posts get a right-rail thumbnail
+  if (isMatePost && hasDestination) {
+    return (
+      <TouchableOpacity
+        style={[styles.mateCard, Elevation.md]}
+        activeOpacity={0.87}
+        onPress={() => router.push(`/post/${item.id}`)}
+      >
+        <DestImage
+          dest={destination}
+          style={styles.mateImage}
+          scrim="bottom"
+          radius={0}
+        >
+          {/* Top row: category + time */}
+          <View style={styles.mateTopRow} />
+        </DestImage>
+
+        {/* Overlay badges on image */}
+        <View style={styles.mateImageBadges}>
+          <View style={styles.mateCatBadge}>
+            <View style={[styles.catDot, { backgroundColor: 'rgba(255,255,255,0.9)' }]} />
+            <Text style={styles.mateCatText}>{cat.label}</Text>
+          </View>
+          <Text style={styles.mateTimeOnImg}>{time}</Text>
+        </View>
+
+        {/* Text body below image */}
+        <View style={styles.mateBody}>
+          <Text style={styles.mateTitle} numberOfLines={2}>{item.title}</Text>
+
+          {item.trip && (
+            <View style={styles.metaRow}>
+              <MapPinIcon color={Colors.textMuted} size={10} />
+              <Text style={styles.metaText}>{destination}</Text>
+              <Text style={styles.metaDate}> · {item.trip.startDate} – {item.trip.endDate}</Text>
+            </View>
+          )}
+
+          {item.travelStyles.length > 0 && (
+            <View style={styles.tagRow}>
+              {item.travelStyles.slice(0, 3).map((s) => (
+                <StyleTag key={s} label={s} />
+              ))}
+            </View>
+          )}
+
+          <View style={styles.footer}>
+            <View style={styles.authorRow}>
+              <Avatar nickname={item.author.nickname} size={18} />
+              <Text style={styles.authorName}>{item.author.nickname}</Text>
+              {item.author.location ? (
+                <Text style={styles.authorMeta}> · {item.author.location}</Text>
+              ) : null}
+            </View>
+            <View style={styles.statsRow}>
+              <HeartIcon color={Colors.textMuted} size={11} />
+              <Text style={styles.stat}>{item.likes}</Text>
+              <MessageIcon color={Colors.textMuted} size={11} />
+              <Text style={styles.stat}>{item.comments}</Text>
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  // Tips / review posts with destination: text-left + right thumbnail
+  if (!isMatePost && hasDestination) {
+    return (
+      <TouchableOpacity
+        style={styles.row}
+        activeOpacity={0.87}
+        onPress={() => router.push(`/post/${item.id}`)}
+      >
+        <View style={styles.rowInner}>
+          {/* Left: all text */}
+          <View style={styles.rowLeft}>
+            {/* Category dot + label + time */}
+            <View style={styles.topRow}>
+              <View style={[styles.catDot, { backgroundColor: cat.dotColor }]} />
+              <Text style={[styles.catText, { color: cat.color }]}>{cat.label}</Text>
+              <Text style={styles.time}>{time}</Text>
+            </View>
+
+            <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
+
+            <View style={styles.metaRow}>
+              <MapPinIcon color={Colors.textMuted} size={10} />
+              <Text style={styles.metaText}>{destination}</Text>
+            </View>
+
+            {item.travelStyles.length > 0 && (
+              <View style={styles.tagRow}>
+                {item.travelStyles.slice(0, 2).map((s) => (
+                  <StyleTag key={s} label={s} />
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* Right: thumbnail */}
+          <DestImage
+            dest={destination}
+            style={styles.thumbnail}
+            scrim="none"
+            radius={Radius.sm}
+          />
+        </View>
+
+        {/* Footer below */}
+        <View style={styles.footer}>
+          <View style={styles.authorRow}>
+            <Avatar nickname={item.author.nickname} size={18} />
+            <Text style={styles.authorName}>{item.author.nickname}</Text>
+            {item.author.location ? (
+              <Text style={styles.authorMeta}> · {item.author.location}</Text>
+            ) : null}
+          </View>
+          <View style={styles.statsRow}>
+            <HeartIcon color={Colors.textMuted} size={11} />
+            <Text style={styles.stat}>{item.likes}</Text>
+            <MessageIcon color={Colors.textMuted} size={11} />
+            <Text style={styles.stat}>{item.comments}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  // No destination: text-only layout
   return (
     <TouchableOpacity
       style={styles.row}
-      activeOpacity={0.72}
+      activeOpacity={0.87}
       onPress={() => router.push(`/post/${item.id}`)}
     >
-      {/* Category dot + label + time */}
       <View style={styles.topRow}>
         <View style={[styles.catDot, { backgroundColor: cat.dotColor }]} />
         <Text style={[styles.catText, { color: cat.color }]}>{cat.label}</Text>
         <Text style={styles.time}>{time}</Text>
       </View>
 
-      {/* Title */}
       <Text style={styles.title} numberOfLines={2}>{item.title}</Text>
 
-      {/* Location + date */}
-      {(destination || (isMatePost && item.trip)) ? (
+      {isMatePost && item.trip && (
         <View style={styles.metaRow}>
-          {destination ? (
-            <>
-              <MapPinIcon color={Colors.textMuted} size={10} />
-              <Text style={styles.metaText}>{destination}</Text>
-            </>
-          ) : null}
-          {isMatePost && item.trip && (
-            <Text style={styles.metaDate}>
-              {destination ? ' · ' : ''}{item.trip.startDate} – {item.trip.endDate}
-            </Text>
-          )}
+          <Text style={styles.metaDate}>{item.trip.startDate} – {item.trip.endDate}</Text>
         </View>
-      ) : null}
+      )}
 
-      {/* Travel style tags */}
       {item.travelStyles.length > 0 && (
         <View style={styles.tagRow}>
           {item.travelStyles.slice(0, 3).map((s) => (
@@ -66,7 +185,6 @@ export function PostCard({ item }: Props) {
         </View>
       )}
 
-      {/* Footer: author + stats */}
       <View style={styles.footer}>
         <View style={styles.authorRow}>
           <Avatar nickname={item.author.nickname} size={18} />
@@ -87,16 +205,33 @@ export function PostCard({ item }: Props) {
 }
 
 const styles = StyleSheet.create({
+  // ── Text-only / text+thumbnail shared row ────────────────────────────────
   row: {
-    paddingVertical: 20,
+    paddingVertical: Space.xl,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
-    gap: 9,
+    gap: Space.sm + 1,
   },
+  rowInner: {
+    flexDirection: 'row',
+    gap: Space.md,
+    alignItems: 'flex-start',
+  },
+  rowLeft: {
+    flex: 1,
+    gap: Space.sm,
+  },
+  thumbnail: {
+    width: 88,
+    height: 88,
+    flexShrink: 0,
+  },
+
+  // ── Shared text elements ──────────────────────────────────────────────────
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Space.sm - 2,
   },
   catDot: {
     width: 5,
@@ -119,6 +254,7 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     lineHeight: 23,
     letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif, fontWeight: '400' } }),
   },
   metaRow: {
     flexDirection: 'row',
@@ -137,18 +273,18 @@ const styles = StyleSheet.create({
   tagRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 5,
+    gap: Space.xs + 1,
   },
   footer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 2,
+    marginTop: Space.xs - 2,
   },
   authorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: Space.xs + 1,
     flex: 1,
     minWidth: 0,
   },
@@ -165,12 +301,68 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: Space.xs + 1,
     flexShrink: 0,
   },
   stat: {
     fontSize: 11,
     color: Colors.textMuted,
     marginRight: 3,
+  },
+
+  // ── Mate card (full-bleed image) ──────────────────────────────────────────
+  mateCard: {
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+    backgroundColor: Colors.card,
+    marginBottom: Space.lg,
+  },
+  mateImage: {
+    height: 180,
+    borderRadius: 0,
+  },
+  mateImageBadges: {
+    position: 'absolute',
+    top: Space.md,
+    left: Space.md,
+    right: Space.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  mateTopRow: { flex: 1 },
+  mateCatBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Space.xs,
+    backgroundColor: 'rgba(16,24,38,0.45)',
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.sm,
+    paddingVertical: Space.xs,
+  },
+  mateCatText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.white,
+    letterSpacing: 0.3,
+  },
+  mateTimeOnImg: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.7)',
+    fontWeight: '500',
+  },
+  mateBody: {
+    paddingHorizontal: Space.lg,
+    paddingTop: Space.md,
+    paddingBottom: Space.lg,
+    gap: Space.sm,
+  },
+  mateTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    lineHeight: 23,
+    letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif, fontWeight: '400' } }),
   },
 });

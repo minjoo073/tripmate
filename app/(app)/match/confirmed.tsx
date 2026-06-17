@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle, Line } from 'react-native-svg';
-import { Colors } from '../../../constants/colors';
+import { Colors, Elevation, Font } from '../../../constants/colors';
 import { Avatar } from '../../../components/ui/Avatar';
 import { useAuth } from '../../../context/AuthContext';
 import { useProfile } from '../../../context/ProfileContext';
@@ -265,6 +265,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(180,160,80,0.28)',
+    ...Elevation.lg,
   },
 
   cardHeader: {
@@ -298,7 +299,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   routeCol: { alignItems: 'flex-start', minWidth: 60 },
-  routeCode: { fontSize: 28, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -1 },
+  routeCode: {
+    fontSize: 28, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -1,
+    ...Platform.select({ web: { fontFamily: Font.serif }, default: {} }),
+  },
   routeCity: { fontSize: 10, color: Colors.textMuted, fontWeight: '500', letterSpacing: 0.5, marginTop: 2 },
   routeMiddle: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 },
   routeLine: { flex: 1, height: 1, backgroundColor: NAVY_FAINT },
@@ -362,6 +366,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Elevation.primary,
   },
   primaryBtnText: { fontSize: 15, fontWeight: '600', color: Colors.white, letterSpacing: -0.1 },
   secondaryBtn: { fontSize: 13, color: Colors.textMuted, textAlign: 'center' },

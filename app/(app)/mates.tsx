@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../constants/colors';
 import { Avatar } from '../../components/ui/Avatar';
 import { ArrowLeftIcon } from '../../components/ui/Icon';
+import { DestImage } from '../../components/ui/DestImage';
 import { router } from 'expo-router';
 import { JoinSheet } from '../../components/mate/JoinSheet';
 
@@ -103,47 +104,61 @@ export default function MatesScreen() {
           </View>
         ) : (
           posts.map((post) => (
-            <View key={post.id} style={styles.card}>
-              <View style={styles.cardTop}>
-                <Avatar nickname={post.user.nickname} size={46} />
-                <View style={styles.userInfo}>
-                  <View style={styles.userNameRow}>
-                    <Text style={styles.userName}>{post.user.nickname}</Text>
-                    <Text style={styles.userAge}>{post.user.age}세</Text>
-                    {post.user.isVerified && (
-                      <View style={styles.verifiedBadge}>
-                        <Text style={styles.verifiedText}>인증</Text>
-                      </View>
-                    )}
+            <View key={post.id} style={[styles.card, Elevation.md]}>
+              {/* Destination hero photo */}
+              <DestImage
+                dest={post.destination}
+                style={styles.cardHero}
+                scrim="bottom"
+                radius={0}
+              >
+                <View style={styles.cardHeroContent}>
+                  <View style={styles.cardHeroAvatarWrap}>
+                    <Avatar nickname={post.user.nickname} size={40} />
+                    {post.user.isVerified && <View style={styles.verifiedDot} />}
                   </View>
-                  <Text style={styles.destination}>📍 {post.destination}</Text>
-                  <Text style={styles.dates}>🗓 {post.dates}</Text>
-                </View>
-              </View>
-
-              <Text style={styles.desc}>{post.desc}</Text>
-
-              <View style={styles.tagsRow}>
-                {post.styles.map((s) => (
-                  <View key={s} style={styles.tag}>
-                    <Text style={styles.tagText}>{s}</Text>
+                  <View style={styles.cardHeroInfo}>
+                    <View style={styles.userNameRow}>
+                      <Text style={styles.userNameOnPhoto}>{post.user.nickname}</Text>
+                      <Text style={styles.userAgeOnPhoto}>{post.user.age}세</Text>
+                      {post.user.isVerified && (
+                        <View style={styles.verifiedBadgeOnPhoto}>
+                          <Text style={styles.verifiedTextOnPhoto}>인증</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text style={styles.destinationOnPhoto}>📍 {post.destination}</Text>
                   </View>
-                ))}
-              </View>
-
-              <View style={styles.cardBottom}>
-                <View style={styles.countBadge}>
-                  <Text style={styles.countText}>
-                    {post.currentCount}/{post.maxCount}명 모집 중
-                  </Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.chatBtn}
-                  onPress={() => setJoinTarget(post)}
-                  activeOpacity={0.85}
-                >
-                  <Text style={styles.chatBtnText}>동행 신청</Text>
-                </TouchableOpacity>
+              </DestImage>
+
+              {/* Card body */}
+              <View style={styles.cardBody}>
+                <Text style={styles.dates}>🗓 {post.dates}</Text>
+                <Text style={styles.desc}>{post.desc}</Text>
+
+                <View style={styles.tagsRow}>
+                  {post.styles.map((s) => (
+                    <View key={s} style={styles.tag}>
+                      <Text style={styles.tagText}>{s}</Text>
+                    </View>
+                  ))}
+                </View>
+
+                <View style={styles.cardBottom}>
+                  <View style={styles.countBadge}>
+                    <Text style={styles.countText}>
+                      {post.currentCount}/{post.maxCount}명 모집 중
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.chatBtn}
+                    onPress={() => setJoinTarget(post)}
+                    activeOpacity={0.85}
+                  >
+                    <Text style={styles.chatBtnText}>동행 신청</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           ))
@@ -168,10 +183,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 16,
-    gap: 12,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xl,
+    paddingBottom: Space.lg,
+    gap: Space.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
   },
@@ -186,7 +201,7 @@ const styles = StyleSheet.create({
 
   destScroll: { maxHeight: 56 },
   destScrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Space.xl,
     gap: 8,
     alignItems: 'center',
     flexDirection: 'row',
@@ -195,7 +210,7 @@ const styles = StyleSheet.create({
   destTab: {
     paddingHorizontal: 18,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
@@ -205,50 +220,59 @@ const styles = StyleSheet.create({
   destTabTextActive: { color: Colors.white, fontWeight: '600' },
 
   scroll: { flex: 1 },
-  list: { padding: 20, gap: 14 },
+  list: { padding: Space.xl, gap: Space.lg },
 
+  // Card — column layout with photo header
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 20,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    gap: 14,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 1,
   },
-  cardTop: { flexDirection: 'row', gap: 14, alignItems: 'flex-start' },
-  userInfo: { flex: 1, gap: 4 },
+  cardHero: { height: 130 },
+  cardHeroContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: Space.md,
+    width: '100%',
+  },
+  cardHeroAvatarWrap: { position: 'relative', flexShrink: 0 },
+  verifiedDot: {
+    position: 'absolute', bottom: 1, right: 1,
+    width: 10, height: 10, borderRadius: 5,
+    backgroundColor: Colors.olive,
+    borderWidth: 1.5, borderColor: Colors.white,
+  },
+  cardHeroInfo: { flex: 1, gap: 3 },
   userNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  userName: { fontSize: 15, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.2 },
-  userAge: { fontSize: 12, color: Colors.textMuted, fontWeight: '400' },
-  verifiedBadge: {
-    backgroundColor: 'rgba(110,125,98,0.12)',
+  userNameOnPhoto: { fontSize: 15, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
+  userAgeOnPhoto: { fontSize: 12, color: 'rgba(255,255,255,0.75)', fontWeight: '400' },
+  verifiedBadgeOnPhoto: {
+    backgroundColor: 'rgba(110,125,98,0.75)',
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
-  verifiedText: { fontSize: 10, color: Colors.olive, fontWeight: '600' },
-  destination: { fontSize: 12, color: Colors.textSecondary, fontWeight: '400' },
-  dates: { fontSize: 12, color: Colors.textMuted, fontWeight: '400' },
+  verifiedTextOnPhoto: { fontSize: 10, color: Colors.white, fontWeight: '600' },
+  destinationOnPhoto: { fontSize: 12, color: 'rgba(255,255,255,0.8)', fontWeight: '400' },
 
+  cardBody: { padding: Space.lg, gap: Space.md },
+  dates: { fontSize: 12, color: Colors.textMuted, fontWeight: '400' },
   desc: {
     fontSize: 14,
     color: Colors.textSecondary,
     lineHeight: 22,
     fontWeight: '400',
     backgroundColor: Colors.bg,
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: Radius.sm,
+    padding: Space.md,
   },
 
   tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   tag: {
     backgroundColor: Colors.primaryLight,
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     paddingHorizontal: 11,
     paddingVertical: 4,
     borderWidth: 1,
@@ -258,11 +282,11 @@ const styles = StyleSheet.create({
 
   cardBottom: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingTop: 2, borderTopWidth: 1, borderTopColor: Colors.cardBorder,
+    paddingTop: Space.md, borderTopWidth: 1, borderTopColor: Colors.cardBorder,
   },
   countBadge: {
     backgroundColor: 'rgba(180,217,204,0.4)',
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 5,
     borderWidth: 1,
@@ -274,8 +298,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     backgroundColor: Colors.primary,
-    borderRadius: 10,
-    paddingHorizontal: 16,
+    borderRadius: Radius.sm,
+    paddingHorizontal: Space.lg,
     paddingVertical: 9,
   },
   chatBtnText: { fontSize: 13, color: Colors.white, fontWeight: '500', letterSpacing: -0.1 },

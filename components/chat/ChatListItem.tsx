@@ -3,7 +3,7 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { ChatRoom } from '../../types';
 import { Avatar } from '../ui/Avatar';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../constants/colors';
 import { MapPinIcon } from '../ui/Icon';
 
 interface Props {
@@ -17,7 +17,7 @@ export function ChatListItem({ item }: Props) {
   return (
     <TouchableOpacity
       style={styles.card}
-      activeOpacity={0.82}
+      activeOpacity={0.88}
       onPress={() => router.push(`/chat/${item.id}`)}
     >
       <View style={styles.avatarWrap}>
@@ -68,54 +68,48 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 20,
-    marginVertical: 5,
+    marginHorizontal: Space.xl,
+    marginVertical: Space.sm,
     backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: Radius.md,
+    padding: Space.lg,
     gap: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 1,
+    ...Elevation.md,
   },
   avatarWrap: { position: 'relative' },
   onlineDot: {
     position: 'absolute',
-    bottom: 1, right: 1,
-    width: 10, height: 10, borderRadius: 5,
+    bottom: 0, right: 0,
+    width: 12, height: 12, borderRadius: Radius.pill,
     backgroundColor: Colors.olive,
-    borderWidth: 1.5, borderColor: Colors.card,
+    borderWidth: 2, borderColor: Colors.card,
   },
-  info: { flex: 1, minWidth: 0, gap: 4 },
+  info: { flex: 1, minWidth: 0, gap: Space.xs },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   name: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary, letterSpacing: -0.2 },
   confirmedBadge: {
     backgroundColor: 'rgba(110,125,98,0.12)',
-    borderRadius: 4,
+    borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   confirmedText: { fontSize: 9, fontWeight: '700', color: Colors.olive, letterSpacing: 0.3 },
   pendingBadge: {
     backgroundColor: Colors.accentLight,
-    borderRadius: 4,
+    borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   pendingText: { fontSize: 9, fontWeight: '600', color: Colors.accent, letterSpacing: 0.3 },
-  tripRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  tripRow: { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   tripText: { fontSize: 11, color: Colors.textMuted, fontWeight: '500' },
   tripDate: { fontSize: 11, color: Colors.textMuted },
   message: { fontSize: 13, color: Colors.textSecondary, lineHeight: 18 },
-  right: { alignItems: 'flex-end', gap: 6, flexShrink: 0 },
+  right: { alignItems: 'flex-end', gap: 5, flexShrink: 0 },
   time: { fontSize: 10, color: Colors.textMuted, fontWeight: '400' },
   badge: {
     backgroundColor: Colors.primary,
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     paddingHorizontal: 7,
     paddingVertical: 3,
     minWidth: 20,

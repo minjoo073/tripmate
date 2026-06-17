@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 import { TRAVEL_STYLES } from '../../mock/data';
@@ -93,12 +93,15 @@ export default function ProfileSetupScreen() {
       >
         {/* 아바타 */}
         <View style={styles.avatarSection}>
-          <TouchableOpacity style={styles.avatarCircle} onPress={() => setPickerOpen((v) => !v)} activeOpacity={0.85}>
-            <Image source={avatarSource} style={styles.avatarImage} resizeMode="contain" />
-            <View style={styles.avatarEditBadge}>
-              <Text style={styles.avatarEditBadgeText}>✎</Text>
-            </View>
-          </TouchableOpacity>
+          {/* Shadow wrapper prevents overflow:hidden from clipping the shadow */}
+          <View style={styles.avatarShadow}>
+            <TouchableOpacity style={styles.avatarCircle} onPress={() => setPickerOpen((v) => !v)} activeOpacity={0.85}>
+              <Image source={avatarSource} style={styles.avatarImage} resizeMode="contain" />
+              <View style={styles.avatarEditBadge}>
+                <Text style={styles.avatarEditBadgeText}>✎</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity onPress={() => setPickerOpen((v) => !v)}>
             <Text style={styles.avatarChange}>{pickerOpen ? '닫기' : '아이콘 선택'}</Text>
           </TouchableOpacity>
@@ -274,24 +277,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+    backgroundColor: Colors.bg,
   },
   backBtn: { padding: 4, width: 40 },
   backIcon: { fontSize: 22, color: Colors.textPrimary },
-  title: { fontSize: 18, fontWeight: '700', color: Colors.textPrimary },
+  title: { fontSize: 17, fontWeight: '600' as const, color: Colors.textPrimary, letterSpacing: -0.3 },
   saveBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
+    borderRadius: Radius.sm,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.sm,
+    ...Elevation.primary,
   },
-  saveBtnText: { fontSize: 14, color: Colors.white, fontWeight: '700' },
+  saveBtnText: { fontSize: 14, color: Colors.white, fontWeight: '700' as const },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, gap: 16 },
+  content: { paddingHorizontal: Space.xl, gap: Space.xl, paddingTop: Space.lg },
 
-  avatarSection: { alignItems: 'center', paddingVertical: 8, gap: 10 },
+  avatarSection: { alignItems: 'center', paddingVertical: Space.md, gap: Space.md },
+  // Shadow wrapper — elevation without overflow:hidden
+  avatarShadow: {
+    borderRadius: 42,
+    ...Elevation.md,
+  },
   avatarCircle: {
     width: 84,
     height: 84,
@@ -315,26 +327,25 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.bg,
   },
-  avatarEditBadgeText: { fontSize: 12, color: Colors.white, fontWeight: '700' },
-  avatarChange: { fontSize: 14, color: Colors.primary, fontWeight: '600' },
+  avatarEditBadgeText: { fontSize: 12, color: Colors.white, fontWeight: '700' as const },
+  avatarChange: { fontSize: 14, color: Colors.primary, fontWeight: '600' as const },
 
   inlinePicker: {
-    marginTop: 2,
+    marginTop: Space.xs,
     backgroundColor: Colors.white,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    paddingVertical: 10,
+    borderRadius: Radius.lg,
+    paddingVertical: Space.md,
+    ...Elevation.sm,
   },
   inlinePickerRow: {
-    paddingHorizontal: 10,
-    gap: 8,
+    paddingHorizontal: Space.md,
+    gap: Space.sm,
     alignItems: 'center',
   },
   inlineIconOption: {
     width: 48,
     height: 48,
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
@@ -347,98 +358,98 @@ const styles = StyleSheet.create({
   },
   inlineIconImage: { width: '70%', height: '70%' },
 
-  sectionHeader: { gap: 2, marginTop: 8 },
-  sectionTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
+  sectionHeader: { gap: 3, marginTop: Space.sm },
+  sectionTitle: {
+    fontSize: 10,
+    fontWeight: '700' as const,
+    color: Colors.textMuted,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase' as const,
+  },
   sectionSubtitle: { fontSize: 12, color: Colors.textSecondary },
 
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    gap: 8,
+    borderRadius: Radius.xl,
+    padding: Space.lg,
+    gap: Space.sm,
+    ...Elevation.md,
   },
-  fieldLabel: { fontSize: 13, fontWeight: '600', color: Colors.textSecondary, marginTop: 4 },
+  fieldLabel: { fontSize: 13, fontWeight: '600' as const, color: Colors.textSecondary, marginTop: 4 },
   input: {
     backgroundColor: Colors.bg,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    borderRadius: Radius.sm,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.md,
     fontSize: 15,
     color: Colors.textPrimary,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
-  textArea: { height: 88, textAlignVertical: 'top' },
-  charCount: { fontSize: 11, color: Colors.textPlaceholder, textAlign: 'right' },
+  textArea: { height: 88, textAlignVertical: 'top' as const },
+  charCount: { fontSize: 11, color: Colors.textPlaceholder, textAlign: 'right' as const },
 
-  tagsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  tagsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
   tag: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.sm + 2,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
+    ...Elevation.sm,
   },
   tagActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  tagText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
-  tagTextActive: { color: Colors.white, fontWeight: '700' },
+  tagText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' as const },
+  tagTextActive: { color: Colors.white, fontWeight: '700' as const },
 
-  personalityList: { gap: 10 },
+  personalityList: { gap: Space.sm },
   personalityRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: Space.sm,
     backgroundColor: Colors.white,
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderRadius: Radius.lg,
+    padding: Space.lg,
+    ...Elevation.sm,
   },
   personalityIcon: { fontSize: 20, width: 28 },
   personalityBtn: {
     flex: 1,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingVertical: Space.sm + 2,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     backgroundColor: Colors.bg,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
   personalityBtnActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  personalityBtnText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
-  personalityBtnTextActive: { color: Colors.white, fontWeight: '700' },
+  personalityBtnText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' as const },
+  personalityBtnTextActive: { color: Colors.white, fontWeight: '700' as const },
   personalityDivider: { width: 1, height: 20, backgroundColor: Colors.cardBorder },
 
   snsBtn: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: Radius.xl,
+    padding: Space.lg,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    gap: Space.md,
+    ...Elevation.md,
   },
   snsBtnIcon: { fontSize: 28 },
   snsBtnInfo: { flex: 1 },
-  snsBtnTitle: { fontSize: 15, fontWeight: '600', color: Colors.textPrimary },
+  snsBtnTitle: { fontSize: 15, fontWeight: '600' as const, color: Colors.textPrimary },
   snsBtnDesc: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
   snsBtnArrow: { fontSize: 20, color: Colors.textPlaceholder },
 
   submitBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 16,
-    paddingVertical: 18,
+    borderRadius: Radius.lg,
+    paddingVertical: Space.lg + 2,
     alignItems: 'center',
-    marginTop: 8,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    marginTop: Space.sm,
+    ...Elevation.primary,
   },
-  submitBtnText: { fontSize: 16, color: Colors.white, fontWeight: '700' },
+  submitBtnText: { fontSize: 16, color: Colors.white, fontWeight: '700' as const },
 });

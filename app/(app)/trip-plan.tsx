@@ -6,8 +6,9 @@ import {
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Radius, Space } from '../../constants/colors';
 import { ArrowLeftIcon, MapPinIcon, CalendarIcon, UsersIcon } from '../../components/ui/Icon';
+import { DestImage } from '../../components/ui/DestImage';
 import { DateRangePicker, formatMD, formatYMD } from '../../components/ui/DateRangePicker';
 
 const THEMES = [
@@ -108,6 +109,16 @@ export default function TripPlanScreen() {
               returnKeyType="done"
               blurOnSubmit
             />
+            {destination.length > 0 && (
+              <DestImage
+                dest={destination}
+                style={styles.destPreview}
+                scrim="bottom"
+                radius={Radius.sm}
+              >
+                <Text style={styles.destPreviewLabel}>{destination}</Text>
+              </DestImage>
+            )}
           </View>
 
           {/* 여행 기간 */}
@@ -259,7 +270,7 @@ const styles = StyleSheet.create({
   headerRight: { width: 36 },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 24, paddingTop: 28, gap: 32 },
+  content: { paddingHorizontal: Space.xxl, paddingTop: Space.xxxl, gap: Space.xxxl },
 
   hint: {
     fontSize: 12,
@@ -339,6 +350,14 @@ const styles = StyleSheet.create({
 
   memoInput: { fontSize: 13 },
   charCount: { fontSize: 10, color: Colors.textMuted, textAlign: 'right', marginTop: -4 },
+
+  destPreview: { height: 140, marginTop: Space.sm },
+  destPreviewLabel: {
+    fontSize: 18,
+    fontWeight: '300',
+    color: Colors.white,
+    letterSpacing: -0.3,
+  },
 
   notice: {
     backgroundColor: 'rgba(192,135,70,0.08)',

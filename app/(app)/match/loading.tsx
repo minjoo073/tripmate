@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Platform } from 'react-native';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Elevation, Font, Radius } from '../../../constants/colors';
 import { PlaneThinIcon } from '../../../components/ui/Icon';
 import { findMates } from '../../../services/matchService';
 import { FindMateFilter } from '../../../types';
@@ -280,6 +280,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 32,
     letterSpacing: -0.4,
+    ...Platform.select({ web: { fontFamily: Font.serif }, default: {} }),
   },
   dotsRow: { flexDirection: 'row', gap: 6 },
   dot: {
@@ -297,9 +298,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     backgroundColor: Colors.card,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderRadius: Radius.sm,
+    ...Elevation.sm,
   },
   stepCheck: {
     width: 22,
@@ -340,15 +340,15 @@ const styles = StyleSheet.create({
 
   progressWrap: { width: '100%', gap: 10 },
   progressTrack: {
-    height: 1,
+    height: 2,
     backgroundColor: Colors.cardBorder,
-    borderRadius: 1,
+    borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
-    height: 1,
+    height: 2,
     backgroundColor: Colors.primary,
-    borderRadius: 1,
+    borderRadius: 2,
   },
   progressLabel: {
     fontSize: 11,

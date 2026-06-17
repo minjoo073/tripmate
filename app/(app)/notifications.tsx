@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../constants/colors';
 import { ArrowLeftIcon, MessageIcon, UsersIcon, HeartIcon } from '../../components/ui/Icon';
 
 type NotiType = 'message' | 'companion' | 'like';
@@ -131,59 +131,55 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
+    gap: Space.md,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xl,
+    paddingBottom: Space.xl,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
   },
-  backBtn: { padding: 4, marginTop: 16 },
+  backBtn: { padding: 4, marginTop: Space.lg },
   headerText: { flex: 1 },
   headerLabel: {
-    fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 2.5, marginBottom: 8,
+    fontSize: 10, fontWeight: '700' as const, color: Colors.textMuted,
+    letterSpacing: 2.5, marginBottom: Space.sm, textTransform: 'uppercase' as const,
   },
-  title: { fontSize: 26, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.5 },
+  title: { fontSize: 28, fontWeight: '300' as const, color: Colors.textPrimary, letterSpacing: -0.5 },
   unreadBadge: {
-    marginTop: 18,
+    marginTop: Space.lg + 2,
     backgroundColor: Colors.primaryLight,
-    paddingHorizontal: 10,
+    paddingHorizontal: Space.md,
     paddingVertical: 5,
-    borderRadius: 999,
+    borderRadius: Radius.pill,
     borderWidth: 1,
     borderColor: 'rgba(59,81,120,0.12)',
   },
-  unreadBadgeText: { fontSize: 11, fontWeight: '600', color: Colors.primary },
+  unreadBadgeText: { fontSize: 11, fontWeight: '600' as const, color: Colors.primary },
 
-  list: { paddingHorizontal: 20, paddingTop: 16, gap: 8 },
+  list: { paddingHorizontal: Space.xl, paddingTop: Space.lg, gap: Space.sm },
 
   sectionLabel: {
-    fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 1.5, marginBottom: 2, marginTop: 2,
+    fontSize: 10, fontWeight: '700' as const, color: Colors.textMuted,
+    letterSpacing: 1.8, textTransform: 'uppercase' as const,
+    marginBottom: 2, marginTop: 2,
   },
-  sectionLabelRead: { marginTop: 12, color: Colors.textMuted },
+  sectionLabelRead: { marginTop: Space.md, color: Colors.textMuted },
 
+  // Read card — light lift
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Space.md,
     backgroundColor: Colors.card,
-    borderRadius: 14,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 1,
+    borderRadius: Radius.lg,
+    padding: Space.md,
     overflow: 'hidden',
+    ...Elevation.sm,
   },
+  // Unread card — stronger lift
   cardUnread: {
     backgroundColor: Colors.white,
-    borderColor: 'rgba(59,81,120,0.12)',
-    shadowOpacity: 1.5,
+    ...Elevation.md,
   },
   accentBar: {
     position: 'absolute',
@@ -193,19 +189,19 @@ const styles = StyleSheet.create({
   },
 
   iconBox: {
-    width: 36, height: 36,
-    borderRadius: 11,
+    width: 40, height: 40,
+    borderRadius: Radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   textCol: { flex: 1, gap: 2 },
   itemTitle: {
-    fontSize: 13, fontWeight: '500',
+    fontSize: 13, fontWeight: '500' as const,
     color: Colors.textSecondary, lineHeight: 18,
   },
   itemTitleUnread: {
-    fontWeight: '600', color: Colors.textPrimary,
+    fontWeight: '600' as const, color: Colors.textPrimary,
   },
   itemBody: { fontSize: 12, color: Colors.textSecondary, lineHeight: 17 },
   time: { fontSize: 10, color: Colors.textMuted, marginTop: 1 },
@@ -217,6 +213,6 @@ const styles = StyleSheet.create({
   },
 
   emptyWrap: { alignItems: 'center', paddingTop: 60, gap: 6 },
-  emptyTitle: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary },
+  emptyTitle: { fontSize: 14, fontWeight: '600' as const, color: Colors.textPrimary },
   emptyDesc: { fontSize: 12, color: Colors.textMuted },
 });

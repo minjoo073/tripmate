@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import {
+  Colors, Editorial, Elevation, Radius, Space, Font,
+} from '../../constants/colors';
+import { DestImage } from '../../components/ui/DestImage';
+import { ArrowLeftIcon } from '../../components/ui/Icon';
 
 type Region = '아시아' | '유럽' | '미주' | '오세아니아';
 
@@ -43,32 +47,38 @@ export default function ExploreDestinationScreen() {
   const filtered = DESTINATIONS.filter((d) => d.region === activeRegion);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
+          <ArrowLeftIcon color={Colors.textPrimary} size={20} />
         </TouchableOpacity>
-        <View>
+        <View style={styles.headerText}>
+          <Text style={styles.headerLabel}>DESTINATIONS</Text>
           <Text style={styles.title}>여행지별 메이트</Text>
-          <Text style={styles.subtitle}>가고 싶은 여행지를 선택해보세요</Text>
         </View>
       </View>
 
-      {/* Region tabs */}
-      <View style={styles.regionTabs}>
+      {/* Region tabs — horizontal pill scroll */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.regionTabScroll}
+        contentContainerStyle={styles.regionTabContent}
+      >
         {REGIONS.map((r) => (
           <TouchableOpacity
             key={r}
             style={[styles.regionTab, activeRegion === r && styles.regionTabActive]}
             onPress={() => setActiveRegion(r)}
+            activeOpacity={0.88}
           >
             <Text style={[styles.regionTabText, activeRegion === r && styles.regionTabTextActive]}>
               {r}
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       <ScrollView
         style={styles.scroll}
@@ -80,31 +90,37 @@ export default function ExploreDestinationScreen() {
             key={dest.name}
             style={styles.card}
             onPress={() => router.push({ pathname: '/mates', params: { destination: dest.name } })}
-            activeOpacity={0.85}
+            activeOpacity={0.88}
           >
-            <View style={styles.cardLeft}>
-              <Text style={styles.flag}>{dest.flag}</Text>
-              <View style={styles.destInfo}>
-                <View style={styles.destNameRow}>
-                  <Text style={styles.destName}>{dest.name}</Text>
-                  <Text style={styles.destCountry}>{dest.country}</Text>
+            {/* Full-bleed destination photo */}
+            <DestImage
+              dest={dest.name}
+              style={styles.cardImage}
+              scrim="bottom"
+              radius={0}
+            >
+              <View style={styles.cardImageContent}>
+                <View style={styles.cardImageLeft}>
+                  <Text style={styles.cardCityName}>{dest.name}</Text>
+                  <Text style={styles.cardCountry}>{dest.flag} {dest.country}</Text>
                 </View>
-                <Text style={styles.highlight}>{dest.highlight}</Text>
-                <View style={styles.tagsRow}>
-                  {dest.tags.map((t) => (
-                    <View key={t} style={styles.tag}>
-                      <Text style={styles.tagText}>{t}</Text>
-                    </View>
-                  ))}
+                <View style={styles.mateBadge}>
+                  <Text style={styles.mateCount}>{dest.mateCount}</Text>
+                  <Text style={styles.mateLabel}>명 모집중</Text>
                 </View>
               </View>
-            </View>
-            <View style={styles.cardRight}>
-              <View style={styles.mateCountBadge}>
-                <Text style={styles.mateCount}>{dest.mateCount}</Text>
-                <Text style={styles.mateCountLabel}>명 모집중</Text>
+            </DestImage>
+
+            {/* Card body */}
+            <View style={styles.cardBody}>
+              <Text style={styles.highlight}>{dest.highlight}</Text>
+              <View style={styles.tagsRow}>
+                {dest.tags.map((t) => (
+                  <View key={t} style={styles.tag}>
+                    <Text style={styles.tagText}>{t}</Text>
+                  </View>
+                ))}
               </View>
-              <Text style={styles.arrow}>›</Text>
             </View>
           </TouchableOpacity>
         ))}
@@ -114,75 +130,89 @@ export default function ExploreDestinationScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+  container: { flex: 1, backgroundColor: Colors.bgDeep },
+
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
+    alignItems: 'flex-start',
+    gap: Space.md,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xxl,
+    paddingBottom: Space.lg,
+    backgroundColor: Colors.card,
+    ...Elevation.sm,
   },
-  backBtn: { padding: 4 },
-  backIcon: { fontSize: 22, color: Colors.textPrimary },
-  title: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
-  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  backBtn: { padding: Space.xs, marginTop: 2 },
+  headerText: { flex: 1 },
+  headerLabel: {
+    ...Editorial.eyebrow,
+    color: Colors.accent,
+    marginBottom: Space.xs,
+  },
+  title: {
+    fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
+  },
 
-  regionTabs: {
+  regionTabScroll: {
+    maxHeight: 60,
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.cardBorder,
+  },
+  regionTabContent: {
+    paddingHorizontal: Space.xl,
+    paddingBottom: Space.md,
+    paddingTop: 2,
+    gap: Space.sm,
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    gap: 8,
-    marginBottom: 16,
+    alignItems: 'center',
   },
   regionTab: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 12,
-    backgroundColor: Colors.white,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.sm,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.bg,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    alignItems: 'center',
   },
   regionTabActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  regionTabText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
-  regionTabTextActive: { color: Colors.white, fontWeight: '700' },
+  regionTabText: { fontSize: 13, fontWeight: '500', color: Colors.textSecondary },
+  regionTabTextActive: { color: Colors.white, fontWeight: '600' },
 
   scroll: { flex: 1 },
-  list: { paddingHorizontal: 20, gap: 12 },
+  list: { paddingHorizontal: Space.xl, paddingTop: Space.lg, gap: Space.md },
 
   card: {
-    backgroundColor: Colors.white,
-    borderRadius: 18,
-    padding: 18,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
+    overflow: 'hidden',
+    ...Elevation.md,
   },
-  cardLeft: { flexDirection: 'row', alignItems: 'flex-start', gap: 14, flex: 1 },
-  flag: { fontSize: 36, marginTop: 2 },
-  destInfo: { flex: 1, gap: 6 },
-  destNameRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6 },
-  destName: { fontSize: 17, fontWeight: '700', color: Colors.textPrimary },
-  destCountry: { fontSize: 12, color: Colors.textSecondary },
-  highlight: { fontSize: 13, color: Colors.textSecondary },
+  cardImage: { height: 148 },
+  cardImageContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  cardImageLeft: { gap: 3 },
+  cardCityName: {
+    fontSize: 24, fontWeight: '300', color: Colors.white, letterSpacing: -0.4,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
+  },
+  cardCountry: { fontSize: 12, color: 'rgba(255,255,255,0.72)' },
+  mateBadge: { alignItems: 'flex-end', gap: 1 },
+  mateCount: { fontSize: 26, fontWeight: '700', color: Colors.white, letterSpacing: -0.5 },
+  mateLabel: { fontSize: 10, color: 'rgba(255,255,255,0.65)' },
+
+  cardBody: { padding: Space.lg, gap: Space.sm },
+  highlight: { fontSize: 13, color: Colors.textSecondary, lineHeight: 18 },
   tagsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   tag: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 999,
-    paddingHorizontal: 10,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.md,
     paddingVertical: 3,
   },
   tagText: { fontSize: 11, color: Colors.primary, fontWeight: '600' },
-
-  cardRight: { alignItems: 'center', gap: 4, marginLeft: 8 },
-  mateCountBadge: { alignItems: 'center' },
-  mateCount: { fontSize: 20, fontWeight: '800', color: Colors.primary },
-  mateCountLabel: { fontSize: 10, color: Colors.textSecondary, fontWeight: '500' },
-  arrow: { fontSize: 20, color: Colors.textPlaceholder },
 });

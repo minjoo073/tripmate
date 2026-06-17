@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import {
+  Colors, Editorial, Elevation, Radius, Space, Font,
+} from '../../constants/colors';
+import { ArrowLeftIcon } from '../../components/ui/Icon';
 
 type StyleItem = { label: string; emoji: string; count: number; desc: string };
 
@@ -59,15 +62,15 @@ export default function ExploreStyleScreen() {
       : MATES.filter((m) => selectedStyles.some((s) => m.styles.includes(s)));
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={styles.backIcon}>←</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
+          <ArrowLeftIcon color={Colors.textPrimary} size={20} />
         </TouchableOpacity>
-        <View>
+        <View style={styles.headerText}>
+          <Text style={styles.headerLabel}>BY STYLE</Text>
           <Text style={styles.title}>스타일별 메이트</Text>
-          <Text style={styles.subtitle}>여행 스타일이 맞는 동행을 찾아보세요</Text>
         </View>
       </View>
 
@@ -77,8 +80,11 @@ export default function ExploreStyleScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Style grid */}
-        <Text style={styles.sectionTitle}>어떤 여행을 좋아하세요?</Text>
-        <Text style={styles.sectionSub}>여러 개 선택할 수 있어요</Text>
+        <View style={styles.styleIntro}>
+          <Text style={styles.sectionTitle}>어떤 여행을 좋아하세요?</Text>
+          <Text style={styles.sectionSub}>여러 개 선택할 수 있어요</Text>
+        </View>
+
         <View style={styles.styleGrid}>
           {STYLE_ITEMS.map((item) => {
             const selected = selectedStyles.includes(item.label);
@@ -87,7 +93,7 @@ export default function ExploreStyleScreen() {
                 key={item.label}
                 style={[styles.styleCard, selected && styles.styleCardActive]}
                 onPress={() => toggleStyle(item.label)}
-                activeOpacity={0.8}
+                activeOpacity={0.88}
               >
                 <Text style={styles.styleEmoji}>{item.emoji}</Text>
                 <Text style={[styles.styleLabel, selected && styles.styleLabelActive]}>
@@ -122,48 +128,56 @@ export default function ExploreStyleScreen() {
             <Text style={styles.emptyDesc}>다른 스타일을 선택해보세요</Text>
           </View>
         ) : (
-          filteredMates.map((mate) => (
-            <TouchableOpacity
-              key={mate.id}
-              style={styles.mateCard}
-              onPress={() => router.push(`/mate/${mate.id}`)}
-              activeOpacity={0.85}
-            >
-              <View style={styles.mateAvatar}>
-                <Text style={styles.mateAvatarText}>{mate.nickname[0]}</Text>
-              </View>
-              <View style={styles.mateInfo}>
-                <View style={styles.mateNameRow}>
-                  <Text style={styles.mateName}>{mate.nickname}</Text>
-                  <Text style={styles.mateMeta}>
-                    {mate.age}세 · {mate.gender === 'female' ? '여성' : '남성'}
-                  </Text>
-                  {mate.isVerified && (
-                    <View style={styles.verifiedBadge}>
-                      <Text style={styles.verifiedText}>인증</Text>
-                    </View>
-                  )}
+          <View style={styles.mateList}>
+            {filteredMates.map((mate) => (
+              <TouchableOpacity
+                key={mate.id}
+                style={styles.mateCard}
+                onPress={() => router.push(`/mate/${mate.id}`)}
+                activeOpacity={0.88}
+              >
+                <View style={styles.mateAvatar}>
+                  <Text style={styles.mateAvatarText}>{mate.nickname[0]}</Text>
                 </View>
-                <Text style={styles.mateBio} numberOfLines={1}>{mate.bio}</Text>
-                <View style={styles.mateDestRow}>
-                  <Text style={styles.mateDest}>{mate.flag} {mate.destination}</Text>
-                  <Text style={styles.mateRating}>★ {mate.rating}</Text>
+                <View style={styles.mateInfo}>
+                  <View style={styles.mateNameRow}>
+                    <Text style={styles.mateName}>{mate.nickname}</Text>
+                    <Text style={styles.mateMeta}>
+                      {mate.age}세 · {mate.gender === 'female' ? '여성' : '남성'}
+                    </Text>
+                    {mate.isVerified && (
+                      <View style={styles.verifiedBadge}>
+                        <Text style={styles.verifiedText}>인증</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={styles.mateBio} numberOfLines={1}>{mate.bio}</Text>
+                  <View style={styles.mateDestRow}>
+                    <Text style={styles.mateDest}>{mate.flag} {mate.destination}</Text>
+                    <Text style={styles.mateRating}>★ {mate.rating}</Text>
+                  </View>
+                  <View style={styles.mateTagsRow}>
+                    {mate.styles.map((s) => (
+                      <View
+                        key={s}
+                        style={[
+                          styles.mateTag,
+                          selectedStyles.includes(s) && styles.mateTagMatch,
+                        ]}
+                      >
+                        <Text style={[
+                          styles.mateTagText,
+                          selectedStyles.includes(s) && styles.mateTagTextMatch,
+                        ]}>
+                          {s}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
-                <View style={styles.mateTagsRow}>
-                  {mate.styles.map((s) => (
-                    <View
-                      key={s}
-                      style={[styles.mateTag, selectedStyles.includes(s) && styles.mateTagMatch]}
-                    >
-                      <Text style={[styles.mateTagText, selectedStyles.includes(s) && styles.mateTagTextMatch]}>
-                        {s}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))
+              </TouchableOpacity>
+            ))}
+          </View>
         )}
       </ScrollView>
     </View>
@@ -171,113 +185,135 @@ export default function ExploreStyleScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+  container: { flex: 1, backgroundColor: Colors.bgDeep },
+
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    gap: 12,
+    alignItems: 'flex-start',
+    gap: Space.md,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xxl,
+    paddingBottom: Space.lg,
+    backgroundColor: Colors.card,
+    ...Elevation.sm,
   },
-  backBtn: { padding: 4 },
-  backIcon: { fontSize: 22, color: Colors.textPrimary },
-  title: { fontSize: 20, fontWeight: '700', color: Colors.textPrimary },
-  subtitle: { fontSize: 13, color: Colors.textSecondary, marginTop: 2 },
+  backBtn: { padding: Space.xs, marginTop: 2 },
+  headerText: { flex: 1 },
+  headerLabel: {
+    ...Editorial.eyebrow,
+    color: Colors.accent,
+    marginBottom: Space.xs,
+  },
+  title: {
+    fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
+  },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, gap: 12 },
+  content: { gap: Space.lg },
 
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary, marginTop: 4 },
+  styleIntro: {
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.xxl,
+    paddingBottom: Space.xs,
+    gap: Space.xs,
+    backgroundColor: Colors.card,
+  },
+  sectionTitle: { fontSize: 17, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.2 },
   sectionSub: { fontSize: 12, color: Colors.textSecondary },
 
   styleGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
-    marginTop: 4,
-    marginBottom: 8,
+    gap: Space.sm,
+    paddingHorizontal: Space.xl,
+    paddingBottom: Space.xl,
+    backgroundColor: Colors.card,
   },
   styleCard: {
-    width: '30%',
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 8,
+    width: '30%', flexGrow: 1,
+    backgroundColor: Colors.bg,
+    borderRadius: Radius.md,
+    paddingVertical: Space.lg,
+    paddingHorizontal: Space.sm,
     alignItems: 'center',
-    gap: 6,
+    gap: Space.sm,
     borderWidth: 1.5,
     borderColor: Colors.cardBorder,
+    ...Elevation.sm,
   },
-  styleCardActive: { backgroundColor: Colors.primary, borderColor: Colors.primary },
-  styleEmoji: { fontSize: 26 },
+  styleCardActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  styleEmoji: { fontSize: 28 },
   styleLabel: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
   styleLabelActive: { color: Colors.white },
   styleCount: {
-    backgroundColor: Colors.bg,
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    backgroundColor: Colors.bgDeep,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.sm, paddingVertical: 2,
   },
-  styleCountActive: { backgroundColor: 'rgba(255,255,255,0.2)' },
+  styleCountActive: { backgroundColor: 'rgba(255,255,255,0.18)' },
   styleCountText: { fontSize: 10, color: Colors.textSecondary, fontWeight: '600' },
-  styleCountTextActive: { color: 'rgba(255,255,255,0.9)' },
+  styleCountTextActive: { color: 'rgba(255,255,255,0.85)' },
 
-  divider: { flexDirection: 'row', alignItems: 'center', gap: 10, marginVertical: 8 },
+  divider: {
+    flexDirection: 'row', alignItems: 'center', gap: Space.md,
+    paddingHorizontal: Space.xl,
+  },
   dividerLine: { flex: 1, height: 1, backgroundColor: Colors.cardBorder },
-  dividerText: { fontSize: 12, color: Colors.textSecondary, fontWeight: '600' },
+  dividerText: {
+    fontSize: 12, color: Colors.textSecondary, fontWeight: '600',
+    flexShrink: 1, textAlign: 'center',
+  },
 
-  empty: { paddingTop: 32, alignItems: 'center', gap: 8 },
+  empty: { paddingTop: 40, alignItems: 'center', gap: Space.md },
   emptyIcon: { fontSize: 36 },
   emptyTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   emptyDesc: { fontSize: 13, color: Colors.textSecondary },
 
+  mateList: { paddingHorizontal: Space.xl, gap: Space.md, paddingBottom: Space.xs },
+
   mateCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 18,
-    padding: 18,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.lg,
+    padding: Space.lg,
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 14,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
-    shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 1,
+    gap: Space.md,
+    ...Elevation.sm,
   },
   mateAvatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 52, height: 52, borderRadius: Radius.pill,
     backgroundColor: Colors.primaryBg,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center', justifyContent: 'center',
   },
   mateAvatarText: { fontSize: 20, fontWeight: '700', color: Colors.primary },
   mateInfo: { flex: 1, gap: 5 },
-  mateNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  mateNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   mateName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   mateMeta: { fontSize: 12, color: Colors.textSecondary },
   verifiedBadge: {
     backgroundColor: Colors.primaryBg,
-    borderRadius: 999,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.sm, paddingVertical: 2,
   },
   verifiedText: { fontSize: 10, color: Colors.primary, fontWeight: '700' },
   mateBio: { fontSize: 13, color: Colors.textSecondary, lineHeight: 18 },
-  mateDestRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  mateDestRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+  },
   mateDest: { fontSize: 12, color: Colors.textSecondary },
   mateRating: { fontSize: 12, color: '#F59E0B', fontWeight: '700' },
   mateTagsRow: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   mateTag: {
-    backgroundColor: Colors.bg,
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    backgroundColor: Colors.bgDeep,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.md, paddingVertical: 3,
+    borderWidth: 1, borderColor: Colors.cardBorder,
   },
   mateTagMatch: { backgroundColor: Colors.primaryBg, borderColor: Colors.primary },
   mateTagText: { fontSize: 11, color: Colors.textSecondary, fontWeight: '500' },

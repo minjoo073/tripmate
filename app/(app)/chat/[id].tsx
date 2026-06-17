@@ -4,9 +4,10 @@ import {
   KeyboardAvoidingView, Platform, Alert, Animated, Pressable,
 } from 'react-native';
 import { SendIcon } from '../../../components/ui/Icon';
+import { DestImage } from '../../../components/ui/DestImage';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../../constants/colors';
 import { Message, ChatRoom } from '../../../types';
 import { ChatBubble } from '../../../components/chat/ChatBubble';
 import { TripCard } from '../../../components/chat/TripCard';
@@ -196,6 +197,20 @@ export default function ChatRoomScreen() {
         <Avatar nickname={room?.partner.nickname} size={36} />
         <View style={styles.headerInfo}>
           <Text style={styles.partnerName} numberOfLines={1}>{room?.partner.nickname ?? '...'}</Text>
+          {room?.trip?.destination && (
+            <View style={styles.headerDestRow}>
+              <DestImage
+                dest={room.trip.destination}
+                width={200}
+                scrim="none"
+                radius={Radius.xs}
+                style={styles.headerDestThumb}
+              />
+              <Text style={styles.headerDestText} numberOfLines={1}>
+                {room.trip.destination}
+              </Text>
+            </View>
+          )}
           {isPending && <Text style={styles.pendingBadge}>동행 제안 받음</Text>}
           {accepted && <Text style={styles.acceptedBadge}>✓ 동행 확정</Text>}
         </View>
@@ -367,6 +382,20 @@ const styles = StyleSheet.create({
   partnerName: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
   pendingBadge: { fontSize: 10, color: Colors.accent, fontWeight: '600' },
   acceptedBadge: { fontSize: 10, color: Colors.green, fontWeight: '600' },
+  headerDestRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Space.xs,
+  },
+  headerDestThumb: {
+    width: 22,
+    height: 22,
+  },
+  headerDestText: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    fontWeight: '500',
+  },
   profileLink: {
     backgroundColor: Colors.bg,
     paddingHorizontal: 12,
@@ -404,17 +433,17 @@ const styles = StyleSheet.create({
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingHorizontal: Space.lg,
+    paddingTop: Space.md,
     borderTopWidth: 1,
     borderTopColor: Colors.cardBorder,
     backgroundColor: Colors.white,
-    gap: 8,
+    gap: Space.sm,
   },
   tripShareBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.bgDeep,
     alignItems: 'center',
     justifyContent: 'center',
@@ -427,22 +456,27 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 44,
     backgroundColor: Colors.bg,
-    borderRadius: 22,
+    borderRadius: Radius.pill,
     paddingHorizontal: 18,
     fontSize: 15,
     color: Colors.textPrimary,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
   sendBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 44,
+    height: 44,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Elevation.primary,
   },
-  sendBtnDisabled: { backgroundColor: Colors.cardBorder },
+  sendBtnDisabled: {
+    backgroundColor: Colors.cardBorder,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
 
   // Bottom sheet
   sheetOverlay: {

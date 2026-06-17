@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Elevation, Radius, Space, Font } from '../../../constants/colors';
 import { Post } from '../../../types';
 import { PostCard } from '../../../components/community/PostCard';
 import { getPosts } from '../../../services/communityService';
 import { MapPinIcon, ArrowRightIcon } from '../../../components/ui/Icon';
+import { DestImage } from '../../../components/ui/DestImage';
 import { router } from 'expo-router';
 
 const TABS = [
@@ -70,9 +71,9 @@ export default function CommunityScreen() {
             <Text style={styles.title}>여행자들의 이야기</Text>
           </View>
           <TouchableOpacity
-            style={styles.writeBtn}
+            style={[styles.writeBtn, Elevation.sm]}
             onPress={() => router.push('/post/new')}
-            activeOpacity={0.82}
+            activeOpacity={0.85}
           >
             <Text style={styles.writeBtnText}>+ 기록하기</Text>
           </TouchableOpacity>
@@ -94,15 +95,30 @@ export default function CommunityScreen() {
             contentContainerStyle={styles.featuredScroll}
           >
             {FEATURED_POSTS.map((post) => (
-              <TouchableOpacity key={post.id} style={styles.featuredCard} activeOpacity={0.82} onPress={() => router.push(`/post/${post.postId}`)}>
-                <View style={[styles.featuredTagWrap, { backgroundColor: 'rgba(255,255,255,0.12)', alignSelf: 'flex-start' }]}>
+              <TouchableOpacity
+                key={post.id}
+                style={[styles.featuredCard, Elevation.lg]}
+                activeOpacity={0.87}
+                onPress={() => router.push(`/post/${post.postId}`)}
+              >
+                <DestImage
+                  dest={post.city}
+                  style={StyleSheet.absoluteFill}
+                  scrim="bottom"
+                  radius={Radius.lg}
+                />
+                {/* Floating tag */}
+                <View style={styles.featuredTagWrap}>
                   <Text style={styles.featuredTag}>{post.tag}</Text>
                 </View>
-                <Text style={styles.featuredCity}>{post.city}</Text>
-                <Text style={styles.featuredTitle} numberOfLines={1}>{post.title}</Text>
-                <View style={styles.featuredFooter}>
-                  <Text style={styles.featuredAuthor}>{post.author}</Text>
-                  <Text style={styles.featuredDate}>{post.date} · ♡ {post.likes}</Text>
+                {/* Bottom content */}
+                <View style={styles.featuredContent}>
+                  <Text style={styles.featuredCity}>{post.city}</Text>
+                  <Text style={styles.featuredTitle} numberOfLines={2}>{post.title}</Text>
+                  <View style={styles.featuredFooter}>
+                    <Text style={styles.featuredAuthor}>{post.author}</Text>
+                    <Text style={styles.featuredDate}>{post.date} · ♡ {post.likes}</Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             ))}
@@ -159,7 +175,11 @@ export default function CommunityScreen() {
         </View>
 
         {/* Route sharing banner */}
-        <TouchableOpacity style={styles.routeBanner} activeOpacity={0.85} onPress={() => router.push('/route-archive')}>
+        <TouchableOpacity
+          style={[styles.routeBanner, Elevation.sm]}
+          activeOpacity={0.87}
+          onPress={() => router.push('/route-archive')}
+        >
           <View style={styles.routeBannerLeft}>
             <Text style={styles.routeBannerLabel}>ROUTE ARCHIVE</Text>
             <Text style={styles.routeBannerTitle}>내 여행 루트 공유하기</Text>
@@ -176,9 +196,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
 
   header: {
-    paddingHorizontal: 24,
-    paddingTop: 44,
-    paddingBottom: 16,
+    paddingHorizontal: Space.xxl,
+    paddingTop: Space.huge,
+    paddingBottom: Space.lg,
     backgroundColor: Colors.bg,
   },
   headerTop: {
@@ -191,19 +211,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.textMuted,
     letterSpacing: 2.5,
-    marginBottom: 8,
+    marginBottom: Space.sm,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '300',
     color: Colors.textPrimary,
     letterSpacing: -0.4,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
   },
   writeBtn: {
     backgroundColor: Colors.card,
-    borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.xs + 3,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
   },
@@ -215,10 +236,11 @@ const styles = StyleSheet.create({
 
   scrollContent: { paddingTop: 0 },
 
-  featuredSection: { marginBottom: 4 },
+  // ── Featured ──────────────────────────────────────────────────────────────
+  featuredSection: { marginBottom: Space.xs },
   featuredHeader: {
-    paddingHorizontal: 24,
-    marginBottom: 12,
+    paddingHorizontal: Space.xxl,
+    marginBottom: Space.md,
   },
   featuredLabel: {
     fontSize: 10,
@@ -227,101 +249,89 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
   },
   featuredScroll: {
-    paddingHorizontal: 24,
-    gap: 14,
-    paddingRight: 24,
+    paddingHorizontal: Space.xxl,
+    gap: Space.md,
+    paddingRight: Space.xxl,
   },
   featuredCard: {
-    width: 240,
-    borderRadius: 20,
+    width: 260,
+    height: 300,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
-    backgroundColor: Colors.primary,
-    padding: 20,
-    gap: 6,
-  },
-  featuredCardBg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: Colors.primary,
-    opacity: 0.92,
-  },
-  featuredTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  featuredCoords: {
-    fontSize: 9,
-    color: 'rgba(255,255,255,0.45)',
-    fontWeight: '600',
-    letterSpacing: 1,
+    position: 'relative',
   },
   featuredTagWrap: {
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    position: 'absolute',
+    top: Space.md,
+    left: Space.md,
+    backgroundColor: 'rgba(16,24,38,0.50)',
+    borderRadius: Radius.xs,
+    paddingHorizontal: Space.sm,
+    paddingVertical: Space.xs - 1,
   },
   featuredTag: {
     fontSize: 9,
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.9)',
     fontWeight: '700',
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
   },
-  featuredBottom: { gap: 5 },
+  featuredContent: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    padding: Space.lg,
+    gap: Space.xs - 1,
+  },
   featuredCity: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.45)',
+    color: 'rgba(255,255,255,0.55)',
     fontWeight: '600',
-    letterSpacing: 1.5,
+    letterSpacing: 2,
     textTransform: 'uppercase',
-    marginBottom: 2,
+    marginBottom: Space.xs - 2,
   },
   featuredTitle: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '400',
     color: Colors.white,
+    lineHeight: 22,
     letterSpacing: -0.2,
-  },
-  featuredDesc: {
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.55)',
-    lineHeight: 17,
+    ...Platform.select({ web: { fontFamily: Font.serif, fontSize: 18 } }),
   },
   featuredFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
-    paddingTop: 8,
+    marginTop: Space.sm,
+    paddingTop: Space.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderTopColor: 'rgba(255,255,255,0.12)',
   },
   featuredAuthor: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.5)',
+    color: 'rgba(255,255,255,0.6)',
     fontWeight: '500',
   },
   featuredDate: {
     fontSize: 10,
-    color: 'rgba(255,255,255,0.35)',
+    color: 'rgba(255,255,255,0.4)',
   },
 
+  // ── City filter ───────────────────────────────────────────────────────────
   cityFilterRow: { marginBottom: 0 },
   cityFilterScroll: {
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    gap: 8,
+    paddingHorizontal: Space.xxl,
+    paddingVertical: Space.md + 2,
+    gap: Space.sm,
   },
   cityTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
+    gap: Space.xs,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.xs + 2,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.card,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
@@ -340,16 +350,17 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  // ── Tab bar ───────────────────────────────────────────────────────────────
   tabBar: {
     flexDirection: 'row',
-    paddingHorizontal: 24,
+    paddingHorizontal: Space.xxl,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
     backgroundColor: Colors.bg,
   },
   tab: {
-    paddingVertical: 11,
-    marginRight: 22,
+    paddingVertical: Space.md - 1,
+    marginRight: Space.xl + 2,
     borderBottomWidth: 1.5,
     borderBottomColor: 'transparent',
   },
@@ -357,32 +368,37 @@ const styles = StyleSheet.create({
   tabText: { fontSize: 13, color: Colors.textMuted, fontWeight: '400' },
   tabTextActive: { color: Colors.textPrimary, fontWeight: '600' },
 
-  postList: { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 4 },
+  // ── Post list ─────────────────────────────────────────────────────────────
+  postList: {
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.sm,
+    paddingBottom: Space.xs,
+  },
 
-  empty: { paddingTop: 48, alignItems: 'center', gap: 8 },
+  empty: { paddingTop: Space.huge, alignItems: 'center', gap: Space.sm },
   emptyTitle: { fontSize: 15, fontWeight: '500', color: Colors.textPrimary },
   emptyDesc: { fontSize: 13, color: Colors.textMuted },
 
+  // ── Route banner ──────────────────────────────────────────────────────────
   routeBanner: {
-    marginHorizontal: 20,
-    marginTop: 12,
-    marginBottom: 8,
+    marginHorizontal: Space.xl,
+    marginTop: Space.md,
+    marginBottom: Space.sm,
     backgroundColor: Colors.accentLight,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: Radius.md,
+    padding: Space.xl,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(196,135,90,0.2)',
-    gap: 0,
   },
-  routeBannerLeft: { flex: 1, gap: 4 },
+  routeBannerLeft: { flex: 1, gap: Space.xs },
   routeBannerLabel: {
     fontSize: 9,
     fontWeight: '700',
     color: Colors.accent,
     letterSpacing: 2,
-    marginBottom: 2,
+    marginBottom: Space.xs - 2,
     opacity: 0.7,
   },
   routeBannerTitle: {

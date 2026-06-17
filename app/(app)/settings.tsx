@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch } f
 import { ChevronRightIcon } from '../../components/ui/Icon';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 import { useProfile } from '../../context/ProfileContext';
 import { usePersonality } from '../../context/PersonalityContext';
@@ -195,41 +195,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.lg,
+    paddingBottom: Space.xl,
   },
   backBtn: { padding: 4, width: 32 },
   backIcon: { fontSize: 22, color: Colors.textPrimary },
-  title: { fontSize: 18, fontWeight: '700', color: Colors.textPrimary },
+  title: { fontSize: 24, fontWeight: '300' as const, color: Colors.textPrimary, letterSpacing: -0.4 },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, gap: 28 },
+  content: { paddingHorizontal: Space.xl, gap: Space.xxxl, paddingTop: Space.sm },
 
-  section: { gap: 10 },
+  section: { gap: Space.sm },
   sectionTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.textSecondary,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-    paddingLeft: 4,
+    fontSize: 10,
+    fontWeight: '700' as const,
+    color: Colors.textMuted,
+    letterSpacing: 2.2,
+    textTransform: 'uppercase' as const,
+    paddingLeft: Space.xs,
   },
   sectionCard: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
+    borderRadius: Radius.xl,
     overflow: 'hidden',
+    ...Elevation.sm,
   },
   settingRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 16,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.xl,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
   },
-  settingLabel: { fontSize: 15, color: Colors.textPrimary, fontWeight: '500' },
+  settingLabel: { fontSize: 15, color: Colors.textPrimary, fontWeight: '500' as const },
   settingLabelDanger: { color: Colors.red },
   settingRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   settingValue: { fontSize: 13, color: Colors.textSecondary },

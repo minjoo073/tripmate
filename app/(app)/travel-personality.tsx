@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius, Space } from '../../constants/colors';
 import {
   ArrowLeftIcon, WaveIcon, FireIcon, MoonIcon, SunIcon,
   UsersIcon, ProfileNavIcon, SparkleIcon, ExploreIcon,
@@ -152,50 +152,57 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.cardBorder,
     backgroundColor: Colors.card,
   },
   backBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  headerCenter: { flex: 1, alignItems: 'center', gap: 2 },
-  headerLabel: { fontSize: 9, fontWeight: '700', color: Colors.textMuted, letterSpacing: 2.5 },
-  headerTitle: { fontSize: 17, fontWeight: '500', color: Colors.textPrimary, letterSpacing: -0.3 },
+  headerCenter: { flex: 1, alignItems: 'center', gap: 3 },
+  headerLabel: {
+    fontSize: 9, fontWeight: '700' as const, color: Colors.textMuted,
+    letterSpacing: 2.5, textTransform: 'uppercase' as const,
+  },
+  headerTitle: { fontSize: 17, fontWeight: '500' as const, color: Colors.textPrimary, letterSpacing: -0.3 },
   headerRight: { width: 36 },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 20, paddingTop: 20, gap: 24 },
+  content: { paddingHorizontal: Space.xl, paddingTop: Space.xl, gap: Space.xxl },
 
-  desc: { fontSize: 11, color: Colors.textMuted, lineHeight: 17 },
+  desc: { fontSize: 12, color: Colors.textMuted, lineHeight: 18 },
 
-  section: { gap: 8 },
+  section: { gap: Space.sm },
   sectionLabel: {
-    fontSize: 10, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 1.2, textTransform: 'uppercase',
+    fontSize: 10, fontWeight: '700' as const, color: Colors.textMuted,
+    letterSpacing: 2, textTransform: 'uppercase' as const,
   },
-  optionRow: { flexDirection: 'row', gap: 6 },
+  optionRow: { flexDirection: 'row', gap: Space.sm },
 
   optionCard: {
     flex: 1,
     backgroundColor: Colors.card,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 6,
+    borderRadius: Radius.lg,
+    paddingVertical: Space.md,
+    paddingHorizontal: Space.sm,
     alignItems: 'center',
-    gap: 5,
-    borderWidth: 1.5,
-    borderColor: Colors.cardBorder,
+    gap: 6,
+    ...Elevation.sm,
   },
   optionCardActive: {
-    borderColor: Colors.primary,
     backgroundColor: Colors.primaryLight,
+    // Override shadow with primary-tinted for active state
+    shadowColor: 'rgba(59,81,120,0.22)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 4,
   },
 
   iconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
+    width: 36,
+    height: 36,
+    borderRadius: Radius.sm,
     backgroundColor: Colors.bgDeep,
     alignItems: 'center',
     justifyContent: 'center',
@@ -203,28 +210,29 @@ const styles = StyleSheet.create({
   iconWrapActive: { backgroundColor: 'rgba(59,81,120,0.13)' },
 
   optionValue: {
-    fontSize: 11, fontWeight: '600', color: Colors.textPrimary,
-    letterSpacing: -0.2, textAlign: 'center',
+    fontSize: 11, fontWeight: '600' as const, color: Colors.textPrimary,
+    letterSpacing: -0.2, textAlign: 'center' as const,
   },
   optionValueActive: { color: Colors.primary },
 
   optionDesc: {
-    fontSize: 9, color: Colors.textMuted, textAlign: 'center', lineHeight: 12,
+    fontSize: 9, color: Colors.textMuted, textAlign: 'center' as const, lineHeight: 12,
   },
   optionDescActive: { color: Colors.dustBlue },
 
   footer: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.md,
     backgroundColor: Colors.card,
     borderTopWidth: 1,
     borderTopColor: Colors.cardBorder,
   },
   saveBtn: {
     backgroundColor: Colors.primary,
-    borderRadius: 14,
-    paddingVertical: 15,
+    borderRadius: Radius.lg,
+    paddingVertical: Space.lg,
     alignItems: 'center',
+    ...Elevation.primary,
   },
-  saveBtnText: { fontSize: 15, fontWeight: '600', color: Colors.white, letterSpacing: -0.2 },
+  saveBtnText: { fontSize: 15, fontWeight: '600' as const, color: Colors.white, letterSpacing: -0.2 },
 });

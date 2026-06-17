@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '../../context/AuthContext';
 import { Colors } from '../../constants/colors';
+import { prefetchDestinations } from '../../constants/destinationImages';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 
 function CompassIcon() {
@@ -27,18 +27,16 @@ function CompassIcon() {
 export default function SplashScreen() {
   const { user, isLoading } = useAuth();
   const [animDone, setAnimDone] = useState(false);
-  const [onboardingDone, setOnboardingDone] = useState<boolean | null>(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const iconAnim = useRef(new Animated.Value(0)).current;
   const textAnim = useRef(new Animated.Value(0)).current;
   const subAnim  = useRef(new Animated.Value(0)).current;
 
-  // 온보딩 완료 플래그 읽기 (AsyncStorage key: 'onboarding_done')
+  // 인트로가 도는 동안 도시 사진을 미리 받아 캐시를 데운다 —
+  // 홈/피드 도착 시 카드가 즉시 뜨도록 (로딩 지연 제거).
   useEffect(() => {
-    AsyncStorage.getItem('onboarding_done')
-      .then((val) => setOnboardingDone(val === 'true'))
-      .catch(() => setOnboardingDone(false));
+    prefetchDestinations();
   }, []);
 
   // 스플래시 애니메이션 실행 — 완료 시 animDone 마킹
@@ -51,22 +49,13 @@ export default function SplashScreen() {
     ]).start(() => setAnimDone(true));
   }, []);
 
-  // 라우팅: auth 로딩 완료 + 애니메이션 완료 + 온보딩 플래그 확인 후 전환
-  // 분기 순서:
-  //   1) 로그인 상태 → /(tabs)/
-  //   2) 비로그인 + 온보딩 완료 → /(auth)/login
-  //   3) 비로그인 + 온보딩 미완료 → /(app)/onboarding
+  // 라우팅: 인트로(스플래시) 후 전환. 온보딩(앱 설명) 단계는 건너뛴다.
+  //   1) 로그인 상태 → /(tabs)/ (메인)
+  //   2) 비로그인    → /(auth)/login (로그인)
   useEffect(() => {
-    if (isLoading || !animDone || onboardingDone === null) return;
-
-    if (user) {
-      router.replace('/(tabs)/');
-    } else if (onboardingDone) {
-      router.replace('/(auth)/login');
-    } else {
-      router.replace('/(app)/onboarding');
-    }
-  }, [isLoading, animDone, onboardingDone, user]);
+    if (isLoading || !animDone) return;
+    router.replace(user ? '/(tabs)/' : '/(auth)/login');
+  }, [isLoading, animDone, user]);
 
   return (
     <View style={styles.container}>

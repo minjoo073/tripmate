@@ -5,8 +5,9 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Radius, Space, Elevation } from '../../constants/colors';
 import { MapPinIcon } from '../ui/Icon';
+import { DestImage } from '../ui/DestImage';
 import { startChat } from '../../services/chatService';
 
 interface Props {
@@ -75,12 +76,23 @@ export function JoinSheet({ visible, onClose, userId, nickname, destination, dat
               {(destination || dates) && (
                 <View style={styles.tripCard}>
                   {destination && (
-                    <View style={styles.tripRow}>
-                      <MapPinIcon color={Colors.primary} size={12} />
-                      <Text style={styles.tripDest}>{destination}</Text>
+                    <DestImage
+                      dest={destination}
+                      style={styles.tripCardHero}
+                      scrim="bottom"
+                      radius={0}
+                    >
+                      <View style={styles.tripRow}>
+                        <MapPinIcon color="rgba(255,255,255,0.85)" size={12} />
+                        <Text style={styles.tripDestOnPhoto}>{destination}</Text>
+                      </View>
+                    </DestImage>
+                  )}
+                  {dates && (
+                    <View style={styles.tripDatesRow}>
+                      <Text style={styles.tripDates}>{dates}</Text>
                     </View>
                   )}
-                  {dates && <Text style={styles.tripDates}>{dates}</Text>}
                 </View>
               )}
 
@@ -132,15 +144,15 @@ const styles = StyleSheet.create({
   wrapper: { position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 11 },
   sheet: {
     backgroundColor: Colors.bg,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 24,
-    paddingTop: 12,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    paddingHorizontal: Space.xxl,
+    paddingTop: Space.md,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 16,
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
@@ -155,13 +167,18 @@ const styles = StyleSheet.create({
     fontSize: 13, color: Colors.textMuted, lineHeight: 20, marginBottom: 20,
   },
   tripCard: {
-    backgroundColor: Colors.card, borderRadius: 12,
-    borderWidth: 1, borderColor: Colors.cardBorder,
-    padding: 14, marginBottom: 20, gap: 6,
+    backgroundColor: Colors.card,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: Colors.cardBorder,
+    marginBottom: Space.xl,
+    overflow: 'hidden',
   },
+  tripCardHero: { height: 100 },
   tripRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  tripDest: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
-  tripDates: { fontSize: 12, color: Colors.textMuted, marginLeft: 18 },
+  tripDestOnPhoto: { fontSize: 14, fontWeight: '600', color: Colors.white },
+  tripDatesRow: { paddingHorizontal: Space.md, paddingVertical: Space.sm },
+  tripDates: { fontSize: 12, color: Colors.textMuted },
   label: {
     fontSize: 11, fontWeight: '700', color: Colors.textMuted,
     letterSpacing: 1.5, marginBottom: 8,

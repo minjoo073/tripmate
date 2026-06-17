@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  useWindowDimensions, Alert, Image,
+  useWindowDimensions, Alert, Image, Platform,
 } from 'react-native';
 import { router } from 'expo-router';
-import { Colors } from '../constants/colors';
+import { Colors, Editorial, Font, Elevation, Radius, Space } from '../constants/colors';
 import { getProfileIcon } from '../constants/profileIcons';
+import { DestImage } from '../components/ui/DestImage';
 import { useAuth } from '../context/AuthContext';
 import { login as loginRequest } from '../services/authService';
 
@@ -16,8 +17,6 @@ async function enterAsGuest(signIn: (u: any) => Promise<void>, target: string) {
     const authUser = await loginRequest('alice@tripmate.app', 'password');
     await signIn(authUser);
   } catch (e) {
-    // If backend is down or seed is missing, fall through with no auth so
-    // the user at least sees the screen (mock mode will kick in).
     console.warn('[guest] login failed, continuing without auth', e);
   }
   router.push(target as any);
@@ -119,7 +118,7 @@ const DESTINATIONS = [
 
 function Stars({ count }: { count: number }) {
   return (
-    <Text style={{ fontSize: 13, letterSpacing: 1 }}>
+    <Text style={{ fontSize: 13, letterSpacing: 1, color: Colors.pointYellow }}>
       {'★'.repeat(count)}{'☆'.repeat(5 - count)}
     </Text>
   );
@@ -139,7 +138,7 @@ export default function LandingPage() {
       {/* ── NAV ── */}
       <View style={styles.nav}>
         <View style={styles.navInner}>
-          <Text style={styles.logo}>✈️ TripMate</Text>
+          <Text style={styles.logo}>TripMate</Text>
           <View style={styles.navLinks}>
             <TouchableOpacity onPress={() => scrollRef.current?.scrollTo({ y: featuresY, animated: true })}>
               <Text style={styles.navLink}>서비스 소개</Text>
@@ -156,52 +155,55 @@ export default function LandingPage() {
 
       {/* ── HERO ── */}
       <View style={styles.hero}>
-        <View style={styles.heroBadge}>
-          <Text style={styles.heroBadgeText}>✨ AI 기반 여행 메이트 매칭 서비스</Text>
-        </View>
-        <Text style={styles.heroTitle}>
-          혼자 떠나기{'\n'}
-          <Text style={styles.heroTitleAccent}>두렵다면,</Text>{'\n'}
-          함께 떠나세요
-        </Text>
-        <Text style={styles.heroSub}>
-          여행지·날짜·스타일을 입력하면{'\n'}
-          AI가 23,000명 중 딱 맞는 메이트를 찾아드려요.
-        </Text>
-        <View style={styles.heroBtns}>
-          <TouchableOpacity style={styles.heroBtn} onPress={() => enterAsGuest(signIn, '/(tabs)/')}>
-            <Text style={styles.heroBtnText}>🚀 지금 무료로 시작하기</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.heroBtnOutline} onPress={() => enterAsGuest(signIn, '/(tabs)/explore')}>
-            <Text style={styles.heroBtnOutlineText}>🔍 메이트 둘러보기</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.heroNote}>회원가입 무료 · 카드 등록 불필요</Text>
+        <DestImage dest="파리" scrim="even" radius={0} style={StyleSheet.absoluteFill} />
+        <View style={styles.heroContent}>
+          <View style={styles.heroBadge}>
+            <Text style={styles.heroBadgeText}>AI 기반 여행 메이트 매칭 서비스</Text>
+          </View>
+          <Text style={styles.heroTitle}>
+            혼자 떠나기{'\n'}
+            <Text style={styles.heroTitleAccent}>두렵다면,</Text>{'\n'}
+            함께 떠나세요
+          </Text>
+          <Text style={styles.heroSub}>
+            여행지·날짜·스타일을 입력하면{'\n'}
+            AI가 23,000명 중 딱 맞는 메이트를 찾아드려요.
+          </Text>
+          <View style={styles.heroBtns}>
+            <TouchableOpacity style={styles.heroBtn} onPress={() => enterAsGuest(signIn, '/(tabs)/')} activeOpacity={0.88}>
+              <Text style={styles.heroBtnText}>지금 무료로 시작하기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.heroBtnOutline} onPress={() => enterAsGuest(signIn, '/(tabs)/explore')} activeOpacity={0.88}>
+              <Text style={styles.heroBtnOutlineText}>메이트 둘러보기</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.heroNote}>회원가입 무료 · 카드 등록 불필요</Text>
 
-        <View style={styles.heroMockup}>
-          <View style={styles.mockPhone}>
-            <View style={styles.mockHeader}>
-              <Text style={styles.mockHeaderText}>안녕하세요 👋</Text>
-              <Text style={styles.mockHeaderSub}>오늘 맞춤 메이트</Text>
-            </View>
-            {[
-              { name: '한소희', rate: 97, dest: '오사카' },
-              { name: '조승연', rate: 94, dest: '오사카' },
-              { name: '양세은', rate: 91, dest: '도쿄' },
-            ].map((m) => (
-              <View key={m.name} style={styles.mockCard}>
-                <View style={styles.mockAvatar}>
-                  <Image source={getProfileIcon(m.name)} style={styles.mockAvatarImage} resizeMode="contain" />
-                </View>
-                <View style={{ flex: 1, minWidth: 0 }}>
-                  <Text style={styles.mockName}>{m.name}</Text>
-                  <Text style={styles.mockDest}>{m.dest}</Text>
-                </View>
-                <View style={styles.mockBadge}>
-                  <Text style={styles.mockBadgeText}>{m.rate}%</Text>
-                </View>
+          <View style={styles.heroMockup}>
+            <View style={styles.mockPhone}>
+              <View style={styles.mockHeader}>
+                <Text style={styles.mockHeaderText}>안녕하세요 👋</Text>
+                <Text style={styles.mockHeaderSub}>오늘 맞춤 메이트</Text>
               </View>
-            ))}
+              {[
+                { name: '한소희', rate: 97, dest: '오사카' },
+                { name: '조승연', rate: 94, dest: '오사카' },
+                { name: '양세은', rate: 91, dest: '도쿄' },
+              ].map((m) => (
+                <View key={m.name} style={styles.mockCard}>
+                  <View style={styles.mockAvatar}>
+                    <Image source={getProfileIcon(m.name)} style={styles.mockAvatarImage} resizeMode="contain" />
+                  </View>
+                  <View style={{ flex: 1, minWidth: 0 }}>
+                    <Text style={styles.mockName}>{m.name}</Text>
+                    <Text style={styles.mockDest}>{m.dest}</Text>
+                  </View>
+                  <View style={styles.mockBadge}>
+                    <Text style={styles.mockBadgeText}>{m.rate}%</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
       </View>
@@ -270,10 +272,12 @@ export default function LandingPage() {
               key={d.name}
               style={styles.destCard}
               onPress={() => enterAsGuest(signIn, '/(tabs)/explore')}
+              activeOpacity={0.88}
             >
-              <Text style={styles.destFlag}>{d.flag}</Text>
-              <Text style={styles.destName}>{d.name}</Text>
-              <Text style={styles.destMates}>메이트 {d.mates}명</Text>
+              <DestImage dest={d.name} scrim="bottom" radius={Radius.lg} style={{ flex: 1 }}>
+                <Text style={styles.destName}>{d.name}</Text>
+                <Text style={styles.destMates}>메이트 {d.mates}명</Text>
+              </DestImage>
             </TouchableOpacity>
           ))}
         </View>
@@ -304,27 +308,30 @@ export default function LandingPage() {
 
       {/* ── CTA BANNER ── */}
       <View style={styles.ctaBanner}>
-        <Text style={styles.ctaTitle}>지금 바로 나만의{'\n'}여행 메이트를 찾아보세요 🗺</Text>
-        <Text style={styles.ctaSub}>
-          가입하는 순간, AI가 당신에게 맞는{'\n'}여행 메이트를 찾기 시작해요.
-        </Text>
-        <TouchableOpacity style={styles.ctaBtn} onPress={() => router.push('/(auth)/signup')}>
-          <Text style={styles.ctaBtnText}>무료로 시작하기 →</Text>
-        </TouchableOpacity>
-        <View style={styles.ctaStores}>
-          <TouchableOpacity style={styles.storeBtn} onPress={() => Alert.alert('준비 중', 'App Store 버전이 곧 출시될 예정이에요!')} activeOpacity={0.75}>
-            <Text style={styles.storeBtnText}>🍎 App Store</Text>
+        <DestImage dest="이스탄불" scrim="even" radius={0} style={StyleSheet.absoluteFill} />
+        <View style={styles.ctaContent}>
+          <Text style={styles.ctaTitle}>지금 바로 나만의{'\n'}여행 메이트를 찾아보세요</Text>
+          <Text style={styles.ctaSub}>
+            가입하는 순간, AI가 당신에게 맞는{'\n'}여행 메이트를 찾기 시작해요.
+          </Text>
+          <TouchableOpacity style={styles.ctaBtn} onPress={() => router.push('/(auth)/signup')} activeOpacity={0.88}>
+            <Text style={styles.ctaBtnText}>무료로 시작하기 →</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.storeBtn} onPress={() => Alert.alert('준비 중', 'Google Play 버전이 곧 출시될 예정이에요!')} activeOpacity={0.75}>
-            <Text style={styles.storeBtnText}>▶ Google Play</Text>
-          </TouchableOpacity>
+          <View style={styles.ctaStores}>
+            <TouchableOpacity style={styles.storeBtn} onPress={() => Alert.alert('준비 중', 'App Store 버전이 곧 출시될 예정이에요!')} activeOpacity={0.75}>
+              <Text style={styles.storeBtnText}>🍎 App Store</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.storeBtn} onPress={() => Alert.alert('준비 중', 'Google Play 버전이 곧 출시될 예정이에요!')} activeOpacity={0.75}>
+              <Text style={styles.storeBtnText}>▶ Google Play</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.ctaNote}>iOS · Android · Web 모두 지원</Text>
         </View>
-        <Text style={styles.ctaNote}>iOS · Android · Web 모두 지원</Text>
       </View>
 
       {/* ── FOOTER ── */}
       <View style={styles.footer}>
-        <Text style={styles.footerLogo}>✈️ TripMate</Text>
+        <Text style={styles.footerLogo}>TripMate</Text>
         <Text style={styles.footerTagline}>
           혼자가 아닌, 함께하는 여행을 만들어드립니다.
         </Text>
@@ -345,6 +352,8 @@ export default function LandingPage() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.white },
+
+  // ── NAV
   nav: {
     backgroundColor: Colors.white,
     borderBottomWidth: 1,
@@ -354,85 +363,107 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingHorizontal: Space.xxl,
+    paddingVertical: Space.lg,
     maxWidth: 1200,
     alignSelf: 'center',
     width: '100%',
   },
-  logo: { fontSize: 20, fontWeight: '800', color: Colors.primary },
-  navLinks: { flexDirection: 'row', alignItems: 'center', gap: 24 },
+  logo: {
+    fontSize: 20,
+    fontWeight: '600' as const,
+    color: Colors.primary,
+    letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif, fontWeight: '400' } }),
+  },
+  navLinks: { flexDirection: 'row', alignItems: 'center', gap: Space.xxl },
   navLink: { fontSize: 14, color: Colors.textSecondary, fontWeight: '500' },
   navCta: {
     backgroundColor: Colors.primary,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.sm + 2,
+    borderRadius: Radius.sm,
+    ...Elevation.primary,
   },
   navCtaText: { fontSize: 14, color: Colors.white, fontWeight: '700' },
+
+  // ── HERO
   hero: {
-    backgroundColor: Colors.primary,
-    paddingTop: 72,
-    paddingBottom: 80,
-    paddingHorizontal: 24,
+    overflow: 'hidden',
+    minHeight: 520,
+  },
+  heroContent: {
+    paddingTop: 88,
+    paddingBottom: 96,
+    paddingHorizontal: Space.xxl,
     alignItems: 'center',
   },
   heroBadge: {
-    backgroundColor: 'rgba(255,249,215,0.2)',
-    borderRadius: 20,
-    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.lg,
     paddingVertical: 6,
-    marginBottom: 24,
+    marginBottom: Space.xxl,
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
-  heroBadgeText: { fontSize: 13, color: Colors.pointYellow, fontWeight: '600' },
+  heroBadgeText: {
+    fontSize: 10,
+    fontWeight: '700' as const,
+    color: 'rgba(255,255,255,0.9)',
+    letterSpacing: 2,
+    textTransform: 'uppercase' as const,
+  },
   heroTitle: {
-    fontSize: 40,
-    fontWeight: '800',
+    ...Editorial.hero,
     color: Colors.white,
-    textAlign: 'center',
-    lineHeight: 52,
+    textAlign: 'center' as const,
   },
   heroTitleAccent: { color: Colors.pointYellow },
   heroSub: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.75)',
-    textAlign: 'center',
+    color: 'rgba(255,255,255,0.78)',
+    textAlign: 'center' as const,
     lineHeight: 26,
-    marginTop: 16,
+    marginTop: Space.lg,
+    maxWidth: 380,
   },
   heroBtns: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 32,
+    gap: Space.md,
+    marginTop: Space.xxxl,
     flexWrap: 'wrap',
     justifyContent: 'center',
   },
   heroBtn: {
     backgroundColor: Colors.pointYellow,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 14,
+    paddingHorizontal: Space.xxl,
+    paddingVertical: Space.lg,
+    borderRadius: Radius.md,
+    ...Elevation.primary,
   },
-  heroBtnText: { fontSize: 15, fontWeight: '800', color: Colors.primary },
+  heroBtnText: { fontSize: 15, fontWeight: '800' as const, color: Colors.primary },
   heroBtnOutline: {
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.5)',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.55)',
+    paddingHorizontal: Space.xxl,
+    paddingVertical: Space.lg,
+    borderRadius: Radius.md,
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
-  heroBtnOutlineText: { fontSize: 15, fontWeight: '700', color: Colors.white },
-  heroNote: { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: 12 },
-  heroMockup: { marginTop: 48, alignItems: 'center', width: '100%' },
+  heroBtnOutlineText: { fontSize: 15, fontWeight: '600' as const, color: Colors.white },
+  heroNote: { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: Space.md },
+  heroMockup: { marginTop: Space.huge, alignItems: 'center', width: '100%' },
   mockPhone: {
     backgroundColor: Colors.white,
-    borderRadius: 24,
-    padding: 16,
+    borderRadius: Radius.xl,
+    padding: Space.lg,
     width: 280,
+    ...Elevation.lg,
   },
-  mockHeader: { marginBottom: 12 },
+  mockHeader: { marginBottom: Space.md },
   mockHeaderText: { fontSize: 13, color: Colors.textSecondary },
-  mockHeaderSub: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
+  mockHeaderSub: { fontSize: 16, fontWeight: '700' as const, color: Colors.textPrimary },
   mockCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -447,133 +478,177 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   mockAvatarImage: { width: 28, height: 28 },
-  mockName: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
+  mockName: { fontSize: 13, fontWeight: '600' as const, color: Colors.textPrimary },
   mockDest: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
   mockBadge: {
     backgroundColor: Colors.primaryBg,
-    paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, flexShrink: 0,
+    paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.xs, flexShrink: 0,
   },
-  mockBadgeText: { fontSize: 13, fontWeight: '800', color: Colors.primary },
+  mockBadgeText: { fontSize: 13, fontWeight: '800' as const, color: Colors.primary },
+
+  // ── STATS
   statsBar: {
     flexDirection: 'row',
     backgroundColor: Colors.primary,
-    paddingVertical: 28,
-    paddingHorizontal: 16,
+    paddingVertical: Space.xxxl,
+    paddingHorizontal: Space.lg,
     justifyContent: 'space-around',
     flexWrap: 'wrap',
-    gap: 16,
+    gap: Space.lg,
   },
   statItem: { alignItems: 'center', minWidth: 80 },
-  statValue: { fontSize: 26, fontWeight: '800', color: Colors.pointYellow },
-  statLabel: { fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: 4 },
+  statValue: { fontSize: 28, fontWeight: '800' as const, color: Colors.pointYellow, letterSpacing: -0.5 },
+  statLabel: { fontSize: 12, color: 'rgba(255,255,255,0.65)', marginTop: Space.xs },
+
+  // ── SECTIONS
   section: {
-    paddingVertical: 72,
-    paddingHorizontal: 24,
+    paddingVertical: Space.huge + Space.xxl,
+    paddingHorizontal: Space.xxl,
     backgroundColor: Colors.white,
     alignItems: 'center',
   },
   sectionDark: { backgroundColor: Colors.cardDark },
   sectionBadge: {
-    fontSize: 12, fontWeight: '700', color: Colors.primary,
-    letterSpacing: 1.5, marginBottom: 12,
+    fontSize: 10, fontWeight: '700' as const, color: Colors.primary,
+    letterSpacing: 2.5, marginBottom: Space.md, textTransform: 'uppercase' as const,
   },
   sectionTitle: {
-    fontSize: 30, fontWeight: '800', color: Colors.textPrimary,
-    textAlign: 'center', lineHeight: 40, marginBottom: 12,
+    ...Editorial.title,
+    color: Colors.textPrimary,
+    textAlign: 'center' as const,
+    marginBottom: Space.md,
   },
   sectionSub: {
     fontSize: 15, color: Colors.textSecondary,
-    textAlign: 'center', lineHeight: 24, marginBottom: 40, maxWidth: 460,
+    textAlign: 'center' as const, lineHeight: 24,
+    marginBottom: Space.huge, maxWidth: 460,
   },
-  featureGrid: { width: '100%', maxWidth: 800, gap: 16 },
+
+  // ── FEATURES
+  featureGrid: { width: '100%', maxWidth: 800, gap: Space.lg },
   featureGridWide: { flexDirection: 'row', flexWrap: 'wrap' },
   featureCard: {
-    borderRadius: 20, padding: 24, marginBottom: 4, flex: 1, minWidth: 260,
+    borderRadius: Radius.xl,
+    padding: Space.xxl,
+    marginBottom: Space.xs,
+    flex: 1,
+    minWidth: 260,
+    ...Elevation.md,
   },
-  featureIcon: { fontSize: 32, marginBottom: 12 },
-  featureTitle: { fontSize: 17, fontWeight: '700', color: Colors.textPrimary, marginBottom: 8 },
+  featureIcon: { fontSize: 32, marginBottom: Space.md },
+  featureTitle: { fontSize: 17, fontWeight: '700' as const, color: Colors.textPrimary, marginBottom: Space.sm },
   featureDesc: { fontSize: 14, color: Colors.textSecondary, lineHeight: 22 },
-  steps: { width: '100%', maxWidth: 480, marginTop: 8 },
-  stepRow: { flexDirection: 'row', gap: 16, marginBottom: 0 },
+
+  // ── STEPS
+  steps: { width: '100%', maxWidth: 480, marginTop: Space.sm },
+  stepRow: { flexDirection: 'row', gap: Space.lg, marginBottom: 0 },
   stepLeft: { alignItems: 'center', width: 48 },
   stepNumBox: {
     width: 48, height: 48, borderRadius: 24,
     backgroundColor: Colors.pointYellow,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    ...Elevation.md,
   },
-  stepNum: { fontSize: 14, fontWeight: '800', color: Colors.primary },
+  stepNum: { fontSize: 14, fontWeight: '800' as const, color: Colors.primary },
   stepLine: {
     width: 2, flex: 1, minHeight: 40,
     backgroundColor: 'rgba(255,255,255,0.2)', marginVertical: 6,
   },
-  stepContent: { flex: 1, paddingBottom: 32, paddingTop: 10 },
+  stepContent: { flex: 1, paddingBottom: Space.xxxl, paddingTop: 10 },
   stepIcon: { fontSize: 22, marginBottom: 6 },
-  stepTitle: { fontSize: 18, fontWeight: '700', color: Colors.white, marginBottom: 6 },
+  stepTitle: { fontSize: 18, fontWeight: '700' as const, color: Colors.white, marginBottom: 6 },
   stepDesc: { fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 22 },
+
+  // ── DESTINATIONS — real city photos
   destGrid: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 12,
-    justifyContent: 'center', marginTop: 8, maxWidth: 700, width: '100%',
+    flexDirection: 'row', flexWrap: 'wrap', gap: Space.md,
+    justifyContent: 'center', marginTop: Space.md, maxWidth: 700, width: '100%',
   },
   destCard: {
-    backgroundColor: Colors.bg, borderRadius: 16, padding: 20,
-    alignItems: 'center', width: 160,
-    borderWidth: 1, borderColor: Colors.cardBorder,
+    width: 160,
+    height: 140,
+    borderRadius: Radius.lg,
+    ...Elevation.md,
   },
-  destFlag: { fontSize: 32, marginBottom: 8 },
-  destName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary, marginBottom: 4 },
-  destMates: { fontSize: 12, color: Colors.primary, fontWeight: '600' },
-  reviewList: { width: '100%', maxWidth: 680, gap: 16, marginTop: 8 },
+  destName: { fontSize: 14, fontWeight: '700' as const, color: Colors.white },
+  destMates: { fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: '500' as const, marginTop: 2 },
+
+  // ── REVIEWS
+  reviewList: { width: '100%', maxWidth: 680, gap: Space.lg, marginTop: Space.sm },
   reviewCard: {
-    backgroundColor: Colors.white, borderRadius: 20, padding: 20,
-    borderWidth: 1, borderColor: Colors.cardBorder,
+    backgroundColor: Colors.white,
+    borderRadius: Radius.xl,
+    padding: Space.xxl,
+    ...Elevation.md,
   },
-  reviewTop: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 14 },
+  reviewTop: { flexDirection: 'row', alignItems: 'center', gap: Space.md, marginBottom: Space.lg },
   reviewAvatar: {
     width: 44, height: 44, borderRadius: 22,
     backgroundColor: Colors.primaryBg,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   reviewAvatarImage: { width: 30, height: 30 },
-  reviewName: { fontSize: 13, fontWeight: '700', color: Colors.textPrimary },
+  reviewName: { fontSize: 13, fontWeight: '700' as const, color: Colors.textPrimary },
   reviewTrip: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  reviewText: { fontSize: 14, color: Colors.textPrimary, lineHeight: 22, fontStyle: 'italic' },
+  reviewText: { fontSize: 14, color: Colors.textPrimary, lineHeight: 22, fontStyle: 'italic' as const },
+
+  // ── CTA BANNER — city photo behind
   ctaBanner: {
-    backgroundColor: Colors.primary, paddingVertical: 80,
-    paddingHorizontal: 24, alignItems: 'center',
+    overflow: 'hidden',
+    minHeight: 400,
+  },
+  ctaContent: {
+    paddingVertical: 88,
+    paddingHorizontal: Space.xxl,
+    alignItems: 'center',
   },
   ctaTitle: {
-    fontSize: 32, fontWeight: '800', color: Colors.white,
-    textAlign: 'center', lineHeight: 44, marginBottom: 12,
+    ...Editorial.hero,
+    color: Colors.white,
+    textAlign: 'center' as const,
+    marginBottom: Space.md,
   },
   ctaSub: {
-    fontSize: 15, color: 'rgba(255,255,255,0.7)',
-    textAlign: 'center', lineHeight: 24, marginBottom: 32,
+    fontSize: 15, color: 'rgba(255,255,255,0.78)',
+    textAlign: 'center' as const, lineHeight: 24, marginBottom: Space.xxxl,
+    maxWidth: 360,
   },
   ctaBtn: {
     backgroundColor: Colors.pointYellow,
-    paddingHorizontal: 32, paddingVertical: 18, borderRadius: 14, marginBottom: 20,
+    paddingHorizontal: Space.xxxl, paddingVertical: Space.lg + 2,
+    borderRadius: Radius.md, marginBottom: Space.xl,
+    ...Elevation.primary,
   },
-  ctaBtnText: { fontSize: 17, fontWeight: '800', color: Colors.primary },
-  ctaStores: { flexDirection: 'row', gap: 12, marginBottom: 16 },
+  ctaBtnText: { fontSize: 17, fontWeight: '800' as const, color: Colors.primary },
+  ctaStores: { flexDirection: 'row', gap: Space.md, marginBottom: Space.lg },
   storeBtn: {
-    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.4)',
-    borderRadius: 10, paddingHorizontal: 20, paddingVertical: 12,
+    borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.45)',
+    borderRadius: Radius.sm, paddingHorizontal: Space.xl, paddingVertical: Space.md,
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
-  storeBtnText: { fontSize: 14, color: Colors.white, fontWeight: '600' },
+  storeBtnText: { fontSize: 14, color: Colors.white, fontWeight: '600' as const },
   ctaNote: { fontSize: 12, color: 'rgba(255,255,255,0.5)' },
+
+  // ── FOOTER
   footer: {
-    backgroundColor: Colors.textPrimary, paddingVertical: 48,
-    paddingHorizontal: 24, alignItems: 'center', gap: 12,
+    backgroundColor: Colors.textPrimary, paddingVertical: Space.huge,
+    paddingHorizontal: Space.xxl, alignItems: 'center', gap: Space.md,
   },
-  footerLogo: { fontSize: 22, fontWeight: '800', color: Colors.white },
-  footerTagline: { fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'center' },
+  footerLogo: {
+    fontSize: 22,
+    fontWeight: '600' as const,
+    color: Colors.white,
+    letterSpacing: -0.3,
+    ...Platform.select({ web: { fontFamily: Font.serif, fontWeight: '300' } }),
+  },
+  footerTagline: { fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'center' as const },
   footerLinks: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 20,
-    justifyContent: 'center', marginTop: 12,
+    flexDirection: 'row', flexWrap: 'wrap', gap: Space.xl,
+    justifyContent: 'center', marginTop: Space.md,
   },
   footerLink: { fontSize: 13, color: 'rgba(255,255,255,0.6)' },
   footerCopy: {
     fontSize: 12, color: 'rgba(255,255,255,0.3)',
-    textAlign: 'center', lineHeight: 20, marginTop: 8,
+    textAlign: 'center' as const, lineHeight: 20, marginTop: Space.sm,
   },
 });

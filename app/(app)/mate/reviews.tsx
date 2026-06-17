@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity,
+  View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Font, Elevation, Radius, Space } from '../../../constants/colors';
 import { ArrowLeftIcon } from '../../../components/ui/Icon';
 import { Avatar } from '../../../components/ui/Avatar';
 import { mockUsers } from '../../../mock/data';
@@ -178,7 +178,11 @@ const styles = StyleSheet.create({
     letterSpacing: 2.5, marginBottom: 8,
   },
   headerTitle: {
-    fontSize: 22, fontWeight: '300', color: Colors.textPrimary, letterSpacing: -0.4,
+    fontSize: 26,
+    fontWeight: '300',
+    color: Colors.textPrimary,
+    letterSpacing: -0.5,
+    ...Platform.select({ web: { fontFamily: Font.serif }, native: {} }),
   },
 
   scroll: { paddingHorizontal: 20, paddingTop: 20, gap: 14 },
@@ -186,23 +190,23 @@ const styles = StyleSheet.create({
   // Summary
   summaryCard: {
     backgroundColor: Colors.card,
-    borderRadius: 20,
-    padding: 22,
+    borderRadius: Radius.xl,
+    padding: Space.xxl,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 1,
+    gap: Space.xl,
+    ...Elevation.md,
   },
   summaryLeft: { alignItems: 'center', gap: 6, minWidth: 64 },
   avgScore: {
-    fontSize: 42, fontWeight: '300', color: Colors.textPrimary,
-    letterSpacing: -1, lineHeight: 48,
+    fontSize: 48,
+    fontWeight: '300',
+    color: Colors.textPrimary,
+    letterSpacing: -1.5,
+    lineHeight: 54,
+    ...Platform.select({ web: { fontFamily: Font.serif }, native: {} }),
   },
   totalCount: { fontSize: 11, color: Colors.textMuted, marginTop: 2 },
   summaryDivider: { width: 1, height: 64, backgroundColor: Colors.cardBorder },
@@ -233,20 +237,16 @@ const styles = StyleSheet.create({
   profileBtnText: { fontSize: 12, fontWeight: '600', color: Colors.primary },
 
   // Review list
-  reviewList: { gap: 12 },
+  reviewList: { gap: Space.md },
 
   reviewCard: {
     backgroundColor: Colors.card,
-    borderRadius: 18,
-    padding: 18,
+    borderRadius: Radius.lg,
+    padding: Space.lg,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    gap: 14,
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 1,
-    shadowRadius: 6,
-    elevation: 1,
+    gap: Space.md,
+    ...Elevation.sm,
   },
   reviewTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   reviewerInfo: { flex: 1, gap: 4 },

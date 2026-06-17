@@ -2,24 +2,25 @@ import React, { useRef, useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
   ScrollView, Animated, ActivityIndicator,
-  useWindowDimensions, LayoutChangeEvent,
+  useWindowDimensions, LayoutChangeEvent, Platform,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../../constants/colors';
+import { Colors, Editorial, Font, Elevation, Radius, Space } from '../../constants/colors';
+import { DestImage } from '../../components/ui/DestImage';
 import { useAuth } from '../../context/AuthContext';
 import { guestLogin } from '../../services/authService';
+
+// Destination photo per slide — creates an immersive editorial feel
+const SLIDE_DEST = ['파리', '도쿄', '싱가포르', '바르셀로나'];
 
 const SLIDES = [
   {
     id: '1',
-    emoji: '✈️',
     tag: 'WELCOME',
     title: '혼자 떠나기\n두렵지 않아요',
     desc: '전 세계 23,000명의 여행자 중\nAI가 나와 딱 맞는 메이트를 찾아드려요.\n함께라면 더 특별한 여행이 시작돼요.',
-    bg: Colors.primary,
-    cardBg: 'rgba(255,255,255,0.12)',
     accent: Colors.pointYellow,
     stats: [
       { value: '23,400+', label: '여행 메이트' },
@@ -29,13 +30,10 @@ const SLIDES = [
   },
   {
     id: '2',
-    emoji: '🤖',
     tag: 'AI MATCHING',
     title: 'AI가 찾아주는\n완벽한 매칭',
     desc: '여행지·날짜·여행 스타일을 분석해\n수만 명 중 나와 가장 잘 맞는 메이트를\n자동으로 골라드려요.',
-    bg: '#2A3F6F',
-    cardBg: 'rgba(255,255,255,0.10)',
-    accent: 'rgba(152,200,202,0.9)',
+    accent: 'rgba(152,200,202,0.95)',
     stats: [
       { value: '97%', label: '최고 매칭률' },
       { value: '4초', label: '평균 매칭 시간' },
@@ -44,13 +42,10 @@ const SLIDES = [
   },
   {
     id: '3',
-    emoji: '🔒',
     tag: 'SAFE TRAVEL',
     title: '믿을 수 있는\n안전한 동행',
     desc: 'SNS 인증 + 실명 확인으로\n신원이 검증된 여행자만 매칭돼요.\n안심하고 새로운 메이트를 만나세요.',
-    bg: Colors.cardDark,
-    cardBg: 'rgba(255,255,255,0.08)',
-    accent: 'rgba(196,150,199,0.9)',
+    accent: 'rgba(196,150,199,0.95)',
     stats: [
       { value: '100%', label: '인증 회원만' },
       { value: '0건', label: '심각 사고 건수' },
@@ -59,12 +54,9 @@ const SLIDES = [
   },
   {
     id: '4',
-    emoji: '🗺️',
     tag: 'COMMUNITY',
     title: '여행자들의\n살아있는 커뮤니티',
     desc: '동행 모집부터 여행 후기, 현지 꿀팁까지.\n같은 목적지를 꿈꾸는 여행자들과\n지금 바로 연결되세요.',
-    bg: '#354C7B',
-    cardBg: 'rgba(255,255,255,0.10)',
     accent: Colors.pointYellow,
     stats: [
       { value: '1,200+', label: '여행 후기' },
@@ -78,8 +70,6 @@ const SLIDES = [
 export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
   const { width: windowW } = useWindowDimensions();
-  // containerW: 슬라이더 실제 렌더 폭. onLayout 으로 정확히 측정하고,
-  // 측정 전에는 windowW 를 폴백으로 사용해 빈 화면 방지.
   const [containerW, setContainerW] = useState(windowW);
   const scrollRef = useRef<ScrollView>(null);
   const [current, setCurrent] = useState(0);
@@ -93,7 +83,6 @@ export default function OnboardingScreen() {
     if (width > 0) setContainerW(width);
   };
 
-  // containerW 가 변경되면(리사이즈 or 초기 프레임 측정) 현재 슬라이드 위치 재동기화
   useEffect(() => {
     if (containerW > 0) {
       scrollRef.current?.scrollTo({ x: current * containerW, animated: false });
@@ -147,7 +136,7 @@ export default function OnboardingScreen() {
   const slide = SLIDES[current];
 
   return (
-    <View style={[styles.root, { backgroundColor: slide.bg }]}>
+    <View style={styles.root}>
       {/* Skip button */}
       {!SLIDES[current].isLast && (
         <TouchableOpacity
@@ -158,7 +147,7 @@ export default function OnboardingScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Slides — onLayout 으로 실제 컨테이너 폭을 측정 */}
+      {/* Slides */}
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -169,36 +158,42 @@ export default function OnboardingScreen() {
         style={styles.slider}
         onLayout={onSliderLayout}
       >
-        {SLIDES.map((s) => (
+        {SLIDES.map((s, idx) => (
           <View
             key={s.id}
-            style={[
-              styles.slide,
-              { width: containerW, backgroundColor: s.bg, paddingTop: insets.top + 56 },
-            ]}
+            style={[styles.slide, { width: containerW }]}
           >
-            <Animated.View style={[styles.slideInner, { opacity: s.id === slide.id ? fadeAnim : 1 }]}>
-              {/* Tag */}
-              <View style={[styles.tag, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
+            {/* Real city photo fills the slide */}
+            <DestImage
+              dest={SLIDE_DEST[idx]}
+              scrim="even"
+              radius={0}
+              style={StyleSheet.absoluteFill}
+            />
+
+            <Animated.View
+              style={[
+                styles.slideInner,
+                { paddingTop: insets.top + 64 },
+                { opacity: s.id === slide.id ? fadeAnim : 1 },
+              ]}
+            >
+              {/* Eyebrow tag */}
+              <View style={styles.tag}>
                 <Text style={styles.tagText}>{s.tag}</Text>
               </View>
 
-              {/* Emoji */}
-              <View style={[styles.emojiWrap, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
-                <Text style={styles.emoji}>{s.emoji}</Text>
-              </View>
-
-              {/* Title */}
+              {/* Serif headline */}
               <Text style={styles.title}>{s.title}</Text>
 
-              {/* Desc */}
+              {/* Body copy */}
               <Text style={styles.desc}>{s.desc}</Text>
 
-              {/* Stats card */}
-              <View style={[styles.statsCard, { backgroundColor: s.cardBg }]}>
+              {/* Stats card — glass panel */}
+              <View style={styles.statsCard}>
                 {s.stats.map((st) => (
                   <View key={st.label} style={styles.statItem}>
-                    <Text style={[styles.statValue, { color: s.accent }]}>{st.value}</Text>
+                    <Text style={[styles.statValue, { color: s.accent as string }]}>{st.value}</Text>
                     <Text style={styles.statLabel}>{st.label}</Text>
                   </View>
                 ))}
@@ -239,7 +234,7 @@ export default function OnboardingScreen() {
               onPress={() => finish('/(auth)/signup')}
               activeOpacity={0.85}
             >
-              <Text style={styles.signupBtnText}>🚀  무료로 시작하기</Text>
+              <Text style={styles.signupBtnText}>무료로 시작하기</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.loginBtn}
@@ -248,7 +243,6 @@ export default function OnboardingScreen() {
             >
               <Text style={styles.loginBtnText}>이미 계정이 있어요  →</Text>
             </TouchableOpacity>
-            {/* 데모 입장 — 로그인 없이 앱 체험 */}
             <TouchableOpacity
               style={[styles.demoBtn, demoLoading && styles.demoBtnDisabled]}
               onPress={handleGuestLogin}
@@ -258,7 +252,7 @@ export default function OnboardingScreen() {
               {demoLoading ? (
                 <ActivityIndicator size="small" color="rgba(255,255,255,0.7)" />
               ) : (
-                <Text style={styles.demoBtnText}>🧭  데모 버전으로 입장하기</Text>
+                <Text style={styles.demoBtnText}>데모 버전으로 입장하기</Text>
               )}
             </TouchableOpacity>
             {demoLoading && (
@@ -275,141 +269,157 @@ export default function OnboardingScreen() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
+  root: { flex: 1, backgroundColor: Colors.darkBg },
+
   skipBtn: {
     position: 'absolute',
     right: 20,
     zIndex: 10,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: 14,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    paddingHorizontal: Space.md,
     paddingVertical: 7,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
   },
-  skipText: { fontSize: 13, color: 'rgba(255,255,255,0.8)', fontWeight: '600' },
+  skipText: { fontSize: 13, color: 'rgba(255,255,255,0.85)', fontWeight: '600' as const },
 
   slider: { flex: 1 },
   slide: {
     flex: 1,
-    paddingHorizontal: 28,
-    alignItems: 'center',
+    overflow: 'hidden',
   },
-  slideInner: { alignItems: 'center', width: '100%' },
+  slideInner: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: Space.xxl + Space.sm,
+    paddingBottom: Space.xxl,
+  },
 
+  // Eyebrow tag
   tag: {
-    borderRadius: 20,
-    paddingHorizontal: 14,
+    borderRadius: Radius.pill,
+    paddingHorizontal: Space.md,
     paddingVertical: 5,
-    marginBottom: 24,
+    marginBottom: Space.xxl,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
   },
-  tagText: { fontSize: 11, color: 'rgba(255,255,255,0.8)', fontWeight: '700', letterSpacing: 1.5 },
-
-  emojiWrap: {
-    width: 100,
-    height: 100,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 28,
+  tagText: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.9)',
+    fontWeight: '700' as const,
+    letterSpacing: 2.5,
+    textTransform: 'uppercase' as const,
   },
-  emoji: { fontSize: 50 },
 
+  // Serif editorial headline
   title: {
-    fontSize: 34,
-    fontWeight: '800',
+    ...Editorial.hero,
     color: Colors.white,
-    textAlign: 'center',
-    lineHeight: 44,
-    marginBottom: 16,
+    textAlign: 'center' as const,
+    marginBottom: Space.lg,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
   },
+
   desc: {
     fontSize: 15,
-    color: 'rgba(255,255,255,0.72)',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 28,
+    color: 'rgba(255,255,255,0.75)',
+    textAlign: 'center' as const,
+    lineHeight: 25,
+    marginBottom: Space.xxl,
+    maxWidth: 320,
   },
 
+  // Glass stats panel
   statsCard: {
     flexDirection: 'row',
-    borderRadius: 20,
-    paddingVertical: 20,
-    paddingHorizontal: 12,
+    borderRadius: Radius.xl,
+    paddingVertical: Space.xl,
+    paddingHorizontal: Space.md,
     width: '100%',
     justifyContent: 'space-around',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
   statItem: { alignItems: 'center', flex: 1 },
-  statValue: { fontSize: 22, fontWeight: '800', marginBottom: 4 },
-  statLabel: { fontSize: 11, color: 'rgba(255,255,255,0.6)', textAlign: 'center' },
+  statValue: { fontSize: 22, fontWeight: '700' as const, marginBottom: Space.xs },
+  statLabel: { fontSize: 11, color: 'rgba(255,255,255,0.65)', textAlign: 'center' as const },
 
+  // Bottom controls
   bottom: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
+    paddingHorizontal: Space.xxl,
+    paddingTop: Space.lg,
     alignItems: 'center',
-    gap: 16,
+    gap: Space.lg,
+    backgroundColor: Colors.darkBg,
   },
-  dots: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  dots: { flexDirection: 'row', gap: Space.sm + 2, alignItems: 'center' },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'rgba(255,255,255,0.25)',
   },
   dotActive: { width: 24, borderRadius: 4 },
 
   nextBtn: {
     width: '100%',
     height: 56,
-    borderRadius: 16,
+    borderRadius: Radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Elevation.primary,
   },
-  nextBtnText: { fontSize: 16, fontWeight: '800', color: Colors.primary },
+  nextBtnText: { fontSize: 16, fontWeight: '700' as const, color: Colors.primary },
 
-  finalBtns: { width: '100%', gap: 12 },
+  finalBtns: { width: '100%', gap: Space.md },
   signupBtn: {
     width: '100%',
     height: 56,
-    borderRadius: 16,
+    borderRadius: Radius.lg,
     backgroundColor: Colors.pointYellow,
     alignItems: 'center',
     justifyContent: 'center',
+    ...Elevation.primary,
   },
-  signupBtnText: { fontSize: 16, fontWeight: '800', color: Colors.primary },
+  signupBtnText: { fontSize: 16, fontWeight: '800' as const, color: Colors.primary },
   loginBtn: {
     width: '100%',
     height: 48,
-    borderRadius: 16,
+    borderRadius: Radius.lg,
     backgroundColor: 'rgba(255,255,255,0.12)',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
   },
-  loginBtnText: { fontSize: 15, fontWeight: '600', color: 'rgba(255,255,255,0.85)' },
+  loginBtnText: { fontSize: 15, fontWeight: '600' as const, color: 'rgba(255,255,255,0.9)' },
 
-  // 데모 버튼: 기존 버튼들보다 한 단계 낮은 시각적 무게
   demoBtn: {
     width: '100%',
     height: 44,
-    borderRadius: 16,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.25)',
+    borderColor: 'rgba(255,255,255,0.22)',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
   },
   demoBtnDisabled: { opacity: 0.55 },
-  demoBtnText: { fontSize: 14, color: 'rgba(255,255,255,0.65)', fontWeight: '500' },
+  demoBtnText: { fontSize: 14, color: 'rgba(255,255,255,0.6)', fontWeight: '500' as const },
   demoHint: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.5)',
-    textAlign: 'center',
+    color: 'rgba(255,255,255,0.45)',
+    textAlign: 'center' as const,
     lineHeight: 16,
   },
   demoError: {
     fontSize: 12,
-    color: 'rgba(255,255,255,0.55)',
-    textAlign: 'center',
+    color: 'rgba(255,255,255,0.5)',
+    textAlign: 'center' as const,
     lineHeight: 18,
   },
 });

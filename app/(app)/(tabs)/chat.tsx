@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Font, Radius, Space } from '../../../constants/colors';
 import { ChatRoom } from '../../../types';
 import { ChatListItem } from '../../../components/chat/ChatListItem';
 import { getChatRooms } from '../../../services/chatService';
@@ -146,10 +146,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   title: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '300',
     color: Colors.textPrimary,
-    letterSpacing: -0.4,
+    letterSpacing: -0.5,
+    ...Platform.select({ web: { fontFamily: Font.serif }, default: {} }),
   },
   unreadBadge: {
     backgroundColor: Colors.accent,
@@ -166,9 +167,9 @@ const styles = StyleSheet.create({
     color: Colors.white,
   },
   newChatBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.bgDeep,
     alignItems: 'center',
     justifyContent: 'center',
@@ -179,10 +180,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 7,
     backgroundColor: Colors.accentLight,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginBottom: 12,
+    borderRadius: Radius.sm,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.sm,
+    marginBottom: Space.md,
   },
   pendingDot: {
     width: 6,
@@ -210,11 +211,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1.5,
     borderBottomColor: 'transparent',
   },
-  tabActive: { borderBottomColor: Colors.textPrimary },
+  tabActive: { borderBottomColor: Colors.textPrimary, borderBottomWidth: 2 },
   tabText: { fontSize: 13, color: Colors.textMuted, fontWeight: '400' },
   tabTextActive: { color: Colors.textPrimary, fontWeight: '600' },
 
-  scrollContent: { flexGrow: 1 },
+  scrollContent: { flexGrow: 1, paddingTop: Space.xs, paddingBottom: Space.xxl },
 
   empty: {
     paddingTop: 72,

@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../constants/colors';
+import { Colors, Font, Elevation, Radius, Space } from '../../constants/colors';
 import { ArrowLeftIcon, EditIcon, CompassIcon } from '../../components/ui/Icon';
+import { DestImage } from '../../components/ui/DestImage';
 import { useTrips } from '../../context/TripsContext';
 
 const AIRPORT_CODES: Record<string, string> = {
@@ -58,7 +59,21 @@ interface TripDisplay {
 function TripContent({ trip }: { trip: TripDisplay }) {
   return (
     <View style={styles.tripWrap}>
-      <View style={styles.card}>
+      {/* Destination hero — full-bleed city photo */}
+      <DestImage
+        dest={trip.destination}
+        style={styles.heroImg}
+        scrim="bottom"
+        radius={Radius.lg}
+      >
+        <View style={styles.heroContent}>
+          <Text style={styles.heroEyebrow}>DESTINATION</Text>
+          <Text style={styles.heroCity}>{trip.destination}</Text>
+          {trip.duration ? <Text style={styles.heroDuration}>{trip.duration}</Text> : null}
+        </View>
+      </DestImage>
+
+      <View style={[styles.card, Elevation.md]}>
         <View style={styles.cardHeader}>
           <Text style={styles.cardHeaderLabel}>BOARDING PASS</Text>
           <View style={styles.stamp}>
@@ -240,11 +255,33 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: { padding: 20, gap: 14 },
 
-  tripWrap: { gap: 14 },
+  tripWrap: { gap: Space.md },
+
+  heroImg: { height: 200 },
+  heroContent: { gap: Space.xs },
+  heroEyebrow: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.75)',
+    letterSpacing: 2.5,
+    marginBottom: 2,
+  },
+  heroCity: {
+    fontSize: 28,
+    fontWeight: '300',
+    color: Colors.white,
+    letterSpacing: -0.5,
+    ...Platform.select({ web: { fontFamily: Font.serif }, native: {} }),
+  },
+  heroDuration: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.75)',
+    marginTop: 2,
+  },
 
   card: {
     backgroundColor: CARD_BG,
-    borderRadius: 18,
+    borderRadius: Radius.lg,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(180,160,80,0.28)',

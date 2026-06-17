@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Linking, Animated, TextInput, KeyboardAvoidingView, Platform, Pressable, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, Font } from '../../../constants/colors';
+import { Colors, Font, Elevation, Radius, Space } from '../../../constants/colors';
 import { Post } from '../../../types';
 import { Avatar } from '../../../components/ui/Avatar';
 import { getPost } from '../../../services/communityService';
 import { startChat } from '../../../services/chatService';
 import { useProfile } from '../../../context/ProfileContext';
 import { MapPinIcon, HeartIcon, MessageIcon, ArrowRightIcon, BookmarkIcon } from '../../../components/ui/Icon';
+import { DestImage } from '../../../components/ui/DestImage';
 
 
 function latlngToTile(lat: number, lng: number, zoom: number) {
@@ -174,31 +175,61 @@ export default function PostDetailScreen() {
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.canGoBack() ? router.back() : router.replace('/(app)/(tabs)/community')} activeOpacity={0.7}>
-          <Text style={styles.backArrow}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerLabel}>{cat.subLabel}</Text>
-        <View style={{ width: 36 }} />
-      </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
-        {/* Hero title area */}
-        <View style={styles.heroSection}>
-          <View style={[styles.catPill, { backgroundColor: cat.bg }]}>
-            <Text style={[styles.catPillText, { color: cat.color }]}>{cat.label}</Text>
+        {/* Hero — DestImage banner when destination available, plain header otherwise */}
+        {destination ? (
+          <View style={styles.heroBanner}>
+            {/* Full-bleed photo — no children, we layer manually */}
+            <DestImage
+              dest={destination}
+              style={styles.heroBannerImage}
+              scrim="bottom"
+              radius={0}
+            />
+            {/* Nav row — floating above image */}
+            <View style={[styles.heroNav, { paddingTop: insets.top + Space.sm }]}>
+              <TouchableOpacity
+                style={styles.heroBackBtn}
+                onPress={() => router.canGoBack() ? router.back() : router.replace('/(app)/(tabs)/community')}
+                activeOpacity={0.82}
+              >
+                <Text style={styles.heroBackArrow}>←</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.heroBackBtn} onPress={() => id && toggleSavedPost(id)} activeOpacity={0.82}>
+                <BookmarkIcon color={saved ? Colors.accent : Colors.white} size={16} filled={saved} />
+              </TouchableOpacity>
+            </View>
+            {/* Title content floating over scrim */}
+            <View style={styles.heroBannerContent}>
+              <View style={[styles.catPill, { backgroundColor: 'rgba(16,24,38,0.5)' }]}>
+                <Text style={[styles.catPillText, { color: 'rgba(255,255,255,0.9)' }]}>{cat.label}</Text>
+              </View>
+              {coords && <Text style={styles.heroCoordsText}>{coords}</Text>}
+              <Text style={styles.heroTitle}>{post.title}</Text>
+            </View>
           </View>
-          <Text style={styles.title}>{post.title}</Text>
-
-          {coords && (
-            <Text style={styles.coordsText}>{coords}</Text>
-          )}
-        </View>
+        ) : (
+          <>
+            <View style={[styles.header, { paddingTop: insets.top + Space.lg }]}>
+              <TouchableOpacity style={styles.backBtn} onPress={() => router.canGoBack() ? router.back() : router.replace('/(app)/(tabs)/community')} activeOpacity={0.7}>
+                <Text style={styles.backArrow}>←</Text>
+              </TouchableOpacity>
+              <Text style={styles.headerLabel}>{cat.subLabel}</Text>
+              <View style={{ width: 36 }} />
+            </View>
+            <View style={styles.heroSection}>
+              <View style={[styles.catPill, { backgroundColor: cat.bg }]}>
+                <Text style={[styles.catPillText, { color: cat.color }]}>{cat.label}</Text>
+              </View>
+              <Text style={styles.title}>{post.title}</Text>
+            </View>
+          </>
+        )}
 
         {/* Author row */}
-        <View style={styles.authorRow}>
+        <View style={[styles.authorRow, destination ? styles.authorRowWithHero : null]}>
           <Avatar nickname={post.author.nickname} size={38} />
           <View style={styles.authorInfo}>
             <Text style={styles.authorName}>{post.author.nickname}</Text>
@@ -210,9 +241,11 @@ export default function PostDetailScreen() {
               {post.likes + (liked ? 1 : 0)}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.likeBtn} onPress={() => id && toggleSavedPost(id)} activeOpacity={0.7}>
-            <BookmarkIcon color={saved ? Colors.primary : Colors.textMuted} size={14} filled={saved} />
-          </TouchableOpacity>
+          {!destination && (
+            <TouchableOpacity style={styles.likeBtn} onPress={() => id && toggleSavedPost(id)} activeOpacity={0.7}>
+              <BookmarkIcon color={saved ? Colors.primary : Colors.textMuted} size={14} filled={saved} />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.divider} />
@@ -432,12 +465,65 @@ export default function PostDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
 
+  // ── Hero banner (DestImage) ───────────────────────────────────────────────
+  heroBanner: {
+    position: 'relative',
+    marginBottom: Space.xl,
+  },
+  heroBannerImage: {
+    height: 320,
+    borderRadius: 0,
+  },
+  heroNav: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Space.xl,
+  },
+  heroBackBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(16,24,38,0.38)',
+    borderRadius: Radius.pill,
+  },
+  heroBackArrow: { fontSize: 18, color: Colors.white },
+  heroBannerContent: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingHorizontal: Space.xl,
+    paddingBottom: Space.xl,
+    gap: Space.sm - 2,
+  },
+  heroTitle: {
+    fontSize: 26,
+    fontWeight: '300',
+    color: Colors.white,
+    lineHeight: 34,
+    letterSpacing: -0.4,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
+  },
+  heroCoordsText: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.5)',
+    letterSpacing: 2,
+    fontWeight: '500',
+  },
+
+  // ── Fallback plain header (no destination) ────────────────────────────────
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingBottom: 12,
+    paddingHorizontal: Space.xl,
+    paddingBottom: Space.md,
   },
   backBtn: {
     width: 36,
@@ -455,22 +541,27 @@ const styles = StyleSheet.create({
   },
 
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 22, paddingBottom: 32, gap: 20 },
+  content: { paddingBottom: Space.xxxl, gap: Space.xl },
 
-  heroSection: { gap: 10, paddingTop: 4 },
+  heroSection: {
+    gap: Space.sm,
+    paddingTop: Space.xs,
+    paddingHorizontal: Space.xl,
+  },
   catPill: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: Space.sm + 2,
+    paddingVertical: Space.xs,
+    borderRadius: Radius.xs - 2,
   },
   catPillText: { fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
   title: {
-    fontSize: 22,
-    fontWeight: '600',
+    fontSize: 24,
+    fontWeight: '300',
     color: Colors.textPrimary,
-    lineHeight: 32,
+    lineHeight: 34,
     letterSpacing: -0.4,
+    ...Platform.select({ web: { fontFamily: Font.serif } }),
   },
   coordsText: {
     fontSize: 10,
@@ -482,42 +573,49 @@ const styles = StyleSheet.create({
   authorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: Space.sm + 2,
+    paddingHorizontal: Space.xl,
+  },
+  authorRowWithHero: {
+    marginTop: -Space.xs,
   },
   authorInfo: { flex: 1 },
   authorName: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
   authorDate: { fontSize: 11, color: Colors.textMuted, marginTop: 2 },
-  likeBtn: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  likeBtn: { flexDirection: 'row', alignItems: 'center', gap: Space.xs + 1 },
   likeCount: { fontSize: 12, color: Colors.textMuted, fontWeight: '500' },
 
-  divider: { height: 1, backgroundColor: Colors.cardBorder },
+  divider: { height: 1, backgroundColor: Colors.cardBorder, marginHorizontal: Space.xl },
 
   tripCard: {
     backgroundColor: Colors.card,
-    borderRadius: 14,
-    padding: 16,
+    borderRadius: Radius.md,
+    padding: Space.lg,
+    marginHorizontal: Space.xl,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
-    gap: 10,
+    gap: Space.sm + 2,
+    ...Elevation.sm,
   },
-  tripCardTop: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  tripCardTop: { flexDirection: 'row', alignItems: 'center', gap: Space.xs + 1 },
   tripDest: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary, flex: 1 },
   tripCoords: { fontSize: 10, color: Colors.textMuted, letterSpacing: 0.8 },
   tripDateRow: { flexDirection: 'row' },
   tripDatePill: {
     backgroundColor: Colors.accentLight,
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    borderRadius: Radius.xs - 2,
+    paddingHorizontal: Space.sm + 2,
+    paddingVertical: Space.xs + 1,
   },
   tripDateText: { fontSize: 11, color: Colors.accent, fontWeight: '600', letterSpacing: 0.2 },
 
-  mapSection: { gap: 10 },
+  mapSection: { gap: Space.sm + 2, paddingHorizontal: Space.xl },
   mapCard: {
-    borderRadius: 16,
+    borderRadius: Radius.md,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: Colors.cardBorder,
+    ...Elevation.sm,
   },
   mapImage: {
     width: '100%',
@@ -536,44 +634,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.card,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.sm + 2,
     borderTopWidth: 1,
     borderTopColor: Colors.cardBorder,
   },
-  mapPill: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  mapPill: { flexDirection: 'row', alignItems: 'center', gap: Space.xs + 1 },
   mapPillText: { fontSize: 12, fontWeight: '600', color: Colors.textPrimary },
   mapPillCoords: { fontSize: 10, color: Colors.textMuted, letterSpacing: 0.5 },
-  mapLinkBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  mapLinkBtn: { flexDirection: 'row', alignItems: 'center', gap: Space.xs },
   mapLinkText: { fontSize: 11, color: Colors.primary, fontWeight: '600' },
 
   bodyText: {
     fontSize: 15,
     color: Colors.textPrimary,
-    lineHeight: 26,
+    lineHeight: 28,
     fontWeight: '400',
+    paddingHorizontal: Space.xl,
+    letterSpacing: 0.1,
   },
 
-  richBody: { gap: 16 },
+  richBody: { gap: Space.lg, paddingHorizontal: Space.xl },
   introText: {
-    fontSize: 14,
+    fontSize: 15,
     color: Colors.textSecondary,
-    lineHeight: 22,
+    lineHeight: 26,
     fontWeight: '400',
   },
   sectionCard: {
     backgroundColor: Colors.card,
-    borderRadius: 16,
+    borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     overflow: 'hidden',
+    ...Elevation.sm,
   },
   sectionCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    gap: Space.sm,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.md,
   },
   sectionCardIcon: { fontSize: 16 },
   sectionCardTitle: {
@@ -582,9 +683,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   richItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 5,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.md + 2,
+    gap: Space.xs + 1,
   },
   richItemBorder: {
     borderBottomWidth: 1,
@@ -594,7 +695,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    gap: 10,
+    gap: Space.sm + 2,
   },
   richItemName: {
     fontSize: 14,
@@ -609,9 +710,9 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   tipBadge: {
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    borderRadius: Radius.xs - 2,
+    paddingHorizontal: Space.sm,
+    paddingVertical: Space.xs - 1,
     flexShrink: 0,
     maxWidth: 140,
   },
@@ -621,7 +722,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
   },
 
-  section: { gap: 10 },
+  section: { gap: Space.sm + 2, paddingHorizontal: Space.xl },
   sectionLabel: {
     fontSize: 10,
     fontWeight: '700',
@@ -629,12 +730,12 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
-  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.xs + 2 },
   tag: {
     backgroundColor: Colors.accentLight,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 999,
+    paddingHorizontal: Space.md,
+    paddingVertical: Space.xs + 1,
+    borderRadius: Radius.pill,
     borderWidth: 1,
     borderColor: 'rgba(196,135,90,0.25)',
   },
@@ -642,17 +743,18 @@ const styles = StyleSheet.create({
 
   scheduleCard: {
     backgroundColor: Colors.card,
-    borderRadius: 14,
+    borderRadius: Radius.md,
     borderWidth: 1,
     borderColor: Colors.cardBorder,
     overflow: 'hidden',
+    ...Elevation.sm,
   },
   scheduleRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 8,
+    paddingHorizontal: Space.lg,
+    paddingVertical: Space.md,
+    gap: Space.sm,
   },
   scheduleRowBorder: { borderBottomWidth: 1, borderBottomColor: Colors.cardBorder },
   scheduleDate: {
@@ -673,25 +775,26 @@ const styles = StyleSheet.create({
   commentsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingTop: 4,
+    gap: Space.xs + 2,
+    paddingTop: Space.xs,
+    paddingHorizontal: Space.xl,
   },
   commentsLabel: { fontSize: 13, color: Colors.textMuted },
 
   bottomActions: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 8,
-    gap: 10,
+    paddingHorizontal: Space.xl,
+    paddingTop: Space.md,
+    paddingBottom: Space.sm,
+    gap: Space.sm + 2,
     backgroundColor: Colors.bg,
     borderTopWidth: 1,
     borderTopColor: Colors.cardBorder,
   },
   secondaryBtn: {
-    height: 50,
+    height: 52,
     flex: 1,
-    borderRadius: 14,
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
@@ -699,12 +802,13 @@ const styles = StyleSheet.create({
   },
   secondaryBtnText: { fontSize: 14, fontWeight: '600', color: Colors.primary },
   primaryBtn: {
-    height: 50,
+    height: 52,
     flex: 2,
-    borderRadius: 14,
+    borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.primary,
+    ...Elevation.primary,
   },
   primaryBtnText: { fontSize: 14, fontWeight: '600', color: Colors.white },
   btnDisabled: { opacity: 0.5 },
@@ -714,61 +818,59 @@ const styles = StyleSheet.create({
   sheetWrapper: { position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 11 },
   sheet: {
     backgroundColor: Colors.bg,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 24,
-    paddingTop: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 16,
-    elevation: 12,
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    paddingHorizontal: Space.xxl,
+    paddingTop: Space.md,
+    ...Elevation.xl,
   },
   sheetHandle: {
     width: 36, height: 4, borderRadius: 2,
     backgroundColor: Colors.cardBorder,
-    alignSelf: 'center', marginBottom: 20,
+    alignSelf: 'center', marginBottom: Space.xl,
   },
   sheetTitle: {
     fontSize: 18, fontWeight: '600', color: Colors.textPrimary,
-    letterSpacing: -0.3, marginBottom: 6,
+    letterSpacing: -0.3, marginBottom: Space.xs + 2,
   },
   sheetSubtitle: {
-    fontSize: 13, color: Colors.textMuted, lineHeight: 20, marginBottom: 20,
+    fontSize: 13, color: Colors.textMuted, lineHeight: 20, marginBottom: Space.xl,
   },
   sheetTripCard: {
-    backgroundColor: Colors.card, borderRadius: 12,
+    backgroundColor: Colors.card, borderRadius: Radius.sm,
     borderWidth: 1, borderColor: Colors.cardBorder,
-    padding: 14, marginBottom: 20, gap: 6,
+    padding: Space.md, marginBottom: Space.xl, gap: Space.xs + 2,
   },
-  sheetTripRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  sheetTripRow: { flexDirection: 'row', alignItems: 'center', gap: Space.xs + 2 },
   sheetTripDest: { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
   sheetTripDate: { fontSize: 12, color: Colors.textMuted, marginLeft: 18 },
   sheetLabel: {
     fontSize: 11, fontWeight: '700', color: Colors.textMuted,
-    letterSpacing: 1.5, marginBottom: 8,
+    letterSpacing: 1.5, marginBottom: Space.sm,
   },
   sheetInput: {
-    backgroundColor: Colors.card, borderRadius: 12,
+    backgroundColor: Colors.card, borderRadius: Radius.sm,
     borderWidth: 1, borderColor: Colors.cardBorder,
-    padding: 14, fontSize: 14, color: Colors.textPrimary,
-    minHeight: 80, textAlignVertical: 'top', marginBottom: 16,
+    padding: Space.md, fontSize: 14, color: Colors.textPrimary,
+    minHeight: 80, textAlignVertical: 'top', marginBottom: Space.lg,
   },
   sheetSendBtn: {
-    backgroundColor: Colors.primary, borderRadius: 14,
-    height: 50, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: Colors.primary, borderRadius: Radius.md,
+    height: 52, alignItems: 'center', justifyContent: 'center',
+    ...Elevation.primary,
   },
   sheetSendBtnText: { fontSize: 15, fontWeight: '600', color: Colors.white },
-  sheetSentIcon: { alignItems: 'center', marginVertical: 16 },
-  sheetSentActions: { flexDirection: 'row', gap: 10, marginTop: 8 },
+  sheetSentIcon: { alignItems: 'center', marginVertical: Space.lg },
+  sheetSentActions: { flexDirection: 'row', gap: Space.sm + 2, marginTop: Space.sm },
   sheetChatBtn: {
-    flex: 2, backgroundColor: Colors.primary, borderRadius: 14,
-    height: 50, alignItems: 'center', justifyContent: 'center',
+    flex: 2, backgroundColor: Colors.primary, borderRadius: Radius.md,
+    height: 52, alignItems: 'center', justifyContent: 'center',
+    ...Elevation.primary,
   },
   sheetChatBtnText: { fontSize: 14, fontWeight: '600', color: Colors.white },
   sheetCloseBtn: {
-    flex: 1, backgroundColor: Colors.card, borderRadius: 14,
-    height: 50, alignItems: 'center', justifyContent: 'center',
+    flex: 1, backgroundColor: Colors.card, borderRadius: Radius.md,
+    height: 52, alignItems: 'center', justifyContent: 'center',
     borderWidth: 1, borderColor: Colors.cardBorder,
   },
   sheetCloseBtnText: { fontSize: 14, fontWeight: '500', color: Colors.textSecondary },

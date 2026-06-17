@@ -3,9 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { MatchResult } from '../../types';
 import { Avatar } from '../ui/Avatar';
-import { Colors } from '../../constants/colors';
+import { Colors, Elevation, Radius } from '../../constants/colors';
 import { MapPinIcon } from '../ui/Icon';
 import { StyleTag } from '../ui/StyleTag';
+import { DestImage } from '../ui/DestImage';
 
 interface Props {
   item: MatchResult;
@@ -26,14 +27,31 @@ export function MatchCard({ item, rank, onJoin }: Props) {
   return (
     <TouchableOpacity
       style={styles.card}
-      activeOpacity={0.8}
+      activeOpacity={0.88}
       onPress={() => router.push(`/mate/${item.user.id}`)}
     >
-      {/* Left accent bar — intensity encodes match rate */}
-      <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
+      {/* City photo header — match rate badge overlaid top-right */}
+      <DestImage
+        dest={item.trip.destination}
+        style={styles.banner}
+        radius={0}
+        scrim="even"
+        align="flex-start"
+      >
+        <View style={styles.badgeRow}>
+          <View style={[styles.matchBadge, { backgroundColor: accentColor + 'E6' }]}>
+            <Text style={styles.matchBadgeRate}>{item.matchRate}%</Text>
+            <Text style={styles.matchBadgeLabel}>매칭</Text>
+          </View>
+        </View>
+      </DestImage>
 
+      {/* Thin accent line — color encodes match quality tier */}
+      <View style={[styles.accentLine, { backgroundColor: accentColor }]} />
+
+      {/* Card content */}
       <View style={styles.inner}>
-        {/* Top row */}
+        {/* Top row: avatar + info */}
         <View style={styles.cardTop}>
           <View style={styles.avatarWrap}>
             <Avatar nickname={item.user.nickname} size={50} />
@@ -47,11 +65,6 @@ export function MatchCard({ item, rank, onJoin }: Props) {
               <Text style={styles.dateSep}>·</Text>
               <Text style={styles.date}>{item.trip.startDate.slice(5, 7)}월</Text>
             </View>
-          </View>
-          {/* Match rate */}
-          <View style={styles.matchWrap}>
-            <Text style={[styles.matchPct, { color: accentColor }]}>{item.matchRate}%</Text>
-            <Text style={styles.matchLabel}>매칭</Text>
           </View>
         </View>
 
@@ -93,26 +106,44 @@ export function MatchCard({ item, rank, onJoin }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
     backgroundColor: Colors.card,
     borderRadius: 18,
-    marginBottom: 10,
+    marginBottom: 12,
     overflow: 'hidden',
-    shadowColor: Colors.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    elevation: 1,
+    ...Elevation.md,
   },
-  accentBar: {
-    width: 4,
-    flexShrink: 0,
+
+  /* Photo banner */
+  banner: { height: 88 },
+  badgeRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    width: '100%',
   },
-  inner: {
-    flex: 1,
-    padding: 18,
-    gap: 12,
+  matchBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: Radius.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
+  matchBadgeRate: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.white,
+  },
+  matchBadgeLabel: {
+    fontSize: 9,
+    fontWeight: '500',
+    color: 'rgba(255,255,255,0.82)',
+  },
+
+  /* Quality accent line */
+  accentLine: { height: 2, width: '100%' },
+
+  /* Content area */
+  inner: { padding: 16, gap: 12 },
 
   cardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   avatarWrap: { position: 'relative' },
@@ -128,18 +159,6 @@ const styles = StyleSheet.create({
   dest: { fontSize: 12, color: Colors.textSecondary },
   dateSep: { fontSize: 12, color: Colors.textMuted },
   date: { fontSize: 12, color: Colors.textMuted },
-
-  matchWrap: { alignItems: 'flex-end', gap: 1 },
-  matchPct: {
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: -0.5,
-  },
-  matchLabel: {
-    fontSize: 10,
-    color: Colors.textMuted,
-    fontWeight: '400',
-  },
 
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
 
@@ -161,20 +180,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     backgroundColor: Colors.bgDeep,
   },
-  badgeText: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: Colors.textSecondary,
-  },
-  verifiedBadgeDot: {
-    width: 5, height: 5, borderRadius: 3,
-    backgroundColor: Colors.olive,
-  },
-  badgeVerifiedText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: Colors.olive,
-  },
+  badgeText: { fontSize: 10, fontWeight: '500', color: Colors.textSecondary },
+  verifiedBadgeDot: { width: 5, height: 5, borderRadius: 3, backgroundColor: Colors.olive },
+  badgeVerifiedText: { fontSize: 10, fontWeight: '600', color: Colors.olive },
 
   joinBtn: {
     backgroundColor: Colors.primary,

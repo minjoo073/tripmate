@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '../../../constants/colors';
+import { Colors, Radius, Space } from '../../../constants/colors';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Tag } from '../../../components/ui/Tag';
@@ -108,13 +108,21 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   body: { flex: 1 },
-  bodyContent: { padding: 24 },
-  field: { marginBottom: 16 },
-  sectionLabel: { fontSize: 14, fontWeight: '600', color: Colors.textPrimary, marginTop: 8, marginBottom: 4 },
-  sectionCaption: { fontSize: 12, color: Colors.textSecondary, marginBottom: 12 },
-  tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 24 },
-  submitBtn: { marginBottom: 16 },
+  bodyContent: { paddingHorizontal: Space.xxl, paddingTop: Space.xxl, paddingBottom: Space.huge },
+  field: { marginBottom: Space.xl },
+  sectionLabel: {
+    fontSize: 10,
+    fontWeight: '700' as const,
+    color: Colors.textMuted,
+    letterSpacing: 2.5,
+    textTransform: 'uppercase' as const,
+    marginTop: Space.xl,
+    marginBottom: Space.sm,
+  },
+  sectionCaption: { fontSize: 12, color: Colors.textSecondary, marginBottom: Space.md },
+  tagWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm, marginBottom: Space.xxl },
+  submitBtn: { marginBottom: Space.lg, marginTop: Space.sm },
   loginLink: { alignItems: 'center' },
   loginText: { fontSize: 14, color: Colors.textSecondary },
-  loginBold: { fontWeight: '700', color: Colors.primary },
+  loginBold: { fontWeight: '700' as const, color: Colors.primary },
 });

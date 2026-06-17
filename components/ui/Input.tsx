@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
-import { Colors } from '../../constants/colors';
+import { Colors, Radius } from '../../constants/colors';
 import { EyeIcon, EyeOffIcon } from './Icon';
 
 interface InputProps extends TextInputProps {
@@ -43,27 +43,39 @@ export function Input({ label, isPassword, containerStyle, error, ...props }: In
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.textSecondary,
-    fontWeight: '500',
+    fontWeight: '600',
+    letterSpacing: 0.1,
     marginBottom: 8,
   },
   inputWrap: {
-    height: 50,
+    height: 54,
     backgroundColor: Colors.inputBg,
-    borderRadius: 14,
+    borderRadius: Radius.sm,
     borderWidth: 1.5,
     borderColor: Colors.inputBorder,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
   },
-  focused: { borderColor: Colors.primary },
+  focused: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.card,
+    // soft focus glow
+    shadowColor: 'rgba(59, 81, 120, 0.22)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    elevation: 2,
+  },
   inputError: { borderColor: Colors.red },
   input: {
     flex: 1,
-    fontSize: 13,
+    fontSize: 15,
     color: Colors.textPrimary,
+    // remove the default web focus outline (the wrapper shows focus)
+    ...(typeof document !== 'undefined' ? { outlineStyle: 'none' as any } : null),
   },
   eyeBtn: { marginLeft: 8, padding: 2 },
   errorText: {

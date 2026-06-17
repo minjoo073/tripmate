@@ -3,9 +3,9 @@ import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { MatchResult } from '../../types';
 import { Avatar } from '../ui/Avatar';
-import { Colors } from '../../constants/colors';
-import { MapPinIcon } from '../ui/Icon';
+import { Colors, Elevation, Radius } from '../../constants/colors';
 import { StyleTag } from '../ui/StyleTag';
+import { DestImage } from '../ui/DestImage';
 
 interface Props {
   item: MatchResult;
@@ -17,21 +17,33 @@ export function RecommendedCard({ item }: Props) {
   return (
     <TouchableOpacity
       style={styles.card}
-      activeOpacity={0.82}
+      activeOpacity={0.88}
       onPress={() => router.push(`/mate/${item.user.id}`)}
     >
-      <View style={styles.avatarWrap}>
-        <Avatar nickname={item.user.nickname} size={52} />
-        {item.user.isVerified && <View style={styles.verifiedDot} />}
-      </View>
-      <Text style={styles.name} numberOfLines={1}>{item.user.nickname}</Text>
-      <View style={styles.destRow}>
-        <MapPinIcon color={Colors.textMuted} size={10} />
-        <Text style={styles.destination} numberOfLines={1}>{item.trip.destination}</Text>
-      </View>
-      <StyleTag label={item.user.travelStyles[0] ?? '자유여행'} size="sm" />
-      <View style={styles.rateRow}>
-        <Text style={styles.rateText}>재동행 {recompanionRate}%</Text>
+      {/* City photo banner — clipped by card overflow:hidden */}
+      <DestImage
+        dest={item.trip.destination}
+        style={styles.banner}
+        radius={0}
+        scrim="bottom"
+        align="flex-end"
+      >
+        <Text style={styles.destOnImage} numberOfLines={1}>
+          {item.trip.destination}
+        </Text>
+      </DestImage>
+
+      {/* Content */}
+      <View style={styles.content}>
+        <View style={styles.avatarWrap}>
+          <Avatar nickname={item.user.nickname} size={48} />
+          {item.user.isVerified && <View style={styles.verifiedDot} />}
+        </View>
+        <Text style={styles.name} numberOfLines={1}>{item.user.nickname}</Text>
+        <StyleTag label={item.user.travelStyles[0] ?? '자유여행'} size="sm" />
+        <View style={styles.rateRow}>
+          <Text style={styles.rateText}>재동행 {recompanionRate}%</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -42,10 +54,24 @@ const styles = StyleSheet.create({
     width: 140,
     backgroundColor: Colors.card,
     borderRadius: 18,
-    padding: 14,
+    overflow: 'hidden',
+    ...Elevation.md,
+  },
+  banner: {
+    height: 72,
+  },
+  destOnImage: {
+    color: Colors.white,
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+    paddingHorizontal: 10,
+    paddingBottom: 8,
+  },
+  content: {
+    padding: 12,
+    paddingTop: 10,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.cardBorder,
     gap: 5,
   },
   avatarWrap: { position: 'relative', marginBottom: 2 },
@@ -65,16 +91,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.textPrimary,
     letterSpacing: -0.1,
-  },
-  destRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 3,
-  },
-  destination: {
-    fontSize: 11,
-    color: Colors.textMuted,
-    fontWeight: '400',
   },
   rateRow: {
     marginTop: 2,
