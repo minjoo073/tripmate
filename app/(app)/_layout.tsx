@@ -6,7 +6,6 @@ import { ProfileProvider } from '../../context/ProfileContext';
 import { TripsProvider } from '../../context/TripsContext';
 import { VerificationProvider } from '../../context/VerificationContext';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Platform, View, StyleSheet } from 'react-native';
 
 function AppStack() {
   return (
@@ -40,37 +39,6 @@ function AppStack() {
 }
 
 export default function AppLayout() {
-  const isWeb = Platform.OS === 'web';
-
-  if (isWeb) {
-    return (
-      <View style={styles.webBg}>
-        <View style={styles.phoneFrame}>
-          <SafeAreaProvider
-            initialMetrics={{
-              insets: { top: 59, bottom: 34, left: 0, right: 0 },
-              frame: { x: 0, y: 0, width: 390, height: 844 },
-            }}
-            style={styles.phoneInner}
-          >
-            <AuthProvider>
-              <ProfileProvider>
-                <PersonalityProvider>
-                  <TripsProvider>
-                    <VerificationProvider>
-                      <StatusBar style="auto" />
-                      <AppStack />
-                    </VerificationProvider>
-                  </TripsProvider>
-                </PersonalityProvider>
-              </ProfileProvider>
-            </AuthProvider>
-          </SafeAreaProvider>
-        </View>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaProvider>
       <AuthProvider>
@@ -88,28 +56,3 @@ export default function AppLayout() {
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  webBg: {
-    flex: 1,
-    backgroundColor: '#0f1117',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  phoneFrame: {
-    width: 390,
-    height: 844,
-    borderRadius: 48,
-    overflow: 'hidden',
-    borderWidth: 10,
-    borderColor: '#1c1c1e',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 24 },
-    shadowOpacity: 0.6,
-    shadowRadius: 48,
-  },
-  phoneInner: {
-    flex: 1,
-    overflow: 'hidden',
-  },
-});

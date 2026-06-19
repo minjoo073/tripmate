@@ -43,7 +43,7 @@ export default function RootLayout() {
   if (Platform.OS === 'web') {
     return (
       <View style={styles.webOuter}>
-        <GestureHandlerRootView style={styles.webFrame}>
+        <GestureHandlerRootView style={styles.webColumn}>
           <AppStack />
         </GestureHandlerRootView>
       </View>
@@ -57,21 +57,17 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-  // 데스크톱 전체: 어두운 배경으로 양옆 채움
+  // 데스크톱: 양옆을 어둡게 채워 모바일 컬럼만 부각 (베젤·둥근 모서리·그림자 없음 — 폰 목업 X)
   webOuter: {
     flex: 1,
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#0f1117',
     alignItems: 'center',
   },
-  // 폰 크기 내부 프레임: maxWidth 480, 그림자로 부각
-  webFrame: {
+  // 콘텐츠 컬럼: 모바일 폭으로만 표시
+  webColumn: {
     width: '100%',
-    maxWidth: 480,
+    maxWidth: 430,
     flex: 1,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
-    shadowRadius: 48,
-    elevation: 24,
+    backgroundColor: '#ffffff',
   },
 });

@@ -178,33 +178,6 @@ export default function LandingPage() {
             </TouchableOpacity>
           </View>
           <Text style={styles.heroNote}>회원가입 무료 · 카드 등록 불필요</Text>
-
-          <View style={styles.heroMockup}>
-            <View style={styles.mockPhone}>
-              <View style={styles.mockHeader}>
-                <Text style={styles.mockHeaderText}>안녕하세요 👋</Text>
-                <Text style={styles.mockHeaderSub}>오늘 맞춤 메이트</Text>
-              </View>
-              {[
-                { name: '한소희', rate: 97, dest: '오사카' },
-                { name: '조승연', rate: 94, dest: '오사카' },
-                { name: '양세은', rate: 91, dest: '도쿄' },
-              ].map((m) => (
-                <View key={m.name} style={styles.mockCard}>
-                  <View style={styles.mockAvatar}>
-                    <Image source={getProfileIcon(m.name)} style={styles.mockAvatarImage} resizeMode="contain" />
-                  </View>
-                  <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text style={styles.mockName}>{m.name}</Text>
-                    <Text style={styles.mockDest}>{m.dest}</Text>
-                  </View>
-                  <View style={styles.mockBadge}>
-                    <Text style={styles.mockBadgeText}>{m.rate}%</Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
         </View>
       </View>
 
@@ -453,38 +426,6 @@ const styles = StyleSheet.create({
   },
   heroBtnOutlineText: { fontSize: 15, fontWeight: '600' as const, color: Colors.white },
   heroNote: { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginTop: Space.md },
-  heroMockup: { marginTop: Space.huge, alignItems: 'center', width: '100%' },
-  mockPhone: {
-    backgroundColor: Colors.white,
-    borderRadius: Radius.xl,
-    padding: Space.lg,
-    width: 280,
-    ...Elevation.lg,
-  },
-  mockHeader: { marginBottom: Space.md },
-  mockHeaderText: { fontSize: 13, color: Colors.textSecondary },
-  mockHeaderSub: { fontSize: 16, fontWeight: '700' as const, color: Colors.textPrimary },
-  mockCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.cardBorder,
-  },
-  mockAvatar: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: Colors.primaryBg,
-    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  },
-  mockAvatarImage: { width: 28, height: 28 },
-  mockName: { fontSize: 13, fontWeight: '600' as const, color: Colors.textPrimary },
-  mockDest: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
-  mockBadge: {
-    backgroundColor: Colors.primaryBg,
-    paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.xs, flexShrink: 0,
-  },
-  mockBadgeText: { fontSize: 13, fontWeight: '800' as const, color: Colors.primary },
 
   // ── STATS
   statsBar: {
