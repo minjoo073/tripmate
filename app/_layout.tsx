@@ -21,8 +21,10 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 
     const style = document.createElement('style');
     style.textContent = `
-      html, body { height: 100%; margin: 0; padding: 0; }
-      #root { height: 100%; display: flex; flex-direction: column; }
+      html, body { margin: 0; padding: 0; }
+      html, body, #root { min-height: 100vh; }
+      body { background: #0f1117; }
+      #root { display: flex; flex-direction: column; }
       body, * { font-family: 'SUIT', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif !important; }
       .editorial-label { font-family: 'Cormorant Garamond', Georgia, serif !important; }
     `;
@@ -43,9 +45,14 @@ export default function RootLayout() {
   if (Platform.OS === 'web') {
     return (
       <View style={styles.webOuter}>
-        <GestureHandlerRootView style={styles.webColumn}>
-          <AppStack />
-        </GestureHandlerRootView>
+        <View style={[styles.phoneFrame, webShadow]}>
+          <View style={styles.dynamicIsland} />
+          <View style={styles.phoneScreen}>
+            <GestureHandlerRootView style={styles.gestureRoot}>
+              <AppStack />
+            </GestureHandlerRootView>
+          </View>
+        </View>
       </View>
     );
   }
@@ -56,18 +63,50 @@ export default function RootLayout() {
   );
 }
 
+// iPhone 14 Pro: 393 × 852 logical viewport, ~9.5pt bezel, Dynamic Island ~120×34
+const SCREEN_W = 393;
+const SCREEN_H = 852;
+const BEZEL = 11;
+
+// boxShadow는 RN 표준 타입에 없어 any 캐스트로 web-only 처리
+const webShadow = {
+  boxShadow: '0 30px 60px rgba(0, 0, 0, 0.45), 0 0 0 2px #2a2a2a inset',
+} as any;
+
 const styles = StyleSheet.create({
-  // 데스크톱: 양옆을 어둡게 채워 모바일 컬럼만 부각 (베젤·둥근 모서리·그림자 없음 — 폰 목업 X)
   webOuter: {
     flex: 1,
     backgroundColor: '#0f1117',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 24,
   },
-  // 콘텐츠 컬럼: 모바일 폭으로만 표시
-  webColumn: {
-    width: '100%',
-    maxWidth: 430,
-    flex: 1,
+  phoneFrame: {
+    width: SCREEN_W + BEZEL * 2,
+    height: SCREEN_H + BEZEL * 2,
+    backgroundColor: '#0a0a0a',
+    borderRadius: 56,
+    padding: BEZEL,
+    position: 'relative',
+  },
+  dynamicIsland: {
+    position: 'absolute',
+    top: BEZEL + 10,
+    alignSelf: 'center',
+    width: 120,
+    height: 34,
+    borderRadius: 20,
+    backgroundColor: '#000',
+    zIndex: 10,
+  },
+  phoneScreen: {
+    width: SCREEN_W,
+    height: SCREEN_H,
+    borderRadius: 47,
     backgroundColor: '#ffffff',
+    overflow: 'hidden',
+  },
+  gestureRoot: {
+    flex: 1,
   },
 });
